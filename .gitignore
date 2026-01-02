@@ -1,0 +1,11 @@
+# Ignore environment-specific configuration
+config/db_connect.php
+
+# Ignore user-uploaded content
+uploads/
+
+# Ignore vendor directories
+vendor/
+
+# Ignore log files
+*.log
