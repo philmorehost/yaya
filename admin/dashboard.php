@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/auth_check.php';
 require_once '../config/db_connect.php';
+require_once '../config/app.php';
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
@@ -14,7 +15,13 @@ if (!$latest_attendance) {
 }
 
 // Month's Offering
-$current_month_offering = $pdo->query("SELECT SUM(amount) FROM giving WHERE type = 'Offering' AND MONTH(giving_date) = MONTH(CURRENT_DATE()) AND YEAR(giving_date) = YEAR(CURRENT_DATE())")->fetchColumn();
+$start_date = date('Y-m-01');
+$end_date = date('Y-m-01', strtotime('+1 month'));
+
+$stmt = $pdo->prepare("SELECT SUM(amount) FROM giving WHERE type = 'Offering' AND giving_date >= ? AND giving_date < ?");
+$stmt->execute([$start_date, $end_date]);
+$current_month_offering = $stmt->fetchColumn();
+
 if (!$current_month_offering) {
     $current_month_offering = 0;
 }
@@ -44,7 +51,7 @@ if (!$current_month_offering) {
                 <div class="card text-white bg-info mb-3">
                     <div class="card-header">Month's Offering</div>
                     <div class="card-body">
-                        <h5 class="card-title">$<?php echo number_format($current_month_offering, 2); ?></h5>
+                        <h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_offering, 2); ?></h5>
                     </div>
                 </div>
             </div>

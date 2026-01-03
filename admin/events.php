@@ -7,34 +7,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once '../includes/csrf_check.php';
 }
 
-// Ensure a CSRF token is available for forms
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-
-$message = '';
+// `auth_check.php` now handles session and CSRF token initialization.
 
 // Handle Add Event
 if (isset($_POST['add_event'])) {
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $start_time = $_POST['start_time'];
-    $end_time = $_POST['end_time'];
+    $end_time = !empty($_POST['end_time']) ? $_POST['end_time'] : null;
     $location = trim($_POST['location']);
 
     if (!empty($name) && !empty($start_time) && !empty($location)) {
         $stmt = $pdo->prepare("INSERT INTO events (name, description, start_time, end_time, location) VALUES (?, ?, ?, ?, ?)");
         if ($stmt->execute([$name, $description, $start_time, $end_time, $location])) {
-            $message = '<div class="alert alert-success">Event added successfully!</div>';
+            $_SESSION['success_message'] = "Event added successfully!";
         } else {
-            $message = '<div class="alert alert-danger">Failed to add event.</div>';
+            $_SESSION['error_message'] = "Failed to add event.";
         }
     } else {
-        $message = '<div class="alert alert-warning">Please fill in all required fields.</div>';
+        $_SESSION['error_message'] = "Please fill in all required fields.";
     }
+    header("Location: events.php");
+    exit();
 }
 
 // Handle Update Event
@@ -43,19 +37,21 @@ if (isset($_POST['update_event'])) {
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $start_time = $_POST['start_time'];
-    $end_time = $_POST['end_time'];
+    $end_time = !empty($_POST['end_time']) ? $_POST['end_time'] : null;
     $location = trim($_POST['location']);
 
     if (!empty($name) && !empty($start_time) && !empty($location)) {
         $stmt = $pdo->prepare("UPDATE events SET name = ?, description = ?, start_time = ?, end_time = ?, location = ? WHERE id = ?");
         if ($stmt->execute([$name, $description, $start_time, $end_time, $location, $id])) {
-            $message = '<div class="alert alert-success">Event updated successfully!</div>';
+            $_SESSION['success_message'] = "Event updated successfully!";
         } else {
-            $message = '<div class="alert alert-danger">Failed to update event.</div>';
+            $_SESSION['error_message'] = "Failed to update event.";
         }
     } else {
-        $message = '<div class="alert alert-warning">Please fill in all required fields.</div>';
+        $_SESSION['error_message'] = "Please fill in all required fields.";
     }
+    header("Location: events.php");
+    exit();
 }
 
 // Handle Delete Event
@@ -63,10 +59,12 @@ if (isset($_POST['delete_event'])) {
     $id = $_POST['id'];
     $stmt = $pdo->prepare("DELETE FROM events WHERE id = ?");
     if ($stmt->execute([$id])) {
-        $message = '<div class="alert alert-success">Event deleted successfully!</div>';
+        $_SESSION['success_message'] = "Event deleted successfully!";
     } else {
-        $message = '<div class="alert alert-danger">Failed to delete event.</div>';
+        $_SESSION['error_message'] = "Failed to delete event.";
     }
+    header("Location: events.php");
+    exit();
 }
 
 // Fetch Data
@@ -80,7 +78,16 @@ require_once '../includes/sidebar.php';
     <div class="container-fluid">
         <h2 class="mb-4">Events Management</h2>
 
-        <?php echo $message; ?>
+        <?php
+        if (isset($_SESSION['success_message'])) {
+            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' . $_SESSION['success_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            unset($_SESSION['success_message']);
+        }
+        if (isset($_SESSION['error_message'])) {
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' . $_SESSION['error_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            unset($_SESSION['error_message']);
+        }
+        ?>
 
         <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addEventModal">
             <i class="fas fa-plus"></i> Add New Event

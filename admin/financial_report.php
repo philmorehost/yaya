@@ -1,6 +1,7 @@
 <?php
 require_once '../includes/auth_check.php';
 require_once '../config/db_connect.php';
+require_once '../config/app.php';
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
@@ -57,7 +58,7 @@ $expenditure_report = $expenditure_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php foreach ($giving_report as $row): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($row['type']); ?></td>
-                                        <td>$<?php echo number_format($row['total'], 2); ?></td>
+                                        <td><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($row['total'], 2); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -80,7 +81,7 @@ $expenditure_report = $expenditure_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php foreach ($expenditure_report as $row): ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($row['category']); ?></td>
-                                        <td>$<?php echo number_format($row['total'], 2); ?></td>
+                                        <td><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($row['total'], 2); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
