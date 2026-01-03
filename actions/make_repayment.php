@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
 
@@ -26,20 +25,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        // Insert repayment record
-        $stmt = $db->prepare("INSERT INTO Repayments (loan_id, user_id, amount, payment_date) VALUES (:loan_id, :user_id, :amount, :payment_date)");
-        $stmt->execute([
-            ':loan_id' => $loan_id,
-            ':user_id' => $user_id,
-            ':amount' => $amount,
-            ':payment_date' => date('Y-m-d')
-        ]);
+        // Get current loan balance
+        $stmt = $db->prepare("SELECT balance FROM Loans WHERE id = :loan_id AND user_id = :user_id");
+        $stmt->execute([':loan_id' => $loan_id, ':user_id' => $user_id]);
+        $loan = $stmt->fetch();
 
-        // Update the next due date (simplified logic)
-        $updateStmt = $db->prepare("UPDATE Loans SET next_due_date = DATE(next_due_date, '+1 month') WHERE id = :loan_id AND user_id = :user_id");
-        $updateStmt->execute([':loan_id' => $loan_id, ':user_id' => $user_id]);
+        if ($loan) {
+            $new_balance = $loan['balance'] - $amount;
+            if ($new_balance < 0) {
+                $new_balance = 0;
+            }
 
-        $_SESSION['success_message'] = 'Repayment of $' . number_format($amount, 2) . ' made successfully!';
+            // Insert repayment record
+            $stmt = $db->prepare("INSERT INTO Repayments (loan_id, user_id, amount, payment_date) VALUES (:loan_id, :user_id, :amount, :payment_date)");
+            $stmt->execute([
+                ':loan_id' => $loan_id,
+                ':user_id' => $user_id,
+                ':amount' => $amount,
+                ':payment_date' => date('Y-m-d')
+            ]);
+
+            // Update loan balance and next due date
+            $updateStmt = $db->prepare("UPDATE Loans SET balance = :balance, next_due_date = DATE_ADD(next_due_date, INTERVAL 1 MONTH) WHERE id = :loan_id AND user_id = :user_id");
+            $updateStmt->execute([':balance' => $new_balance, ':loan_id' => $loan_id, ':user_id' => $user_id]);
+
+            $_SESSION['success_message'] = 'Repayment of $' . number_format($amount, 2) . ' made successfully!';
+        } else {
+            $_SESSION['errors'] = ['Loan not found.'];
+        }
+
         header('Location: ' . BASE_URL . 'pages/dashboard.php');
         exit;
     } catch (PDOException $e) {

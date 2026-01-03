@@ -29,11 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $updateStmt->execute([':id' => $id]);
 
                 // Create a new loan
-                $loanStmt = $db->prepare("INSERT INTO Loans (application_id, user_id, amount, next_due_date) VALUES (:application_id, :user_id, :amount, :next_due_date)");
+                $loanStmt = $db->prepare("INSERT INTO Loans (application_id, user_id, amount, balance, next_due_date) VALUES (:application_id, :user_id, :amount, :balance, :next_due_date)");
                 $loanStmt->execute([
                     ':application_id' => $id,
-                    ':user_id' => $application['user_id'], // This assumes user_id is stored in LoanApplications
+                    ':user_id' => $application['user_id'],
                     ':amount' => $application['loanAmount'],
+                    ':balance' => $application['loanAmount'],
                     ':next_due_date' => date('Y-m-d', strtotime('+1 month'))
                 ]);
 

@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php require_once dirname(__DIR__) . '/database.php'; ?>
 

@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -58,8 +57,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         echo htmlspecialchars($article['title']);
                         echo '<div>';
                         echo '<a href="' . BASE_URL . 'pages/article.php?id=' . $article['id'] . '" class="btn btn-info btn-sm">View</a> ';
-                        // echo '<a href="#" class="btn btn-warning btn-sm">Edit</a> '; // Edit functionality to be added
-                        // echo '<a href="#" class="btn btn-danger btn-sm">Delete</a>'; // Delete functionality to be added
+                        echo '<a href="edit_article.php?id=' . $article['id'] . '" class="btn btn-warning btn-sm">Edit</a> ';
+                        echo '<form action="' . BASE_URL . 'actions/delete_article.php" method="post" style="display:inline-block;" onsubmit="return confirm(\'Are you sure you want to delete this article?\');">';
+                        echo '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+                        echo '<input type="hidden" name="id" value="' . $article['id'] . '">';
+                        echo '<button type="submit" class="btn btn-danger btn-sm">Delete</button>';
+                        echo '</form>';
                         echo '</div>';
                         echo '</li>';
                     }

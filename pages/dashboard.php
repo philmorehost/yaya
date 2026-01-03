@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php
 if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
@@ -35,13 +34,14 @@ if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
                         <tr>
                             <th>Loan ID</th>
                             <th>Amount</th>
+                            <th>Balance</th>
                             <th>Next Due Date</th>
                             <th>Make a Repayment</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $stmt = $db->prepare("SELECT id, amount, next_due_date FROM Loans WHERE user_id = :user_id");
+                        $stmt = $db->prepare("SELECT id, amount, balance, next_due_date FROM Loans WHERE user_id = :user_id");
                         $stmt->execute([':user_id' => $_SESSION['user_id']]);
                         $loans = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -50,13 +50,14 @@ if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
                                 echo "<tr>";
                                 echo "<td>" . $loan['id'] . "</td>";
                                 echo "<td>$" . htmlspecialchars(number_format($loan['amount'], 2)) . "</td>";
+                                echo "<td>$" . htmlspecialchars(number_format($loan['balance'], 2)) . "</td>";
                                 echo "<td>" . date('F j, Y', strtotime($loan['next_due_date'])) . "</td>";
                                 echo "<td>
                                         <form action='" . BASE_URL . "actions/make_repayment.php' method='post'>
                                             <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
                                             <input type='hidden' name='loan_id' value='" . $loan['id'] . "'>
                                             <div class='input-group'>
-                                                <input type='number' class='form-control' name='amount' placeholder='Amount' required>
+                                                <input type='number' step='0.01' class='form-control' name='amount' placeholder='Amount' required>
                                                 <button type='submit' class='btn btn-success'>Pay</button>
                                             </div>
                                         </form>
@@ -64,7 +65,7 @@ if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='4' class='text-center'>You have no active loans.</td></tr>";
+                            echo "<tr><td colspan='5' class='text-center'>You have no active loans.</td></tr>";
                         }
                         ?>
                     </tbody>

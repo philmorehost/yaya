@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
 
@@ -23,7 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_name'] = $user['fullName'];
         $_SESSION['user_email'] = $user['email'];
 
-        header('Location: ' . BASE_URL . 'pages/dashboard.php');
+        if (isset($_SESSION['return_to'])) {
+            $return_to = $_SESSION['return_to'];
+            unset($_SESSION['return_to']);
+            header('Location: ' . $return_to);
+        } else {
+            header('Location: ' . BASE_URL . 'pages/dashboard.php');
+        }
         exit;
     } else {
         $errors[] = 'Invalid email or password.';

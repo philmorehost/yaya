@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
 
@@ -69,9 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':guarantor2MemberId' => $_POST['guarantor2MemberId'],
             ':status' => 'Pending'
         ]);
-
-        // Unset the token after successful submission
-        unset($_SESSION['csrf_token']);
 
         header('Location: ' . BASE_URL . 'pages/thank_you.php');
         exit();

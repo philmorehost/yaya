@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php
 if (empty($_SESSION['csrf_token'])) {

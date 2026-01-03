@@ -16,7 +16,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="<?php echo BASE_URL; ?>">Home</a>
                         </li>
@@ -26,9 +26,21 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?php echo BASE_URL; ?>pages/news.php">The Watchmen News</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="<?php echo BASE_URL; ?>pages/login.php">Login</a>
-                        </li>
+                        <?php if (isset($_SESSION['user_loggedin']) && $_SESSION['user_loggedin'] === true): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>pages/dashboard.php">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>actions/logout_user.php">Logout</a>
+                            </li>
+                        <?php else: ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>pages/login.php">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>pages/register.php">Register</a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>

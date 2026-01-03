@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once dirname(__DIR__) . '/config.php';
 
 // Unset all of the session variables

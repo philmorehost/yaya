@@ -1,10 +1,15 @@
-<?php session_start(); ?>
+<?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php
+if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
+    // Store the intended destination in the session
+    $_SESSION['return_to'] = BASE_URL . 'pages/apply.php';
+    header('Location: ' . BASE_URL . 'pages/login.php');
+    exit;
+}
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
-<?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php include dirname(__DIR__) . '/includes/header.php'; ?>
 
 <div class="container mt-5">

@@ -33,6 +33,7 @@ CREATE TABLE `Loans` (
   `application_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
+  `balance` decimal(10,2) NOT NULL,
   `next_due_date` date NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
