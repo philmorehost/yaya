@@ -1,6 +1,8 @@
 <?php
 require_once '../includes/auth_check.php';
 require_once '../config/db_connect.php';
+require_once '../includes/helpers.php';
+check_permission('manage_roles');
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
@@ -48,6 +50,7 @@ $roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_A
                                 <tr>
                                     <td><?php echo htmlspecialchars($role['name']); ?></td>
                                     <td>
+                                        <a href="edit_permissions.php?role_id=<?php echo $role['id']; ?>" class="btn btn-sm btn-warning">Permissions</a>
                                         <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editRoleModal-<?php echo $role['id']; ?>">Edit</button>
                                         <form method="post" class="d-inline">
                                             <input type="hidden" name="id" value="<?php echo $role['id']; ?>">

@@ -9,6 +9,11 @@
         <a href="media.php" class="list-group-item list-group-item-action">Media</a>
         <a href="departments.php" class="list-group-item list-group-item-action">Departments</a>
         <a href="roles.php" class="list-group-item list-group-item-action">Roles</a>
+
+        <div class="list-group-item list-group-item-action list-group-item-heading">Settings</div>
+        <a href="homepage_settings.php" class="list-group-item list-group-item-action">Homepage Settings</a>
+        <a href="smtp_settings.php" class="list-group-item list-group-item-action">SMTP Settings</a>
+
         <a href="../logout.php" class="list-group-item list-group-item-action">Logout</a>
     </div>
 </div>
