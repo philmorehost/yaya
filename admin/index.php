@@ -13,11 +13,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 <?php include dirname(__DIR__) . '/includes/header.php'; ?>
 
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Admin Dashboard</h1>
         <a href="logout.php" class="btn btn-danger">Logout</a>
     </div>
-    <p>Loan Applications</p>
 
     <?php
     if (isset($_SESSION['success_message'])) {
@@ -26,71 +25,60 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     }
     ?>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Hub Category</th>
-                <th>Full Name</th>
-                <th>Membership Number</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Loan Purpose</th>
-                <th>Loan Amount</th>
-                <th>Monthly Income</th>
-                <th>Existing Savings</th>
-                <th>Guarantor 1 Name</th>
-                <th>Guarantor 1 MemberId</th>
-                <th>Guarantor 2 Name</th>
-                <th>Guarantor 2 MemberId</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $stmt = $db->query("SELECT * FROM LoanApplications");
-            $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            if ($applications) {
-                foreach ($applications as $app) {
-                    echo "<tr>";
-                    echo "<td>" . $app['id'] . "</td>";
-                    echo "<td>" . htmlspecialchars($app['hubCategory']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['fullName']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['membershipNumber']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['email']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['phone']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['loanPurpose']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['loanAmount']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['monthlyIncome']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['existingSavings']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['guarantor1Name']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['guarantor1MemberId']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['guarantor2Name']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['guarantor2MemberId']) . "</td>";
-                    echo "<td>" . htmlspecialchars($app['status']) . "</td>";
-                    echo "<td>
-                            <form action='update_status.php' method='post' style='display:inline-block;'>
-                                <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
-                                <input type='hidden' name='id' value='" . $app['id'] . "'>
-                                <input type='hidden' name='status' value='Approved'>
-                                <button type='submit' class='btn btn-success btn-sm'>Approve</button>
-                            </form>
-                            <form action='update_status.php' method='post' style='display:inline-block;'>
-                                <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
-                                <input type='hidden' name='id' value='" . $app['id'] . "'>
-                                <input type='hidden' name='status' value='Disapproved'>
-                                <button type='submit' class='btn btn-warning btn-sm'>Disapprove</button>
-                            </form>
-                          </td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='16' class='text-center'>No applications found.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="card-header">
+            <h4>Loan Applications</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Loan Purpose</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $stmt = $db->query("SELECT id, fullName, loanPurpose, loanAmount, status FROM LoanApplications ORDER BY id DESC");
+                        $applications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        if ($applications) {
+                            foreach ($applications as $app) {
+                                echo "<tr>";
+                                echo "<td>" . $app['id'] . "</td>";
+                                echo "<td>" . htmlspecialchars($app['fullName']) . "</td>";
+                                echo "<td>" . htmlspecialchars($app['loanPurpose']) . "</td>";
+                                echo "<td>$" . htmlspecialchars(number_format($app['loanAmount'], 2)) . "</td>";
+                                echo "<td><span class='badge bg-" . ($app['status'] === 'Approved' ? 'success' : ($app['status'] === 'Disapproved' ? 'danger' : 'warning')) . "'>" . htmlspecialchars($app['status']) . "</span></td>";
+                                echo "<td>
+                                        <form action='update_status.php' method='post' style='display:inline-block;'>
+                                            <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
+                                            <input type='hidden' name='id' value='" . $app['id'] . "'>
+                                            <input type='hidden' name='status' value='Approved'>
+                                            <button type='submit' class='btn btn-success btn-sm'>Approve</button>
+                                        </form>
+                                        <form action='update_status.php' method='post' style='display:inline-block;'>
+                                            <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
+                                            <input type='hidden' name='id' value='" . $app['id'] . "'>
+                                            <input type='hidden' name='status' value='Disapproved'>
+                                            <button type='submit' class='btn btn-warning btn-sm'>Disapprove</button>
+                                        </form>
+                                      </td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='6' class='text-center'>No applications found.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?php include dirname(__DIR__) . '/includes/footer.php'; ?>

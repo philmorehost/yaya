@@ -1,11 +1,114 @@
+/*
+* Base Styles & Variables
+*/
+:root {
+    --primary-color: #0056b3;
+    --secondary-color: #007bff;
+    --accent-color: #00d4ff;
+    --text-color: #333;
+    --light-gray: #f8f9fa;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 body {
     font-family: 'Poppins', sans-serif;
+    background-color: var(--light-gray);
+    color: var(--text-color);
+    line-height: 1.6;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/*
+* Navbar & Header
+*/
 .navbar {
-    margin-bottom: 2rem;
+    background-color: #fff;
+    box-shadow: var(--box-shadow);
+    padding: 1rem 1.5rem;
 }
 
-h1, h2 {
-    color: #0056b3;
+.navbar-brand {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/*
+* Card Styles
+*/
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: #fff;
+    font-weight: 600;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+/*
+* Form Styles
+*/
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+/*
+* Homepage Specific Styles
+*/
+.hero-section {
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.info-card {
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/*
+* Admin Dashboard Styles
+*/
+.table {
+    background-color: #fff;
+}
+.table thead {
+    background-color: var(--primary-color);
+    color: #fff;
 }
