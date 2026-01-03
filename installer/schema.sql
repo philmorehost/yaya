@@ -104,9 +104,6 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Set initial schema version to 1.0 for fresh installs
-INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.0') ON DUPLICATE KEY UPDATE setting_value = '1.0';
-
 -- Truncate tables to ensure a clean slate, just in case they existed before.
 TRUNCATE TABLE `giving`;
 TRUNCATE TABLE `members`;
@@ -117,6 +114,9 @@ TRUNCATE TABLE `events`;
 TRUNCATE TABLE `media`;
 TRUNCATE TABLE `announcements`;
 TRUNCATE TABLE `connection_requests`;
+
+-- Set initial schema version to 1.0 for fresh installs
+INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.0') ON DUPLICATE KEY UPDATE setting_value = '1.0';
 
 CREATE TABLE IF NOT EXISTS `giving_accounts` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
