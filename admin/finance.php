@@ -2,6 +2,8 @@
 require_once '../includes/auth_check.php';
 require_once '../config/db_connect.php';
 require_once '../includes/header.php';
+require_once '../includes/helpers.php';
+check_permission('manage_finance');
 require_once '../includes/sidebar.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

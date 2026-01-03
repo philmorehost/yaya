@@ -1,6 +1,8 @@
 <?php
 require_once '../includes/auth_check.php';
 require_once '../config/db_connect.php';
+require_once '../includes/helpers.php';
+check_permission('delete_members');
 require_once '../includes/csrf_check.php';
 
 $id = $_POST['id'];
