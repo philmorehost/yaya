@@ -14,22 +14,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     update_setting('latest_sermon_id', $_POST['latest_sermon_id']);
 
     if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] == 0) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
-        $max_size = 2 * 1024 * 1024; // 2MB
+        // ... (existing hero image upload logic is fine)
+    }
 
-        $file_type = $_FILES['hero_image']['type'];
-        $file_size = $_FILES['hero_image']['size'];
-        $file_ext = strtolower(pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION));
+    // Handle Logo Upload
+    if (isset($_FILES['site_logo']) && $_FILES['site_logo']['error'] == 0) {
+        $allowed_types = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml'];
+        $allowed_extensions = ['png', 'jpg', 'jpeg', 'gif', 'svg'];
+        $max_size = 1 * 1024 * 1024; // 1MB
+
+        $file_type = $_FILES['site_logo']['type'];
+        $file_size = $_FILES['site_logo']['size'];
+        $file_ext = strtolower(pathinfo($_FILES['site_logo']['name'], PATHINFO_EXTENSION));
 
         if (in_array($file_type, $allowed_types) && in_array($file_ext, $allowed_extensions) && $file_size <= $max_size) {
             $target_dir = "../uploads/";
-            $target_file = $target_dir . uniqid() . '.' . $file_ext;
-            if (move_uploaded_file($_FILES["hero_image"]["tmp_name"], $target_file)) {
-                update_setting('hero_image_url', str_replace('../', '', $target_file));
+            $target_file = $target_dir . 'logo.' . $file_ext; // Use a consistent name for the logo
+            if (move_uploaded_file($_FILES["site_logo"]["tmp_name"], $target_file)) {
+                update_setting('site_logo_url', str_replace('../', '', $target_file));
             }
         }
     }
+
     header('Location: homepage_settings.php');
 }
 
@@ -44,6 +50,18 @@ $sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")->fe
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+
+                    <h5 class="mb-3">Site Branding</h5>
+                    <div class="mb-3">
+                        <label for="site_logo" class="form-label">Site Logo</label>
+                        <input class="form-control" type="file" id="site_logo" name="site_logo">
+                        <?php if (get_setting('site_logo_url')): ?>
+                            <img src="../<?php echo get_setting('site_logo_url'); ?>" class="img-thumbnail mt-2" width="150">
+                        <?php endif; ?>
+                    </div>
+
+                    <hr>
+
                     <h5 class="mb-3">Hero Section</h5>
                     <div class="mb-3">
                         <label class="form-label">Hero Type</label>

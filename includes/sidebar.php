@@ -1,5 +1,14 @@
 <div id="sidebar-wrapper">
-    <div class="sidebar-heading text-center">YAYA CMS</div>
+    <div class="sidebar-heading text-center">
+        <?php
+        $logo_url = get_setting('site_logo_url');
+        if ($logo_url) {
+            echo '<img src="../' . htmlspecialchars($logo_url) . '" alt="Site Logo" class="img-fluid" style="max-height: 50px;">';
+        } else {
+            echo 'YAYA CMS';
+        }
+        ?>
+    </div>
     <div class="list-group list-group-flush">
         <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
         <a href="members.php" class="list-group-item list-group-item-action">Members</a>
@@ -21,6 +30,6 @@
 <div id="page-content-wrapper">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
         <div class="container-fluid">
-            <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+            <button class="btn btn-primary" id="menu-toggle"><i class="fas fa-bars"></i></button>
         </div>
     </nav>

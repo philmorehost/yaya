@@ -65,7 +65,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <div class="login-container">
-        <h2 class="text-center mb-4">YAYA Admin Login</h2>
+        <div class="text-center mb-4">
+            <?php
+            require_once 'includes/helpers.php';
+            $logo_url = get_setting('site_logo_url');
+            if ($logo_url) {
+                echo '<img src="' . htmlspecialchars($logo_url) . '" alt="Site Logo" class="img-fluid" style="max-height: 70px;">';
+            } else {
+                echo '<h2>YAYA Admin Login</h2>';
+            }
+            ?>
+        </div>
         <?php if (isset($error)): ?>
             <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>

@@ -8,9 +8,17 @@
     <link rel="stylesheet" href="assets/css/public_style.css">
 </head>
 <body>
+    <?php require_once 'includes/helpers.php'; ?>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="index.php">RCCG YAYA</a>
+            <a class="navbar-brand" href="index.php">
+                <?php $logo_url = get_setting('site_logo_url'); ?>
+                <?php if ($logo_url): ?>
+                    <img src="<?php echo htmlspecialchars($logo_url); ?>" alt="Site Logo" height="40">
+                <?php else: ?>
+                    RCCG YAYA
+                <?php endif; ?>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>

@@ -26,8 +26,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header('Location: roles.php');
 }
 
-// Fetch Data
-$roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// Fetch Data with Permissions
+$roles_stmt = $pdo->query("
+    SELECT
+        r.id,
+        r.name,
+        GROUP_CONCAT(p.name ORDER BY p.name SEPARATOR ', ') as permissions
+    FROM roles r
+    LEFT JOIN role_permissions rp ON r.id = rp.role_id
+    LEFT JOIN permissions p ON rp.permission_id = p.id
+    GROUP BY r.id, r.name
+    ORDER BY r.name
+");
+$roles = $roles_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -42,6 +53,7 @@ $roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_A
                         <thead>
                             <tr>
                                 <th>Role Name</th>
+                                <th>Permissions</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -49,6 +61,15 @@ $roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_A
                             <?php foreach ($roles as $role): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($role['name']); ?></td>
+                                    <td>
+                                        <?php if (!empty($role['permissions'])): ?>
+                                            <?php foreach (explode(', ', $role['permissions']) as $permission): ?>
+                                                <span class="badge bg-secondary"><?php echo htmlspecialchars($permission); ?></span>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">No permissions assigned</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <a href="edit_permissions.php?role_id=<?php echo $role['id']; ?>" class="btn btn-sm btn-warning">Permissions</a>
                                         <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editRoleModal-<?php echo $role['id']; ?>">Edit</button>
