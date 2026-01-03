@@ -1,4 +1,10 @@
 <?php
+// Redirect to installer if the config file doesn't exist.
+if (!file_exists('config/db_connect.php')) {
+    header('Location: installer/');
+    exit;
+}
+
 require_once 'config/db_connect.php';
 require_once 'includes/public_header.php';
 require_once 'includes/helpers.php';
