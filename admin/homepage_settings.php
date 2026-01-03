@@ -1,10 +1,8 @@
 <?php
-require_once '../includes/auth_check.php';
-require_once '../config/db_connect.php';
+require_once 'init.php';
+check_permission('manage_settings');
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
-require_once '../includes/helpers.php';
-check_permission('manage_settings');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';

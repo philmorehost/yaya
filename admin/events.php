@@ -1,6 +1,5 @@
 <?php
-require_once '../includes/auth_check.php';
-require_once '../config/db_connect.php';
+require_once 'init.php';
 
 // CSRF Protection
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

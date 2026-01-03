@@ -32,6 +32,6 @@
 <div id="page-content-wrapper">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
         <div class="container-fluid">
-            <button class="btn btn-primary" id="menu-toggle"><i class="fas fa-bars"></i></button>
+            <button class="btn btn-primary" id="menu-toggle"><i class="fa fa-bars"></i></button>
         </div>
     </nav>

@@ -1,7 +1,5 @@
 <?php
-require_once '../includes/auth_check.php';
-require_once '../config/db_connect.php';
-require_once '../includes/helpers.php';
+require_once 'init.php';
 // check_permission('manage_announcements'); // To be added later
 
 // Handle form submissions for add, edit, delete

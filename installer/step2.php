@@ -34,9 +34,23 @@
 
             try {
                 // 1. Check for necessary permissions and files before attempting connection
-                if (!is_writable('../config/')) {
-                    throw new Exception("The directory '../config/' is not writable. Please check the folder permissions.");
+                $config_dir = '../config/';
+                $uploads_dir = '../uploads/';
+
+                if (!file_exists($config_dir) && !mkdir($config_dir, 0755, true)) {
+                    throw new Exception("The directory '$config_dir' could not be created. Please check parent directory permissions.");
                 }
+                if (!is_writable($config_dir)) {
+                    throw new Exception("The directory '$config_dir' is not writable. Please check the folder permissions.");
+                }
+
+                if (!file_exists($uploads_dir) && !mkdir($uploads_dir, 0755, true)) {
+                    throw new Exception("The directory '$uploads_dir' could not be created. Please check parent directory permissions.");
+                }
+                if (!is_writable($uploads_dir)) {
+                    throw new Exception("The directory '$uploads_dir' is not writable. Please check the folder permissions.");
+                }
+
                 if (!is_readable('schema.sql')) {
                     throw new Exception("The 'schema.sql' file is not readable. Please ensure the file exists and has the correct permissions.");
                 }
