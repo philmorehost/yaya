@@ -6,50 +6,49 @@ require_once '../includes/sidebar.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';
+
+    // Update text-based settings
     update_setting('hero_type', $_POST['hero_type']);
     update_setting('hero_video_url', $_POST['hero_video_url']);
     update_setting('upcoming_event_id', $_POST['upcoming_event_id']);
     update_setting('latest_sermon_id', $_POST['latest_sermon_id']);
 
-    // Handle Hero Image Upload
-    if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] == 0) {
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
-        $max_size = 2 * 1024 * 1024; // 2MB
+    // Function to handle a file upload
+    function handle_upload($file_key, $setting_name, $prefix = '') {
+        if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] == 0) {
+            $allowed_types = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml'];
+            $allowed_extensions = ['png', 'jpg', 'jpeg', 'gif', 'svg'];
+            $max_size = 2 * 1024 * 1024; // 2MB
 
-        $file_type = $_FILES['hero_image']['type'];
-        $file_size = $_FILES['hero_image']['size'];
-        $file_ext = strtolower(pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION));
+            $file_info = $_FILES[$file_key];
+            $file_ext = strtolower(pathinfo($file_info['name'], PATHINFO_EXTENSION));
 
-        if (in_array($file_type, $allowed_types) && in_array($file_ext, $allowed_extensions) && $file_size <= $max_size) {
-            $target_dir = "../uploads/";
-            $target_file = $target_dir . 'hero_' . uniqid() . '.' . $file_ext;
-            if (move_uploaded_file($_FILES["hero_image"]["tmp_name"], $target_file)) {
-                update_setting('hero_image_url', str_replace('../', '', $target_file));
+            if (in_array($file_info['type'], $allowed_types) && in_array($file_ext, $allowed_extensions) && $file_info['size'] <= $max_size) {
+                $target_dir = "../uploads/";
+                // To prevent file overwrites, create a unique name
+                $target_file = $target_dir . $prefix . uniqid() . '.' . $file_ext;
+
+                if (move_uploaded_file($file_info["tmp_name"], $target_file)) {
+                    // Important: Save the path relative to the web root, not the file system
+                    $url_path = 'uploads/' . basename($target_file);
+                    update_setting($setting_name, $url_path);
+                } else {
+                    $_SESSION['error_message'] = "Failed to move uploaded file '$file_key'.";
+                }
+            } else {
+                $_SESSION['error_message'] = "Invalid file type or size for '$file_key'.";
             }
         }
     }
 
-    // Handle Logo Upload
-    if (isset($_FILES['site_logo']) && $_FILES['site_logo']['error'] == 0) {
-        $allowed_types = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml'];
-        $allowed_extensions = ['png', 'jpg', 'jpeg', 'gif', 'svg'];
-        $max_size = 1 * 1024 * 1024; // 1MB
+    // Handle Hero Image and Logo Uploads
+    handle_upload('hero_image', 'hero_image_url', 'hero_');
+    handle_upload('site_logo', 'site_logo_url', 'logo_');
 
-        $file_type = $_FILES['site_logo']['type'];
-        $file_size = $_FILES['site_logo']['size'];
-        $file_ext = strtolower(pathinfo($_FILES['site_logo']['name'], PATHINFO_EXTENSION));
-
-        if (in_array($file_type, $allowed_types) && in_array($file_ext, $allowed_extensions) && $file_size <= $max_size) {
-            $target_dir = "../uploads/";
-            $target_file = $target_dir . 'logo.' . $file_ext; // Use a consistent name for the logo
-            if (move_uploaded_file($_FILES["site_logo"]["tmp_name"], $target_file)) {
-                update_setting('site_logo_url', str_replace('../', '', $target_file));
-            }
-        }
+    if (!isset($_SESSION['error_message'])) {
+        $_SESSION['success_message'] = "Homepage settings saved successfully!";
     }
 
-    $_SESSION['success_message'] = "Homepage settings saved successfully!";
     header('Location: homepage_settings.php');
     exit();
 }
@@ -66,6 +65,10 @@ $sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")->fe
         if (isset($_SESSION['success_message'])) {
             echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' . $_SESSION['success_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
             unset($_SESSION['success_message']);
+        }
+        if (isset($_SESSION['error_message'])) {
+            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">' . $_SESSION['error_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            unset($_SESSION['error_message']);
         }
         ?>
 
