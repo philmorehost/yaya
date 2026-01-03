@@ -68,3 +68,6 @@ INSERT IGNORE INTO `permissions` (`name`, `description`) VALUES
 ('manage_roles', 'Full CRUD access to roles and permissions'),
 ('manage_settings', 'Full access to system settings'),
 ('manage_announcements', 'Full CRUD access to announcements');
+
+-- Finally, update the schema version to mark this update as complete.
+INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.4') ON DUPLICATE KEY UPDATE `setting_value` = '1.4';

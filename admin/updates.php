@@ -4,15 +4,8 @@ check_permission('manage_settings');
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
-// Simplified versioning: check for the existence of the author_id column
-$update_needed = false;
-try {
-    $pdo->query("SELECT author_id FROM announcements LIMIT 1");
-} catch (PDOException $e) {
-    // If the query fails, the column likely doesn't exist.
-    $update_needed = true;
-}
-
+$current_version = get_setting('schema_version') ?: '1.0';
+$update_needed = version_compare($current_version, LATEST_SCHEMA_VERSION, '<');
 $error_message = '';
 $success_message = '';
 
@@ -21,31 +14,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['apply_update'])) {
     require_once '../includes/csrf_check.php';
 
     $update_file = '../updates/update.sql';
-    if (is_readable($update_file)) {
+    if ($update_needed && is_readable($update_file)) {
         try {
             $sql = file_get_contents($update_file);
-            $statements = array_filter(array_map('trim', explode(';', $sql)));
+            $pdo->exec($sql); // Execute the entire script as a single transaction
 
-            $pdo->beginTransaction();
-            foreach ($statements as $statement) {
-                if (!empty($statement)) {
-                    $pdo->exec($statement);
-                }
-            }
-            $pdo->commit();
-
-            // Mark update as complete by adding a setting
-            update_setting('schema_version', '1.3'); // You can still use versions
-            $success_message = "System updated successfully! The database is now up to date.";
-            $update_needed = false; // Refresh the state
+            // After execution, the script itself will have updated the version.
+            // We refresh the page to reflect the new state.
+            header("Location: updates.php?updated=true");
+            exit();
         } catch (Exception $e) {
-            $pdo->rollBack();
             $error_message = "An error occurred during the update: " . $e->getMessage();
         }
     } else {
-        $error_message = "Update file not found or is not readable.";
+        $error_message = "No update is required or the update file is missing.";
     }
 }
+
+// Check for success message
+if (isset($_GET['updated'])) {
+    $success_message = "System updated successfully! Your database is now up to date.";
+}
+
+// Re-check version after potential update
+$current_version = get_setting('schema_version') ?: '1.0';
+$update_needed = version_compare($current_version, LATEST_SCHEMA_VERSION, '<');
 ?>
 
 <div class="main-content">
@@ -64,11 +57,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['apply_update'])) {
                 Database Schema Updater
             </div>
             <div class="card-body">
+                <p><strong>Current Schema Version:</strong> <?php echo htmlspecialchars($current_version); ?></p>
+                <p><strong>Latest Schema Version:</strong> <?php echo LATEST_SCHEMA_VERSION; ?></p>
+                <hr>
                 <?php if ($update_needed): ?>
                     <div class="alert alert-warning">
                         <h4 class="alert-heading">Database Update Required</h4>
                         <p>Your database schema is out of date. Applying the update will add new tables and columns required for the latest features to function correctly.</p>
-                        <hr>
                         <p class="mb-0">It is strongly recommended to back up your database before proceeding.</p>
                     </div>
                     <form method="post" onsubmit="return confirm('Are you sure you want to apply the database update?');">
@@ -77,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['apply_update'])) {
                     </form>
                 <?php else: ?>
                     <div class="alert alert-success mb-0">
-                        Your system is up to date. The database schema is correct.
+                        Your system is up to date.
                     </div>
                 <?php endif; ?>
             </div>

@@ -37,15 +37,9 @@ if (!is_numeric($current_month_tithe)) {
         <h2 class="mb-4">Dashboard</h2>
 
         <?php
-        // Check if a database update is needed
-        $update_needed = false;
-        try {
-            $pdo->query("SELECT author_id FROM announcements LIMIT 1");
-        } catch (PDOException $e) {
-            $update_needed = true;
-        }
-
-        if ($update_needed):
+        // Standardized version check
+        $current_version = get_setting('schema_version') ?: '1.0';
+        if (version_compare($current_version, LATEST_SCHEMA_VERSION, '<')):
         ?>
         <div class="alert alert-danger">
             <h4 class="alert-heading">Database Update Required!</h4>
