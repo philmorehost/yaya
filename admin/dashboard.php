@@ -25,13 +25,22 @@ $current_month_offering = $stmt->fetchColumn();
 if (!$current_month_offering) {
     $current_month_offering = 0;
 }
+
+// Month's Tithe
+$stmt = $pdo->prepare("SELECT SUM(amount) FROM giving WHERE type = 'Tithe' AND giving_date >= ? AND giving_date < ?");
+$stmt->execute([$start_date, $end_date]);
+$current_month_tithe = $stmt->fetchColumn();
+
+if (!$current_month_tithe) {
+    $current_month_tithe = 0;
+}
 ?>
 
 <div class="main-content">
     <div class="container-fluid">
         <h2 class="mb-4">Dashboard</h2>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-white bg-primary mb-3">
                     <div class="card-header">Total Members</div>
                     <div class="card-body">
@@ -39,7 +48,7 @@ if (!$current_month_offering) {
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-white bg-success mb-3">
                     <div class="card-header">Sunday Attendance</div>
                     <div class="card-body">
@@ -47,11 +56,19 @@ if (!$current_month_offering) {
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-white bg-info mb-3">
                     <div class="card-header">Month's Offering</div>
                     <div class="card-body">
                         <h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_offering, 2); ?></h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning mb-3">
+                    <div class="card-header">Month's Tithe</div>
+                    <div class="card-body">
+                        <h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_tithe, 2); ?></h5>
                     </div>
                 </div>
             </div>
