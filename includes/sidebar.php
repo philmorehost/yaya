@@ -13,6 +13,7 @@
         <div class="list-group-item list-group-item-action list-group-item-heading">Settings</div>
         <a href="homepage_settings.php" class="list-group-item list-group-item-action">Homepage Settings</a>
         <a href="smtp_settings.php" class="list-group-item list-group-item-action">SMTP Settings</a>
+        <a href="updates.php" class="list-group-item list-group-item-action">System Updates</a>
 
         <a href="../logout.php" class="list-group-item list-group-item-action">Logout</a>
     </div>
