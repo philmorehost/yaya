@@ -1,4 +1,4 @@
--- Comprehensive update script to bring a v1.0 database to version 1.3
+-- Comprehensive update script to bring any older database schema to the latest version.
 
 -- Add tables for RBAC system
 CREATE TABLE IF NOT EXISTS `permissions` (
@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS `connection_requests` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Add the author_id column to the announcements table
--- This query checks if the column exists before adding it to prevent errors on re-runs.
+-- Add the author_id column to the announcements table if it doesn't exist.
+-- This is a safe way to run the update multiple times.
 SET @s = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
      WHERE table_schema = DATABASE()

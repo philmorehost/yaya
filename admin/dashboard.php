@@ -35,6 +35,26 @@ if (!is_numeric($current_month_tithe)) {
 <div class="main-content">
     <div class="container-fluid">
         <h2 class="mb-4">Dashboard</h2>
+
+        <?php
+        // Check if a database update is needed
+        $update_needed = false;
+        try {
+            $pdo->query("SELECT author_id FROM announcements LIMIT 1");
+        } catch (PDOException $e) {
+            $update_needed = true;
+        }
+
+        if ($update_needed):
+        ?>
+        <div class="alert alert-danger">
+            <h4 class="alert-heading">Database Update Required!</h4>
+            <p>Your database schema is out of date and needs to be updated for all features to work correctly.</p>
+            <hr>
+            <a href="updates.php" class="btn btn-danger mb-0">Go to System Updates Page</a>
+        </div>
+        <?php endif; ?>
+
         <div class="row">
             <div class="col-md-3">
                 <div class="card text-white bg-primary mb-3">

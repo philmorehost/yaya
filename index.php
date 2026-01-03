@@ -31,14 +31,20 @@ if ($latest_sermon_id) {
 }
 
 // Announcements
-$announcements_stmt = $pdo->query("
-    SELECT a.*, u.email as author_email
-    FROM announcements a
-    LEFT JOIN admin_users u ON a.author_id = u.id
-    ORDER BY a.created_at DESC
-    LIMIT 3
-");
-$announcements = $announcements_stmt->fetchAll(PDO::FETCH_ASSOC);
+$announcements = [];
+try {
+    $announcements_stmt = $pdo->query("
+        SELECT a.*, u.email as author_email
+        FROM announcements a
+        LEFT JOIN admin_users u ON a.author_id = u.id
+        ORDER BY a.created_at DESC
+        LIMIT 3
+    ");
+    $announcements = $announcements_stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // Gracefully handle error if the schema is not up to date
+    // The admin dashboard will show a warning to the admin.
+}
 ?>
 
 <!-- Hero Section -->
