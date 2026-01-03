@@ -139,7 +139,7 @@ require_once '../includes/sidebar.php';
 <!-- Add Announcement Modal -->
 <div class="modal fade" id="addAnnouncementModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content bg-dark text-white">
             <div class="modal-header">
                 <h5 class="modal-title">Add New Announcement</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -168,7 +168,7 @@ require_once '../includes/sidebar.php';
 <!-- Edit Announcement Modal -->
 <div class="modal fade" id="editAnnouncementModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content bg-dark text-white">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Announcement</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
