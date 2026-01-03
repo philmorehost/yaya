@@ -21,11 +21,17 @@ $end_date = date('Y-m-01', strtotime('+1 month'));
 $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND giving_date >= ? AND giving_date < ?");
 $stmt->execute([$start_date, $end_date]);
 $current_month_offering = $stmt->fetchColumn();
+if (!is_numeric($current_month_offering)) {
+    $current_month_offering = 0;
+}
 
 // Month's Tithe
 $stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND giving_date >= ? AND giving_date < ?");
 $stmt->execute([$start_date, $end_date]);
 $current_month_tithe = $stmt->fetchColumn();
+if (!is_numeric($current_month_tithe)) {
+    $current_month_tithe = 0;
+}
 ?>
 
 <div class="main-content">
