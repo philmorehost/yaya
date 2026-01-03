@@ -1,7 +1,12 @@
 <?php
 session_start();
-require_once dirname(__DIR__) . '/database.php';
 require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/database.php';
+
+if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
+    header('Location: ' . BASE_URL . 'pages/login.php');
+    exit;
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -38,16 +43,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $stmt = $db->prepare("INSERT INTO LoanApplications (
-            hubCategory, fullName, membershipNumber, email, phone,
+            user_id, hubCategory, fullName, membershipNumber, email, phone,
             loanPurpose, loanAmount, monthlyIncome, existingSavings,
             guarantor1Name, guarantor1MemberId, guarantor2Name, guarantor2MemberId, status
         ) VALUES (
-            :hubCategory, :fullName, :membershipNumber, :email, :phone,
+            :user_id, :hubCategory, :fullName, :membershipNumber, :email, :phone,
             :loanPurpose, :loanAmount, :monthlyIncome, :existingSavings,
             :guarantor1Name, :guarantor1MemberId, :guarantor2Name, :guarantor2MemberId, :status
         )");
 
         $stmt->execute([
+            ':user_id' => $_SESSION['user_id'],
             ':hubCategory' => $_POST['hubCategory'],
             ':fullName' => $_POST['fullName'],
             ':membershipNumber' => $_POST['membershipNumber'],

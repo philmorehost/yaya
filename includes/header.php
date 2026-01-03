@@ -24,10 +24,10 @@
                             <a class="nav-link" href="<?php echo BASE_URL; ?>pages/apply.php">Apply for a Loan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">The Watchmen News</a>
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>pages/news.php">The Watchmen News</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Login</a>
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>pages/login.php">Login</a>
                         </li>
                     </ul>
                 </div>

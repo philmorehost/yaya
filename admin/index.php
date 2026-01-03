@@ -15,7 +15,12 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Admin Dashboard</h1>
-        <a href="logout.php" class="btn btn-danger">Logout</a>
+        <div>
+            <a href="manage_repayments.php" class="btn btn-success">Manage Repayments</a>
+            <a href="manage_users.php" class="btn btn-info">Manage Users</a>
+            <a href="manage_articles.php" class="btn btn-primary">Manage Articles</a>
+            <a href="logout.php" class="btn btn-danger">Logout</a>
+        </div>
     </div>
 
     <?php
@@ -66,6 +71,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                                             <input type='hidden' name='id' value='" . $app['id'] . "'>
                                             <input type='hidden' name='status' value='Disapproved'>
                                             <button type='submit' class='btn btn-warning btn-sm'>Disapprove</button>
+                                        </form>
+                                        <form action='disburse_loan.php' method='post' style='display:inline-block;'>
+                                            <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
+                                            <input type='hidden' name='id' value='" . $app['id'] . "'>
+                                            <button type='submit' class='btn btn-info btn-sm'>Disburse</button>
                                         </form>
                                       </td>";
                                 echo "</tr>";

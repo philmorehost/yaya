@@ -1,6 +1,6 @@
 <?php session_start(); ?>
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
-<?php require_once dirname(__DIR__) . '/users.php'; ?>
+<?php require_once dirname(__DIR__) . '/database.php'; ?>
 
 <?php
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
@@ -9,16 +9,21 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
-    if (isset($users[$username]) && password_verify($password, $users[$username])) {
+    $stmt = $db->prepare("SELECT * FROM Users WHERE email = :email AND role = 'admin'");
+    $stmt->execute([':email' => $email]);
+    $user = $stmt->fetch();
+
+    if ($user && password_verify($password, $user['password'])) {
         $_SESSION['loggedin'] = true;
-        $_SESSION['username'] = $username;
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['fullName'];
         header('Location: ' . BASE_URL . 'admin/');
         exit;
     } else {
-        $error = 'Invalid username or password';
+        $error = 'Invalid email or password, or you do not have admin privileges.';
     }
 }
 ?>
@@ -38,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endif; ?>
                     <form action="" method="post">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" required>
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
