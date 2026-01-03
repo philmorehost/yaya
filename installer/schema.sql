@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS `announcements` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `content` text,
+  `author_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -123,7 +124,8 @@ CREATE TABLE IF NOT EXISTS `connection_requests` (
 
 -- Set initial schema version to 1.0 for fresh installs
 -- Set initial schema version to 1.2 for fresh installs
-INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.2') ON DUPLICATE KEY UPDATE setting_value = '1.2';
+-- Set initial schema version to 1.3 for fresh installs
+INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.3') ON DUPLICATE KEY UPDATE setting_value = '1.3';
 
 -- Truncate tables to ensure a clean slate, just in case they existed before. This is the final step.
 TRUNCATE TABLE `giving`;

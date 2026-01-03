@@ -13,8 +13,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     update_setting('upcoming_event_id', $_POST['upcoming_event_id']);
     update_setting('latest_sermon_id', $_POST['latest_sermon_id']);
 
+    // Handle Hero Image Upload
     if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] == 0) {
-        // ... (existing hero image upload logic is fine)
+        $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $max_size = 2 * 1024 * 1024; // 2MB
+
+        $file_type = $_FILES['hero_image']['type'];
+        $file_size = $_FILES['hero_image']['size'];
+        $file_ext = strtolower(pathinfo($_FILES['hero_image']['name'], PATHINFO_EXTENSION));
+
+        if (in_array($file_type, $allowed_types) && in_array($file_ext, $allowed_extensions) && $file_size <= $max_size) {
+            $target_dir = "../uploads/";
+            $target_file = $target_dir . 'hero_' . uniqid() . '.' . $file_ext;
+            if (move_uploaded_file($_FILES["hero_image"]["tmp_name"], $target_file)) {
+                update_setting('hero_image_url', str_replace('../', '', $target_file));
+            }
+        }
     }
 
     // Handle Logo Upload
@@ -36,7 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    $_SESSION['success_message'] = "Homepage settings saved successfully!";
     header('Location: homepage_settings.php');
+    exit();
 }
 
 $events = $pdo->query("SELECT * FROM events ORDER BY start_time DESC")->fetchAll(PDO::FETCH_ASSOC);
@@ -46,6 +63,14 @@ $sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")->fe
 <div class="main-content">
     <div class="container-fluid">
         <h2 class="mb-4">Homepage Settings</h2>
+
+        <?php
+        if (isset($_SESSION['success_message'])) {
+            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' . $_SESSION['success_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
+            unset($_SESSION['success_message']);
+        }
+        ?>
+
         <div class="card">
             <div class="card-body">
                 <form method="post" enctype="multipart/form-data">
@@ -83,7 +108,7 @@ $sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")->fe
                     </div>
                     <div class="mb-3">
                         <label for="hero_video_url" class="form-label">Hero Video URL</label>
-                        <input type="text" class="form-control" id="hero_video_url" name="hero_video_url" value="<?php echo get_setting('hero_video_url'); ?>">
+                        <input type="text" class="form-control" id="hero_video_url" name="hero_video_url" value="<?php echo get_setting('hero_video_url'); ?>" placeholder="e.g., https://example.com/video.mp4">
                     </div>
 
                     <hr>

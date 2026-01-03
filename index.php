@@ -31,7 +31,14 @@ if ($latest_sermon_id) {
 }
 
 // Announcements
-$announcements = $pdo->query("SELECT * FROM announcements ORDER BY created_at DESC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+$announcements_stmt = $pdo->query("
+    SELECT a.*, u.email as author_email
+    FROM announcements a
+    LEFT JOIN admin_users u ON a.author_id = u.id
+    ORDER BY a.created_at DESC
+    LIMIT 3
+");
+$announcements = $announcements_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!-- Hero Section -->
@@ -82,16 +89,19 @@ $announcements = $pdo->query("SELECT * FROM announcements ORDER BY created_at DE
             <div class="list-group">
                 <?php if ($announcements): ?>
                     <?php foreach ($announcements as $announcement): ?>
-                        <div class="list-group-item list-group-item-action flex-column align-items-start">
+                        <a href="announcement.php?id=<?php echo $announcement['id']; ?>" class="list-group-item list-group-item-action flex-column align-items-start">
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1"><?php echo htmlspecialchars($announcement['title']); ?></h5>
-                                <small><?php echo date('M d', strtotime($announcement['created_at'])); ?></small>
+                                <small><?php echo date('M d, Y', strtotime($announcement['created_at'])); ?></small>
                             </div>
-                            <p class="mb-1"><?php echo htmlspecialchars(substr($announcement['content'], 0, 100)); ?>...</p>
-                        </div>
+                            <p class="mb-1">
+                                <small>By <?php echo htmlspecialchars($announcement['author_email'] ?? 'Admin'); ?></small>
+                            </p>
+                            <small>Read More...</small>
+                        </a>
                     <?php endforeach; ?>
                 <?php else: ?>
-                <p>No recent announcements.</p>
+                    <p>No recent announcements.</p>
                 <?php endif; ?>
             </div>
         </div>

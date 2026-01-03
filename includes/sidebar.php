@@ -1,3 +1,4 @@
+<?php require_once '../includes/helpers.php'; ?>
 <div id="sidebar-wrapper">
     <div class="sidebar-heading text-center">
         <?php
@@ -11,6 +12,7 @@
     </div>
     <div class="list-group list-group-flush">
         <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+        <a href="announcements.php" class="list-group-item list-group-item-action">Announcements</a>
         <a href="members.php" class="list-group-item list-group-item-action">Members</a>
         <a href="attendance.php" class="list-group-item list-group-item-action">Attendance</a>
         <a href="finance.php" class="list-group-item list-group-item-action">Finance</a>
