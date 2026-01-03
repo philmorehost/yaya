@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `connection_requests` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Add the author_id column to the announcements table
--- Check if the column exists before adding it to avoid errors on re-run
+-- This query checks if the column exists before adding it to prevent errors on re-runs.
 SET @s = (SELECT IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
      WHERE table_schema = DATABASE()
@@ -66,4 +66,5 @@ INSERT IGNORE INTO `permissions` (`name`, `description`) VALUES
 ('manage_media', 'Full CRUD access to media'),
 ('manage_departments', 'Full CRUD access to departments'),
 ('manage_roles', 'Full CRUD access to roles and permissions'),
-('manage_settings', 'Full access to system settings');
+('manage_settings', 'Full access to system settings'),
+('manage_announcements', 'Full CRUD access to announcements');

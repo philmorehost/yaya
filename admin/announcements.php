@@ -1,6 +1,6 @@
 <?php
 require_once 'init.php';
-// check_permission('manage_announcements'); // To be added later
+check_permission('manage_announcements');
 
 // Handle form submissions for add, edit, delete
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
