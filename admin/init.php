@@ -10,6 +10,9 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../config/db_connect.php';
 require_once __DIR__ . '/../config/app.php';
 
+// ** One-time automatic database schema fix **
+require_once __DIR__ . '/auto_db_fix.php';
+
 // 3. Load helper functions
 require_once __DIR__ . '/../includes/helpers.php';
 
