@@ -37,6 +37,7 @@ INSERT INTO `permissions` (`name`, `description`) VALUES
 ('manage_media', 'Allow user to manage media uploads'),
 ('manage_settings', 'Allow user to manage system settings'),
 ('manage_roles', 'Allow user to manage roles and permissions'),
+('manage_users', 'Allow user to manage admin users'),
 ('manage_announcements', 'Allow user to manage announcements'),
 ('view_dashboard', 'Allow user to view the admin dashboard');
 
@@ -55,6 +56,7 @@ CREATE TABLE IF NOT EXISTS `members` (
   `birthday` date DEFAULT NULL,
   `gender` varchar(50) DEFAULT NULL,
   `workforce_unit_id` int(11) DEFAULT NULL,
+  `role_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

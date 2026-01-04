@@ -10,7 +10,12 @@ function check_permission($permission_name) {
     global $pdo;
     if (!isset($_SESSION['admin_role_id'])) {
         // Default to no permissions if role is not set
-        return false;
+        die('You do not have permission to access this page.');
+    }
+
+    // Super Admin role has all permissions implicitly
+    if (isset($_SESSION['admin_role_name']) && $_SESSION['admin_role_name'] === 'Super Admin') {
+        return true;
     }
 
     $role_id = $_SESSION['admin_role_id'];

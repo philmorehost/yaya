@@ -11,15 +11,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE email = ?");
+    $stmt = $pdo->prepare("
+        SELECT u.*, r.name as role_name
+        FROM admin_users u
+        LEFT JOIN roles r ON u.role_id = r.id
+        WHERE u.email = ?
+    ");
     $stmt->execute([$email]);
-    $admin = $stmt->fetch();
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($admin && password_verify($password, $admin['password'])) {
         $_SESSION['admin_loggedin'] = true;
         $_SESSION['admin_id'] = $admin['id'];
         $_SESSION['admin_email'] = $admin['email'];
         $_SESSION['admin_role_id'] = $admin['role_id'];
+        $_SESSION['admin_role_name'] = $admin['role_name']; // Set role name in session
         header('Location: admin/dashboard.php');
         exit;
     } else {

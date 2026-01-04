@@ -1,10 +1,23 @@
 <?php
 require_once 'init.php';
-check_permission('edit_members');
+check_permission('manage_members');
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
-$id = $_GET['id'];
+$member_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if (!$member_id) {
+    header("Location: members.php");
+    exit();
+}
+
+$stmt = $pdo->prepare("SELECT * FROM members WHERE id = ?");
+$stmt->execute([$member_id]);
+$member = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$member) {
+    header("Location: members.php");
+    exit();
+}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';
@@ -13,20 +26,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $birthday = $_POST['birthday'];
     $gender = $_POST['gender'];
+    $role_id = !empty($_POST['role_id']) ? $_POST['role_id'] : null;
 
-    $stmt = $pdo->prepare("UPDATE members SET name = ?, phone = ?, email = ?, birthday = ?, gender = ? WHERE id = ?");
-    $stmt->execute([$name, $phone, $email, $birthday, $gender, $id]);
-    header('Location: members.php');
+    $stmt = $pdo->prepare("UPDATE members SET name = ?, phone = ?, email = ?, birthday = ?, gender = ?, role_id = ? WHERE id = ?");
+    $stmt->execute([$name, $phone, $email, $birthday, $gender, $role_id, $member_id]);
+
+    $_SESSION['success_message'] = "Member updated successfully.";
+    header("Location: members.php");
+    exit();
 }
 
-$stmt = $pdo->prepare("SELECT * FROM members WHERE id = ?");
-$stmt->execute([$id]);
-$member = $stmt->fetch(PDO::FETCH_ASSOC);
+$roles = $pdo->query("SELECT id, name FROM roles ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
     <div class="container-fluid">
-        <h2 class="mb-4">Edit Member</h2>
+        <h2 class="mb-4">Edit Member: <?php echo htmlspecialchars($member['name']); ?></h2>
+
         <div class="card">
             <div class="card-body">
                 <form method="post">
@@ -54,7 +70,18 @@ $member = $stmt->fetch(PDO::FETCH_ASSOC);
                             <option value="Female" <?php if ($member['gender'] == 'Female') echo 'selected'; ?>>Female</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update Member</button>
+                    <div class="mb-3">
+                        <label for="role_id" class="form-label">Role</label>
+                        <select class="form-select" id="role_id" name="role_id">
+                            <option value="">Member (No Role)</option>
+                            <?php foreach ($roles as $role): ?>
+                                <option value="<?php echo $role['id']; ?>" <?php if ($member['role_id'] == $role['id']) echo 'selected'; ?>>
+                                    <?php echo htmlspecialchars($role['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                     <a href="members.php" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>

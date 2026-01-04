@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Fetch Data
 $departments = $pdo->query("SELECT d.*, m.name as head_name FROM departments d LEFT JOIN members m ON d.head_id = m.id ORDER BY d.name")->fetchAll(PDO::FETCH_ASSOC);
-$members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// Fetch only members who have a role assigned
+$members_with_roles = $pdo->query("SELECT id, name FROM members WHERE role_id IS NOT NULL ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -88,7 +89,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FET
                         <label for="head_id" class="form-label">Department Head</label>
                         <select class="form-select" id="head_id" name="head_id">
                             <option value="">Select Head</option>
-                            <?php foreach ($members as $member): ?>
+                            <?php foreach ($members_with_roles as $member): ?>
                                 <option value="<?php echo $member['id']; ?>"><?php echo htmlspecialchars($member['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -121,7 +122,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FET
                         <label for="head_id" class="form-label">Department Head</label>
                         <select class="form-select" id="head_id" name="head_id">
                             <option value="">Select Head</option>
-                            <?php foreach ($members as $member): ?>
+                            <?php foreach ($members_with_roles as $member): ?>
                                 <option value="<?php echo $member['id']; ?>" <?php if($department['head_id'] == $member['id']) echo 'selected'; ?>><?php echo htmlspecialchars($member['name']); ?></option>
                             <?php endforeach; ?>
                         </select>

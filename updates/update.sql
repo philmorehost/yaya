@@ -72,8 +72,22 @@ INSERT IGNORE INTO `permissions` (`name`, `description`) VALUES
 ('manage_media', 'Full CRUD access to media'),
 ('manage_departments', 'Full CRUD access to departments'),
 ('manage_roles', 'Full CRUD access to roles and permissions'),
+('manage_users', 'Full CRUD access to admin users'),
 ('manage_settings', 'Full access to system settings'),
 ('manage_announcements', 'Full CRUD access to announcements');
 
+-- Add role_id to members table
+SET @s = (SELECT IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+     WHERE table_schema = DATABASE()
+     AND table_name = 'members'
+     AND column_name = 'role_id') > 0,
+    "SELECT 1",
+    "ALTER TABLE `members` ADD COLUMN `role_id` INT(11) DEFAULT NULL AFTER `workforce_unit_id`;"
+));
+PREPARE stmt FROM @s;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 -- Finally, update the schema version to mark this update as complete.
-INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.4') ON DUPLICATE KEY UPDATE `setting_value` = '1.4';
+INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.5') ON DUPLICATE KEY UPDATE `setting_value` = '1.5';

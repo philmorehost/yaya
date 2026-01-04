@@ -19,8 +19,12 @@
         <a href="events.php" class="list-group-item list-group-item-action">Events</a>
         <a href="media.php" class="list-group-item list-group-item-action">Media</a>
         <a href="departments.php" class="list-group-item list-group-item-action">Departments</a>
-        <a href="roles.php" class="list-group-item list-group-item-action">Roles</a>
 
+        <div class="list-group-item list-group-item-action list-group-item-heading">Administration</div>
+        <?php if (check_permission('manage_roles')) : ?><a href="roles.php" class="list-group-item list-group-item-action">Roles</a><?php endif; ?>
+        <?php if (check_permission('manage_users')) : ?><a href="users.php" class="list-group-item list-group-item-action">Admin Users</a><?php endif; ?>
+
+        <?php if (check_permission('manage_settings')) : ?>
         <div class="list-group-item list-group-item-action list-group-item-heading">Settings</div>
         <a href="homepage_settings.php" class="list-group-item list-group-item-action">Homepage Settings</a>
         <a href="smtp_settings.php" class="list-group-item list-group-item-action">SMTP Settings</a>
