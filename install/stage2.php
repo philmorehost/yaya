@@ -1,4 +1,5 @@
 <?php
+// Mark this stage as "visited"
 $_SESSION['install_stage'] = 1;
 $error = null;
 
@@ -32,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $db->exec($sql);
 
+        // Set session to allow progression to the final stage
         $_SESSION['install_stage'] = 2;
         header('Location: index.php?stage=3');
         exit;

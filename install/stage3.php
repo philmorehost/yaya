@@ -1,5 +1,4 @@
 <?php
-$_SESSION['install_stage'] = 2;
 // In a real installer, you might pass the admin details via the session
 $admin_email = 'admin@example.com';
 $admin_password = 'password123';
