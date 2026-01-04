@@ -50,14 +50,14 @@ if (!file_exists('../config/db_connect.php')) {
                 $user_id = $pdo->lastInsertId();
 
                 // Grant all permissions to Super Admin role
-                $permissions = [
-                    'manage_members', 'manage_attendance', 'manage_finance',
-                    'manage_events', 'manage_media', 'manage_settings',
-                    'manage_roles', 'manage_announcements', 'view_dashboard'
-                ];
-                $stmt = $pdo->prepare("INSERT INTO role_permissions (role_id, permission_name) VALUES (?, ?)");
-                foreach ($permissions as $permission) {
-                    $stmt->execute([$role_id, $permission]);
+                // Get the IDs of all permissions
+                $permissions_stmt = $pdo->query("SELECT id FROM permissions");
+                $permission_ids = $permissions_stmt->fetchAll(PDO::FETCH_COLUMN);
+
+                // Grant all permissions to Super Admin role
+                $stmt = $pdo->prepare("INSERT INTO role_permissions (role_id, permission_id) VALUES (?, ?)");
+                foreach ($permission_ids as $permission_id) {
+                    $stmt->execute([$role_id, $permission_id]);
                 }
 
                 header('Location: step4.php');
