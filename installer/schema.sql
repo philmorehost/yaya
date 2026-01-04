@@ -12,6 +12,34 @@ CREATE TABLE IF NOT EXISTS `roles` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS `permissions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `role_permissions` (
+  `role_id` int(11) NOT NULL,
+  `permission_name` varchar(255) NOT NULL,
+  PRIMARY KEY (`role_id`,`permission_name`),
+  KEY `permission_name` (`permission_name`),
+  CONSTRAINT `role_permissions_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `role_permissions_ibfk_2` FOREIGN KEY (`permission_name`) REFERENCES `permissions` (`name`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `permissions` (`name`, `description`) VALUES
+('manage_members', 'Allow user to manage church members'),
+('manage_attendance', 'Allow user to manage attendance records'),
+('manage_finance', 'Allow user to manage financial records (giving and expenditures)'),
+('manage_events', 'Allow user to manage church events'),
+('manage_media', 'Allow user to manage media uploads'),
+('manage_settings', 'Allow user to manage system settings'),
+('manage_roles', 'Allow user to manage roles and permissions'),
+('manage_announcements', 'Allow user to manage announcements'),
+('view_dashboard', 'Allow user to view the admin dashboard');
+
 CREATE TABLE IF NOT EXISTS `departments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -123,9 +151,8 @@ CREATE TABLE IF NOT EXISTS `connection_requests` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Set initial schema version to 1.0 for fresh installs
--- Set initial schema version to 1.2 for fresh installs
--- Set initial schema version to 1.3 for fresh installs
-INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.3') ON DUPLICATE KEY UPDATE setting_value = '1.3';
+-- Set initial schema version to 1.4 for fresh installs
+INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.4') ON DUPLICATE KEY UPDATE setting_value = '1.4';
 
 -- Truncate tables to ensure a clean slate, just in case they existed before. This is the final step.
 TRUNCATE TABLE `giving`;

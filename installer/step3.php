@@ -39,8 +39,26 @@ if (!file_exists('../config/db_connect.php')) {
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
             try {
-                $stmt = $pdo->prepare("INSERT INTO admin_users (email, password) VALUES (?, ?)");
-                $stmt->execute([$email, $password]);
+                // Create Super Admin role
+                $stmt = $pdo->prepare("INSERT INTO roles (name) VALUES (?)");
+                $stmt->execute(['Super Admin']);
+                $role_id = $pdo->lastInsertId();
+
+                // Create admin user and assign to Super Admin role
+                $stmt = $pdo->prepare("INSERT INTO admin_users (email, password, role_id) VALUES (?, ?, ?)");
+                $stmt->execute([$email, $password, $role_id]);
+                $user_id = $pdo->lastInsertId();
+
+                // Grant all permissions to Super Admin role
+                $permissions = [
+                    'manage_members', 'manage_attendance', 'manage_finance',
+                    'manage_events', 'manage_media', 'manage_settings',
+                    'manage_roles', 'manage_announcements', 'view_dashboard'
+                ];
+                $stmt = $pdo->prepare("INSERT INTO role_permissions (role_id, permission_name) VALUES (?, ?)");
+                foreach ($permissions as $permission) {
+                    $stmt->execute([$role_id, $permission]);
+                }
 
                 header('Location: step4.php');
                 exit();
