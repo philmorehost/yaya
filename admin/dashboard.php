@@ -3,82 +3,99 @@ require_once 'init.php';
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
-// Total Members
+// Dashboard Analytics
 $total_members = $pdo->query("SELECT COUNT(*) FROM members")->fetchColumn();
-
-// Sunday Attendance (most recent entry)
-$latest_attendance = $pdo->query("SELECT (men + women + children) as total FROM attendance_headcount ORDER BY service_date DESC LIMIT 1")->fetchColumn();
-if (!$latest_attendance) {
-    $latest_attendance = 0;
-}
-
-// Month's Offering
+$latest_attendance = $pdo->query("SELECT (men + women + children) as total FROM attendance_headcount ORDER BY service_date DESC LIMIT 1")->fetchColumn() ?: 0;
 $start_date = date('Y-m-01');
-$end_date = date('Y-m-01', strtotime('+1 month'));
+$end_date = date('Y-m-t');
+$current_month_offering = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND giving_date BETWEEN ? AND ?");
+$current_month_offering->execute([$start_date, $end_date]);
+$current_month_offering = $current_month_offering->fetchColumn();
+$current_month_tithe = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND giving_date BETWEEN ? AND ?");
+$current_month_tithe->execute([$start_date, $end_date]);
+$current_month_tithe = $current_month_tithe->fetchColumn();
 
-$stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND giving_date >= ? AND giving_date < ?");
-$stmt->execute([$start_date, $end_date]);
-$current_month_offering = $stmt->fetchColumn();
-if (!is_numeric($current_month_offering)) {
-    $current_month_offering = 0;
-}
-
-// Month's Tithe
-$stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND giving_date >= ? AND giving_date < ?");
-$stmt->execute([$start_date, $end_date]);
-$current_month_tithe = $stmt->fetchColumn();
-if (!is_numeric($current_month_tithe)) {
-    $current_month_tithe = 0;
-}
+// Recent Data
+$recent_sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
+$recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY created_at DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
+$recent_members = $pdo->query("SELECT * FROM members ORDER BY id DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
     <div class="container-fluid">
-        <h2 class="mb-4">Dashboard</h2>
+        <h2 class="mb-4">Admin Dashboard</h2>
 
-        <?php
-        // Standardized version check
-        $current_version = get_setting('schema_version') ?: '1.0';
-        if (version_compare($current_version, LATEST_SCHEMA_VERSION, '<')):
-        ?>
-        <div class="alert alert-danger">
-            <h4 class="alert-heading">Database Update Required!</h4>
-            <p>Your database schema is out of date and needs to be updated for all features to work correctly.</p>
-            <hr>
-            <a href="updates.php" class="btn btn-danger mb-0">Go to System Updates Page</a>
+        <!-- Quick Actions -->
+        <div class="mb-4">
+            <a href="members.php" class="btn btn-primary">Manage Members</a>
+            <a href="announcements.php" class="btn btn-info">Post Announcement</a>
+            <a href="media.php" class="btn btn-success">Upload Media</a>
+            <a href="finance.php" class="btn btn-warning">Track Finances</a>
         </div>
-        <?php endif; ?>
 
+        <!-- Analytics Cards -->
         <div class="row">
             <div class="col-md-3">
                 <div class="card text-white bg-primary mb-3">
                     <div class="card-header">Total Members</div>
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo number_format($total_members); ?></h5>
-                    </div>
+                    <div class="card-body"><h5 class="card-title"><?php echo number_format($total_members); ?></h5></div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-white bg-success mb-3">
-                    <div class="card-header">Sunday Attendance</div>
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo number_format($latest_attendance); ?></h5>
-                    </div>
+                    <div class="card-header">Recent Attendance</div>
+                    <div class="card-body"><h5 class="card-title"><?php echo number_format($latest_attendance); ?></h5></div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-white bg-info mb-3">
-                    <div class="card-header">Month's Offering</div>
-                    <div class="card-body">
-                        <h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_offering, 2); ?></h5>
-                    </div>
+                    <div class="card-header">This Month's Offering</div>
+                    <div class="card-body"><h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_offering, 2); ?></h5></div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card text-white bg-warning mb-3">
-                    <div class="card-header">Month's Tithe</div>
+                    <div class="card-header">This Month's Tithe</div>
+                    <div class="card-body"><h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_tithe, 2); ?></h5></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">Recent Sermons</div>
                     <div class="card-body">
-                        <h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_tithe, 2); ?></h5>
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($recent_sermons as $sermon): ?>
+                                <li class="list-group-item"><?php echo htmlspecialchars($sermon['title']); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">Recent Announcements</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($recent_announcements as $announcement): ?>
+                                <li class="list-group-item"><?php echo htmlspecialchars($announcement['title']); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">Newest Members</div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($recent_members as $member): ?>
+                                <li class="list-group-item"><?php echo htmlspecialchars($member['name']); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -86,6 +103,4 @@ if (!is_numeric($current_month_tithe)) {
     </div>
 </div>
 
-<?php
-require_once '../includes/footer.php';
-?>
+<?php require_once '../includes/footer.php'; ?>

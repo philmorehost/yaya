@@ -13,15 +13,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $birthday = $_POST['birthday'];
     $gender = $_POST['gender'];
+    $role_id = !empty($_POST['role_id']) ? $_POST['role_id'] : null;
 
-    $stmt = $pdo->prepare("UPDATE members SET name = ?, phone = ?, email = ?, birthday = ?, gender = ? WHERE id = ?");
-    $stmt->execute([$name, $phone, $email, $birthday, $gender, $id]);
+    $stmt = $pdo->prepare("UPDATE members SET name = ?, phone = ?, email = ?, birthday = ?, gender = ?, role_id = ? WHERE id = ?");
+    $stmt->execute([$name, $phone, $email, $birthday, $gender, $role_id, $id]);
     header('Location: members.php');
+    exit();
 }
 
+// Fetch the member's details
 $stmt = $pdo->prepare("SELECT * FROM members WHERE id = ?");
 $stmt->execute([$id]);
 $member = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Fetch all roles for the dropdown
+$roles_stmt = $pdo->query("SELECT * FROM roles ORDER BY name");
+$roles = $roles_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -52,6 +59,17 @@ $member = $stmt->fetch(PDO::FETCH_ASSOC);
                         <select class="form-select" id="gender" name="gender">
                             <option value="Male" <?php if ($member['gender'] == 'Male') echo 'selected'; ?>>Male</option>
                             <option value="Female" <?php if ($member['gender'] == 'Female') echo 'selected'; ?>>Female</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role_id" class="form-label">Role</label>
+                        <select class="form-select" id="role_id" name="role_id">
+                            <option value="">Select a role (optional)</option>
+                            <?php foreach ($roles as $role): ?>
+                                <option value="<?php echo $role['id']; ?>" <?php if ($member['role_id'] == $role['id']) echo 'selected'; ?>>
+                                    <?php echo htmlspecialchars($role['name']); ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Update Member</button>
