@@ -68,3 +68,18 @@ if ($incorrect_schema_exists) {
 // 6. Mark the fix as applied so it doesn't run again.
 $mark_fix_stmt = $pdo->prepare("INSERT INTO settings (setting_name, setting_value) VALUES ('db_fix_1_4_applied', '1') ON DUPLICATE KEY UPDATE setting_value = '1'");
 $mark_fix_stmt->execute();
+
+// Add role_id and membership_id columns to members table if they don't exist
+try {
+    $pdo->exec("ALTER TABLE members ADD COLUMN role_id INT(11) DEFAULT NULL;");
+    $pdo->exec("ALTER TABLE members ADD CONSTRAINT fk_member_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL;");
+} catch (PDOException $e) {
+    // Ignore if column already exists
+}
+
+try {
+    $pdo->exec("ALTER TABLE members ADD COLUMN membership_id VARCHAR(255) DEFAULT NULL;");
+    $pdo->exec("ALTER TABLE members ADD UNIQUE (membership_id);");
+} catch (PDOException $e) {
+    // Ignore if column already exists
+}
