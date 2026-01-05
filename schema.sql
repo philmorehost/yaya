@@ -15,9 +15,14 @@ CREATE TABLE `LoanApplications` (
   `monthlyIncome` decimal(10,2) DEFAULT NULL,
   `existingSavings` decimal(10,2) DEFAULT NULL,
   `guarantor1Name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `guarantor1MemberId` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `guarantor1Occupation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `guarantor1Phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `guarantor1Passport` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `guarantor2Name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `guarantor2MemberId` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `guarantor2Occupation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `guarantor2Phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `guarantor2Passport` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `userPassport` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'Pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `disbursed_at` timestamp NULL DEFAULT NULL,
@@ -83,6 +88,33 @@ CREATE TABLE `Articles` (
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `author_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `AdminSettings`
+--
+DROP TABLE IF EXISTS `AdminSettings`;
+CREATE TABLE `AdminSettings` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `setting_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `setting_value` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `setting_key` (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Table structure for table `PaymentNotifications`
+--
+DROP TABLE IF EXISTS `PaymentNotifications`;
+CREATE TABLE `PaymentNotifications` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `loan_id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_date` date NOT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

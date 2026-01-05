@@ -46,6 +46,12 @@
                             <a class="nav-link" href="<?php echo BASE_URL; ?>admin/manage_articles.php">Manage Articles</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>admin/notifications.php">Payment Notifications</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>admin/settings.php">Settings</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="<?php echo BASE_URL; ?>admin/logout.php">Logout</a>
                         </li>
                     </ul>

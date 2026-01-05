@@ -34,7 +34,7 @@ if (empty($_SESSION['csrf_token'])) {
                     }
                     ?>
 
-                    <form action="<?php echo BASE_URL; ?>actions/submit_application.php" method="POST">
+                    <form action="<?php echo BASE_URL; ?>actions/submit_application.php" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
                         <fieldset class="mb-4">
@@ -74,6 +74,10 @@ if (empty($_SESSION['csrf_token'])) {
                                     <input type="tel" class="form-control" id="phone" name="phone" required value="<?php echo isset($_SESSION['form_data']['phone']) ? $_SESSION['form_data']['phone'] : ''; ?>">
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label for="userPassport" class="form-label">Your Passport</label>
+                                <input type="file" class="form-control" id="userPassport" name="userPassport" required>
+                            </div>
                         </fieldset>
 
                         <fieldset>
@@ -90,7 +94,7 @@ if (empty($_SESSION['csrf_token'])) {
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="loanAmount" class="form-label">Amount Requested ($)</label>
+                                    <label for="loanAmount" class="form-label">Amount Requested (₦)</label>
                                     <input type="number" class="form-control" id="loanAmount" name="loanAmount" required value="<?php echo isset($_SESSION['form_data']['loanAmount']) ? $_SESSION['form_data']['loanAmount'] : ''; ?>">
                                 </div>
                             </div>
@@ -104,11 +108,11 @@ if (empty($_SESSION['csrf_token'])) {
                             <legend class="h5">Step 4: Financial Standing</legend>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="monthlyIncome" class="form-label">Monthly Income/Allowance ($)</label>
+                                    <label for="monthlyIncome" class="form-label">Monthly Income/Allowance (₦)</label>
                                     <input type="number" class="form-control" id="monthlyIncome" name="monthlyIncome" required value="<?php echo isset($_SESSION['form_data']['monthlyIncome']) ? $_SESSION['form_data']['monthlyIncome'] : ''; ?>">
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="existingSavings" class="form-label">Existing Savings in the Hub ($)</label>
+                                    <label for="existingSavings" class="form-label">Existing Savings in the Hub (₦)</label>
                                     <input type="number" class="form-control" id="existingSavings" name="existingSavings" required value="<?php echo isset($_SESSION['form_data']['existingSavings']) ? $_SESSION['form_data']['existingSavings'] : ''; ?>">
                                 </div>
                             </div>
@@ -122,15 +126,23 @@ if (empty($_SESSION['csrf_token'])) {
                                     <h5>Guarantor 1</h5>
                                     <label for="guarantor1Name" class="form-label">Full Name</label>
                                     <input type="text" class="form-control" id="guarantor1Name" name="guarantor1Name" required value="<?php echo isset($_SESSION['form_data']['guarantor1Name']) ? $_SESSION['form_data']['guarantor1Name'] : ''; ?>">
-                                    <label for="guarantor1MemberId" class="form-label mt-2">Membership Number</label>
-                                    <input type="text" class="form-control" id="guarantor1MemberId" name="guarantor1MemberId" required value="<?php echo isset($_SESSION['form_data']['guarantor1MemberId']) ? $_SESSION['form_data']['guarantor1MemberId'] : ''; ?>">
+                                    <label for="guarantor1Occupation" class="form-label mt-2">Occupation</label>
+                                    <input type="text" class="form-control" id="guarantor1Occupation" name="guarantor1Occupation" required value="<?php echo isset($_SESSION['form_data']['guarantor1Occupation']) ? $_SESSION['form_data']['guarantor1Occupation'] : ''; ?>">
+                                    <label for="guarantor1Phone" class="form-label mt-2">Phone Number</label>
+                                    <input type="tel" class="form-control" id="guarantor1Phone" name="guarantor1Phone" required value="<?php echo isset($_SESSION['form_data']['guarantor1Phone']) ? $_SESSION['form_data']['guarantor1Phone'] : ''; ?>">
+                                    <label for="guarantor1Passport" class="form-label mt-2">Passport</label>
+                                    <input type="file" class="form-control" id="guarantor1Passport" name="guarantor1Passport" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <h5>Guarantor 2</h5>
                                     <label for="guarantor2Name" class="form-label">Full Name</label>
                                     <input type="text" class="form-control" id="guarantor2Name" name="guarantor2Name" required value="<?php echo isset($_SESSION['form_data']['guarantor2Name']) ? $_SESSION['form_data']['guarantor2Name'] : ''; ?>">
-                                    <label for="guarantor2MemberId" class="form-label mt-2">Membership Number</label>
-                                    <input type="text" class="form-control" id="guarantor2MemberId" name="guarantor2MemberId" required value="<?php echo isset($_SESSION['form_data']['guarantor2MemberId']) ? $_SESSION['form_data']['guarantor2MemberId'] : ''; ?>">
+                                    <label for="guarantor2Occupation" class="form-label mt-2">Occupation</label>
+                                    <input type="text" class="form-control" id="guarantor2Occupation" name="guarantor2Occupation" required value="<?php echo isset($_SESSION['form_data']['guarantor2Occupation']) ? $_SESSION['form_data']['guarantor2Occupation'] : ''; ?>">
+                                    <label for="guarantor2Phone" class="form-label mt-2">Phone Number</label>
+                                    <input type="tel" class="form-control" id="guarantor2Phone" name="guarantor2Phone" required value="<?php echo isset($_SESSION['form_data']['guarantor2Phone']) ? $_SESSION['form_data']['guarantor2Phone'] : ''; ?>">
+                                    <label for="guarantor2Passport" class="form-label mt-2">Passport</label>
+                                    <input type="file" class="form-control" id="guarantor2Passport" name="guarantor2Passport" required>
                                 </div>
                             </div>
                         </fieldset>

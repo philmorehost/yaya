@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
+require_once dirname(__DIR__) . '/includes/utils.php';
 
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     header('Location: ' . BASE_URL . 'pages/login.php');
@@ -23,7 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $requiredFields = [
         'hubCategory', 'fullName', 'membershipNumber', 'email', 'phone',
         'loanPurpose', 'loanAmount', 'monthlyIncome', 'existingSavings',
-        'guarantor1Name', 'guarantor1MemberId', 'guarantor2Name', 'guarantor2MemberId'
+        'guarantor1Name', 'guarantor1Occupation', 'guarantor1Phone',
+        'guarantor2Name', 'guarantor2Occupation', 'guarantor2Phone',
     ];
 
     $errors = [];
@@ -32,6 +34,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $errors[] = "Please fill all required fields. Missing: $field";
         }
     }
+
+    $userPassport = upload_file($_FILES['userPassport'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+    $guarantor1Passport = upload_file($_FILES['guarantor1Passport'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+    $guarantor2Passport = upload_file($_FILES['guarantor2Passport'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+
+    if (!$userPassport || !$guarantor1Passport || !$guarantor2Passport) {
+        $errors[] = "Invalid file upload.";
+    }
+
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
@@ -44,11 +55,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $db->prepare("INSERT INTO LoanApplications (
             user_id, hubCategory, fullName, membershipNumber, email, phone,
             loanPurpose, loanAmount, monthlyIncome, existingSavings,
-            guarantor1Name, guarantor1MemberId, guarantor2Name, guarantor2MemberId, status
+            guarantor1Name, guarantor1Occupation, guarantor1Phone, guarantor1Passport,
+            guarantor2Name, guarantor2Occupation, guarantor2Phone, guarantor2Passport,
+            userPassport, status
         ) VALUES (
             :user_id, :hubCategory, :fullName, :membershipNumber, :email, :phone,
             :loanPurpose, :loanAmount, :monthlyIncome, :existingSavings,
-            :guarantor1Name, :guarantor1MemberId, :guarantor2Name, :guarantor2MemberId, :status
+            :guarantor1Name, :guarantor1Occupation, :guarantor1Phone, :guarantor1Passport,
+            :guarantor2Name, :guarantor2Occupation, :guarantor2Phone, :guarantor2Passport,
+            :userPassport, :status
         )");
 
         $stmt->execute([
@@ -63,9 +78,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':monthlyIncome' => $_POST['monthlyIncome'],
             ':existingSavings' => $_POST['existingSavings'],
             ':guarantor1Name' => $_POST['guarantor1Name'],
-            ':guarantor1MemberId' => $_POST['guarantor1MemberId'],
+            ':guarantor1Occupation' => $_POST['guarantor1Occupation'],
+            ':guarantor1Phone' => $_POST['guarantor1Phone'],
+            ':guarantor1Passport' => $guarantor1Passport,
             ':guarantor2Name' => $_POST['guarantor2Name'],
-            ':guarantor2MemberId' => $_POST['guarantor2MemberId'],
+            ':guarantor2Occupation' => $_POST['guarantor2Occupation'],
+            ':guarantor2Phone' => $_POST['guarantor2Phone'],
+            ':guarantor2Passport' => $guarantor2Passport,
+            ':userPassport' => $userPassport,
             ':status' => 'Pending'
         ]);
 

@@ -40,7 +40,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
                                 echo "<td>" . $repayment['id'] . "</td>";
                                 echo "<td>" . $repayment['loan_id'] . "</td>";
                                 echo "<td>" . $repayment['user_id'] . "</td>";
-                                echo "<td>$" . htmlspecialchars(number_format($repayment['amount'], 2)) . "</td>";
+                                echo "<td>₦" . htmlspecialchars(number_format($repayment['amount'], 2)) . "</td>";
                                 echo "<td>" . date('F j, Y', strtotime($repayment['payment_date'])) . "</td>";
                                 echo "</tr>";
                             }

@@ -49,19 +49,10 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
                             foreach ($loans as $loan) {
                                 echo "<tr>";
                                 echo "<td>" . $loan['id'] . "</td>";
-                                echo "<td>$" . htmlspecialchars(number_format($loan['amount'], 2)) . "</td>";
-                                echo "<td>$" . htmlspecialchars(number_format($loan['balance'], 2)) . "</td>";
+                                echo "<td>₦" . htmlspecialchars(number_format($loan['amount'], 2)) . "</td>";
+                                echo "<td>₦" . htmlspecialchars(number_format($loan['balance'], 2)) . "</td>";
                                 echo "<td>" . date('F j, Y', strtotime($loan['next_due_date'])) . "</td>";
-                                echo "<td>
-                                        <form action='" . BASE_URL . "actions/make_repayment.php' method='post'>
-                                            <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
-                                            <input type='hidden' name='loan_id' value='" . $loan['id'] . "'>
-                                            <div class='input-group'>
-                                                <input type='number' step='0.01' class='form-control' name='amount' placeholder='Amount' required>
-                                                <button type='submit' class='btn btn-success'>Pay</button>
-                                            </div>
-                                        </form>
-                                      </td>";
+                                echo "<td><a href='" . BASE_URL . "pages/payment.php' class='btn btn-success'>Make a Payment</a></td>";
                                 echo "</tr>";
                             }
                         } else {
@@ -101,7 +92,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
                                 echo "<tr>";
                                 echo "<td>" . $app['id'] . "</td>";
                                 echo "<td>" . htmlspecialchars($app['loanPurpose']) . "</td>";
-                                echo "<td>$" . htmlspecialchars(number_format($app['loanAmount'], 2)) . "</td>";
+                                echo "<td>₦" . htmlspecialchars(number_format($app['loanAmount'], 2)) . "</td>";
                                 echo "<td><span class='badge bg-" . ($app['status'] === 'Approved' ? 'success' : ($app['status'] === 'Disapproved' ? 'danger' : 'warning')) . "'>" . htmlspecialchars($app['status']) . "</span></td>";
                                 echo "<td>" . date('F j, Y', strtotime($app['created_at'])) . "</td>";
                                 echo "</tr>";

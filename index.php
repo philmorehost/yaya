@@ -1,8 +1,18 @@
 <?php require_once __DIR__ . '/config.php'; ?>
+<?php require_once __DIR__ . '/database.php'; ?>
 <?php include __DIR__ . '/includes/header.php'; ?>
 
+<?php
+$stmt = $db->query("SELECT * FROM AdminSettings");
+$settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+?>
+
 <div class="container mt-5">
-    <div class="hero-section">
+    <?php if (isset($settings['hero_image'])): ?>
+        <div class="hero-section" style="background-image: url('<?php echo BASE_URL . htmlspecialchars($settings['hero_image']); ?>');">
+    <?php else: ?>
+        <div class="hero-section">
+    <?php endif; ?>
         <h1>Empowering Generations, Securing Futures.</h1>
         <p class="lead">From your first savings account to your first business venture, Watchmen Finance Hub is here to help teens, youths, and adults thrive together.</p>
         <p class="h4 text-secondary"><strong>ZERO INTEREST ON ALL MONEY BORROWED</strong></p>
@@ -42,6 +52,14 @@
             <a href="<?php echo BASE_URL; ?>pages/apply.php" class="btn btn-primary btn-lg mt-3">Apply Now</a>
         </div>
     </div>
+
+    <?php if (isset($settings['support_phone'])): ?>
+    <div class="whatsapp-support">
+        <a href="https://wa.me/<?php echo htmlspecialchars($settings['support_phone']); ?>" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Support">
+        </a>
+    </div>
+    <?php endif; ?>
 </div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>
