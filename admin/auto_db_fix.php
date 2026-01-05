@@ -69,17 +69,27 @@ if ($incorrect_schema_exists) {
 $mark_fix_stmt = $pdo->prepare("INSERT INTO settings (setting_name, setting_value) VALUES ('db_fix_1_4_applied', '1') ON DUPLICATE KEY UPDATE setting_value = '1'");
 $mark_fix_stmt->execute();
 
-// Add role_id and membership_id columns to members table if they don't exist
-try {
-    $pdo->exec("ALTER TABLE members ADD COLUMN role_id INT(11) DEFAULT NULL;");
-    $pdo->exec("ALTER TABLE members ADD CONSTRAINT fk_member_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL;");
-} catch (PDOException $e) {
-    // Ignore if column already exists
+// --- Robust Schema Update for Member Roles ---
+
+// Check for role_id column in members table
+$check_role_id_stmt = $pdo->query("SHOW COLUMNS FROM `members` LIKE 'role_id'");
+if ($check_role_id_stmt->rowCount() == 0) {
+    try {
+        $pdo->exec("ALTER TABLE members ADD COLUMN role_id INT(11) DEFAULT NULL;");
+        $pdo->exec("ALTER TABLE members ADD CONSTRAINT fk_member_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL;");
+    } catch (PDOException $e) {
+        // If it fails here, there's a more serious problem (e.g., permissions)
+        die("Failed to add 'role_id' column. Please check database permissions. Error: " . $e->getMessage());
+    }
 }
 
-try {
-    $pdo->exec("ALTER TABLE members ADD COLUMN membership_id VARCHAR(255) DEFAULT NULL;");
-    $pdo->exec("ALTER TABLE members ADD UNIQUE (membership_id);");
-} catch (PDOException $e) {
-    // Ignore if column already exists
+// Check for membership_id column in members table
+$check_membership_id_stmt = $pdo->query("SHOW COLUMNS FROM `members` LIKE 'membership_id'");
+if ($check_membership_id_stmt->rowCount() == 0) {
+    try {
+        $pdo->exec("ALTER TABLE members ADD COLUMN membership_id VARCHAR(255) DEFAULT NULL;");
+        $pdo->exec("ALTER TABLE members ADD UNIQUE (membership_id);");
+    } catch (PDOException $e) {
+        die("Failed to add 'membership_id' column. Please check database permissions. Error: " . $e->getMessage());
+    }
 }

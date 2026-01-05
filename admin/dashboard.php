@@ -8,12 +8,12 @@ $total_members = $pdo->query("SELECT COUNT(*) FROM members")->fetchColumn();
 $latest_attendance = $pdo->query("SELECT (men + women + children) as total FROM attendance_headcount ORDER BY service_date DESC LIMIT 1")->fetchColumn() ?: 0;
 $start_date = date('Y-m-01');
 $end_date = date('Y-m-t');
-$current_month_offering = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND giving_date BETWEEN ? AND ?");
-$current_month_offering->execute([$start_date, $end_date]);
-$current_month_offering = $current_month_offering->fetchColumn();
-$current_month_tithe = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND giving_date BETWEEN ? AND ?");
-$current_month_tithe->execute([$start_date, $end_date]);
-$current_month_tithe = $current_month_tithe->fetchColumn();
+$current_month_offering_stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND giving_date BETWEEN ? AND ?");
+$current_month_offering_stmt->execute([$start_date, $end_date]);
+$current_month_offering = $current_month_offering_stmt->fetchColumn();
+$current_month_tithe_stmt = $pdo->prepare("SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND giving_date BETWEEN ? AND ?");
+$current_month_tithe_stmt->execute([$start_date, $end_date]);
+$current_month_tithe = $current_month_tithe_stmt->fetchColumn();
 
 // Recent Data
 $recent_sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
