@@ -1,4 +1,5 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
+<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     // Store the intended destination in the session

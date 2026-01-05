@@ -1,11 +1,11 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
+<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     header('Location: ' . BASE_URL . 'pages/login.php');
     exit;
 }
 ?>
-<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php include dirname(__DIR__) . '/includes/header.php'; ?>
 
 <div class="container mt-5">

@@ -1,4 +1,5 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
+<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -8,8 +9,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
     exit;
 }
 ?>
-<?php require_once dirname(__DIR__) . '/database.php'; ?>
-<?php include dirname(__DIR__) . '/includes/header.php'; ?>
+<?php include 'includes/header.php'; ?>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">

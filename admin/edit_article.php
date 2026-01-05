@@ -1,11 +1,11 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
+<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_SESSION['user_role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'admin/login.php');
     exit;
 }
 ?>
-<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
 if (!isset($_GET['id'])) {
     header('Location: ' . BASE_URL . 'admin/manage_articles.php');
@@ -19,7 +19,7 @@ if (!$article) {
     exit;
 }
 ?>
-<?php include dirname(__DIR__) . '/includes/header.php'; ?>
+<?php include 'includes/header.php'; ?>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
