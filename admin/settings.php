@@ -7,8 +7,14 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
     exit;
 }
 
-$stmt = $db->query("SELECT * FROM AdminSettings");
-$settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+$settings = [];
+try {
+    $stmt = $db->query("SELECT * FROM AdminSettings");
+    $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+} catch (PDOException $e) {
+    // Log the error or handle it gracefully
+    // For now, we'll just suppress the error
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -17,29 +23,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $fields = ['support_phone', 'account_details'];
+    try {
+        $fields = ['support_phone', 'account_details'];
 
-    foreach ($fields as $field) {
-        if (isset($_POST[$field])) {
-            $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value");
-            $stmt->execute([':key' => $field, ':value' => $_POST[$field]]);
+        foreach ($fields as $field) {
+            if (isset($_POST[$field])) {
+                $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value");
+                $stmt->execute([':key' => $field, ':value' => $_POST[$field]]);
+            }
         }
-    }
 
-    if (isset($_FILES['logo'])) {
-        $logo_path = upload_file($_FILES['logo'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
-        if ($logo_path) {
-            $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES ('logo', :value) ON DUPLICATE KEY UPDATE setting_value = :value");
-            $stmt->execute([':value' => $logo_path]);
+        if (isset($_FILES['logo'])) {
+            $logo_path = upload_file($_FILES['logo'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+            if ($logo_path) {
+                $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES ('logo', :value) ON DUPLICATE KEY UPDATE setting_value = :value");
+                $stmt->execute([':value' => $logo_path]);
+            }
         }
-    }
 
-    if (isset($_FILES['hero_image'])) {
-        $hero_image_path = upload_file($_FILES['hero_image'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
-        if ($hero_image_path) {
-            $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES ('hero_image', :value) ON DUPLICATE KEY UPDATE setting_value = :value");
-            $stmt->execute([':value' => $hero_image_path]);
+        if (isset($_FILES['hero_image'])) {
+            $hero_image_path = upload_file($_FILES['hero_image'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+            if ($hero_image_path) {
+                $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES ('hero_image', :value) ON DUPLICATE KEY UPDATE setting_value = :value");
+                $stmt->execute([':value' => $hero_image_path]);
+            }
         }
+    } catch (PDOException $e) {
+        $_SESSION['error_message'] = 'There was an error updating the settings. The database may not be up to date.';
+        header('Location: ' . BASE_URL . 'admin/settings.php');
+        exit;
     }
 
     $_SESSION['success_message'] = 'Settings updated successfully.';

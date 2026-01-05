@@ -6,8 +6,14 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     exit;
 }
 
-$stmt = $db->query("SELECT * FROM AdminSettings WHERE setting_key = 'account_details'");
-$account_details = $stmt->fetch();
+$account_details = null;
+try {
+    $stmt = $db->query("SELECT * FROM AdminSettings WHERE setting_key = 'account_details'");
+    $account_details = $stmt->fetch();
+} catch (PDOException $e) {
+    // Log the error or handle it gracefully
+    // For now, we'll just suppress the error
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {

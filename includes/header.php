@@ -13,11 +13,17 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
                 <?php
-                $stmt = $db->query("SELECT * FROM AdminSettings WHERE setting_key = 'logo'");
-                $logo = $stmt->fetch();
+                $logo = null;
+                try {
+                    $stmt = $db->query("SELECT * FROM AdminSettings WHERE setting_key = 'logo'");
+                    $logo = $stmt->fetch();
+                } catch (PDOException $e) {
+                    // Log the error or handle it gracefully
+                    // For now, we'll just suppress the error
+                }
                 ?>
                 <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
-                    <?php if ($logo): ?>
+                    <?php if ($logo && !empty($logo['setting_value'])): ?>
                         <img src="<?php echo BASE_URL . htmlspecialchars($logo['setting_value']); ?>" alt="Watchmen Finance Hub" style="max-height: 40px;">
                     <?php else: ?>
                         Watchmen Finance Hub

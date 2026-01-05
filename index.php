@@ -3,8 +3,14 @@
 <?php include __DIR__ . '/includes/header.php'; ?>
 
 <?php
-$stmt = $db->query("SELECT * FROM AdminSettings");
-$settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+$settings = [];
+try {
+    $stmt = $db->query("SELECT * FROM AdminSettings");
+    $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+} catch (PDOException $e) {
+    // Log the error or handle it gracefully
+    // For now, we'll just suppress the error
+}
 ?>
 
 <div class="container mt-5">

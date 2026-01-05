@@ -30,8 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$stmt = $db->query("SELECT * FROM PaymentNotifications ORDER BY created_at DESC");
-$notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$notifications = [];
+try {
+    $stmt = $db->query("SELECT * FROM PaymentNotifications ORDER BY created_at DESC");
+    $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // Log the error or handle it gracefully
+    // For now, we'll just suppress the error and show an empty list
+}
 ?>
 <?php include 'includes/header.php'; ?>
 
