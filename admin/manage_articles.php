@@ -1,20 +1,12 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_SESSION['user_role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'admin/login.php');
     exit;
 }
 ?>
 <?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php include dirname(__DIR__) . '/includes/header.php'; ?>
-
-<!--
-    NOTE: The rich text editor below (TinyMCE) is using a free, limited version.
-    For production use, it is recommended to sign up for a free API key at https://www.tiny.cloud/
-    to remove developer warnings and access more features.
--->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-<script>tinymce.init({selector:'textarea'});</script>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">

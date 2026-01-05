@@ -17,10 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user && password_verify($password, $user['password'])) {
         // Password is correct, start a new session
-        $_SESSION['user_loggedin'] = true;
+        $_SESSION['is_loggedin'] = true;
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['fullName'];
         $_SESSION['user_email'] = $user['email'];
+        $_SESSION['user_role'] = $user['role'];
 
         if (isset($_SESSION['return_to'])) {
             $return_to = $_SESSION['return_to'];

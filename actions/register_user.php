@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
-        header('Location: ' . BASE_URL . 'pages/register.php');
+        header('Location: '. BASE_URL . 'pages/register.php');
         exit;
     }
 
@@ -37,10 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':fullName' => $fullName, ':email' => $email, ':password' => $hashed_password]);
 
         // Log the user in after successful registration
-        $_SESSION['user_loggedin'] = true;
+        $_SESSION['is_loggedin'] = true;
         $_SESSION['user_id'] = $db->lastInsertId();
         $_SESSION['user_name'] = $fullName;
         $_SESSION['user_email'] = $email;
+        $_SESSION['user_role'] = 'user';
 
         header('Location: ' . BASE_URL . 'pages/dashboard.php');
         exit;

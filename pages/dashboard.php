@@ -1,6 +1,6 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php
-if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
+if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     header('Location: ' . BASE_URL . 'pages/login.php');
     exit;
 }

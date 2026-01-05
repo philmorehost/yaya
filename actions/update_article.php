@@ -2,7 +2,7 @@
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     header('Location: ' . BASE_URL . 'admin/login.php');
     exit;
 }

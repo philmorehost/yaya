@@ -1,6 +1,6 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
 <?php
-if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
+if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     // Store the intended destination in the session
     $_SESSION['return_to'] = BASE_URL . 'pages/apply.php';
     header('Location: ' . BASE_URL . 'pages/login.php');

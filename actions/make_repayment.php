@@ -2,7 +2,7 @@
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
 
-if (!isset($_SESSION['user_loggedin']) || $_SESSION['user_loggedin'] !== true) {
+if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
     header('Location: ' . BASE_URL . 'pages/login.php');
     exit;
 }
@@ -31,17 +31,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $loan = $stmt->fetch();
 
         if ($loan) {
-            $new_balance = $loan['balance'] - $amount;
-            if ($new_balance < 0) {
-                $new_balance = 0;
+            $repayment_amount = $amount;
+            if ($repayment_amount > $loan['balance']) {
+                $repayment_amount = $loan['balance'];
             }
+
+            $new_balance = $loan['balance'] - $repayment_amount;
 
             // Insert repayment record
             $stmt = $db->prepare("INSERT INTO Repayments (loan_id, user_id, amount, payment_date) VALUES (:loan_id, :user_id, :amount, :payment_date)");
             $stmt->execute([
                 ':loan_id' => $loan_id,
                 ':user_id' => $user_id,
-                ':amount' => $amount,
+                ':amount' => $repayment_amount,
                 ':payment_date' => date('Y-m-d')
             ]);
 
@@ -49,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateStmt = $db->prepare("UPDATE Loans SET balance = :balance, next_due_date = DATE_ADD(next_due_date, INTERVAL 1 MONTH) WHERE id = :loan_id AND user_id = :user_id");
             $updateStmt->execute([':balance' => $new_balance, ':loan_id' => $loan_id, ':user_id' => $user_id]);
 
-            $_SESSION['success_message'] = 'Repayment of $' . number_format($amount, 2) . ' made successfully!';
+            $_SESSION['success_message'] = 'Repayment of $' . number_format($repayment_amount, 2) . ' made successfully!';
         } else {
             $_SESSION['errors'] = ['Loan not found.'];
         }

@@ -13,8 +13,8 @@ $admin_password = 'password123';
     <h5 class="alert-heading">Admin Login Details</h5>
     <p>Please use the following credentials to log into the admin area. It is strongly recommended that you change the default password after your first login.</p>
     <hr>
-    <p class="mb-0"><strong>Email:</strong> <?php echo $admin_email; ?></p>
-    <p class="mb-0"><strong>Password:</strong> <?php echo $admin_password; ?></p>
+    <p class="mb-0"><strong>Email:</strong> admin@example.com</p>
+    <p class="mb-0"><strong>Password:</strong> password123</p>
 </div>
 
 <div class="alert alert-danger mt-4">

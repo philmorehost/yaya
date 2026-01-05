@@ -2,7 +2,7 @@
 <?php require_once dirname(__DIR__) . '/database.php'; ?>
 
 <?php
-if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+if (isset($_SESSION['is_loggedin']) && $_SESSION['is_loggedin'] === true) {
     header('Location: ' . BASE_URL . 'admin/');
     exit;
 }
@@ -16,9 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['loggedin'] = true;
+        $_SESSION['is_loggedin'] = true;
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['username'] = $user['fullName'];
+        $_SESSION['user_name'] = $user['fullName'];
+        $_SESSION['user_email'] = $user['email'];
+        $_SESSION['user_role'] = $user['role'];
         header('Location: ' . BASE_URL . 'admin/');
         exit;
     } else {
@@ -27,7 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<?php include dirname(__DIR__) . '/includes/header.php'; ?>
+<?php
+$page_title = "Admin Login";
+include dirname(__DIR__) . '/includes/header.php';
+?>
 
 <div class="container mt-5">
     <div class="row justify-content-center">

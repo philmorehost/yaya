@@ -42,7 +42,7 @@ CREATE TABLE `Loans` (
 --
 -- Table structure for table `Repayments`
 --
-
+DROP TABLE IF EXISTS `Repayments`;
 CREATE TABLE `Repayments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `loan_id` int(11) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE `Users` (
 -- Dumping data for table `Users`
 --
 INSERT INTO `Users` (`id`, `fullName`, `email`, `password`, `role`, `created_at`) VALUES
-(1, 'Admin User', 'admin@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', '2024-05-22 10:00:00');
+(1, 'Admin User', 'admin@example.com', '$2y$10$ZOXYxaNzn5wzppJ2VLlcP.zvqaenh43vSq22.W1ws4pnJBl4O9QMW', 'admin', '2024-05-22 10:00:00');
 
 --
 -- Table structure for table `Articles`
