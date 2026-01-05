@@ -7,14 +7,32 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
     exit;
 }
 
-$settings = [];
-try {
-    $stmt = $db->query("SELECT * FROM AdminSettings");
-    $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-} catch (PDOException $e) {
-    // Log the error or handle it gracefully
-    // For now, we'll just suppress the error
+function get_setting($key, $db) {
+    try {
+        $stmt = $db->prepare("SELECT setting_value FROM AdminSettings WHERE setting_key = :key");
+        $stmt->execute([':key' => $key]);
+        return $stmt->fetchColumn();
+    } catch (PDOException $e) {
+        return null;
+    }
 }
+
+function update_setting($key, $value, $db) {
+    try {
+        $stmt = $db->prepare("SELECT setting_key FROM AdminSettings WHERE setting_key = :key");
+        $stmt->execute([':key' => $key]);
+        if ($stmt->fetch()) {
+            $stmt = $db->prepare("UPDATE AdminSettings SET setting_value = :value WHERE setting_key = :key");
+        } else {
+            $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES (:key, :value)");
+        }
+        $stmt->execute([':key' => $key, ':value' => $value]);
+    } catch (PDOException $e) {
+        $_SESSION['errors'][] = 'There was an error updating the settings. The database may not be up to date.';
+        error_log("Error updating setting {$key}: " . $e->getMessage(), 3, dirname(__DIR__) . '/logs/errors.log');
+    }
+}
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
@@ -23,46 +41,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    try {
-        $fields = ['support_phone', 'account_details'];
-
-        foreach ($fields as $field) {
-            if (isset($_POST[$field])) {
-                $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value");
-                $stmt->execute([':key' => $field, ':value' => $_POST[$field]]);
-            }
+    $fields = ['support_phone', 'account_details'];
+    foreach ($fields as $field) {
+        if (isset($_POST[$field])) {
+            update_setting($field, $_POST[$field], $db);
         }
-
-        if (isset($_FILES['logo'])) {
-            $logo_path = upload_file($_FILES['logo'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
-            if ($logo_path) {
-                $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES ('logo', :value) ON DUPLICATE KEY UPDATE setting_value = :value");
-                $stmt->execute([':value' => $logo_path]);
-            }
-        }
-
-        if (isset($_FILES['hero_image'])) {
-            $hero_image_path = upload_file($_FILES['hero_image'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
-            if ($hero_image_path) {
-                $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES ('hero_image', :value) ON DUPLICATE KEY UPDATE setting_value = :value");
-                $stmt->execute([':value' => $hero_image_path]);
-            }
-        }
-    } catch (PDOException $e) {
-        $_SESSION['error_message'] = 'There was an error updating the settings. The database may not be up to date.';
-        header('Location: ' . BASE_URL . 'admin/settings.php');
-        exit;
     }
 
-    $_SESSION['success_message'] = 'Settings updated successfully.';
+    if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+        $logo_path = upload_file($_FILES['logo'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+        if ($logo_path) {
+            update_setting('logo', $logo_path, $db);
+        }
+    }
+
+    if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] === UPLOAD_ERR_OK) {
+        $hero_image_path = upload_file($_FILES['hero_image'], ['image/jpeg', 'image/png', 'image/gif'], 5 * 1024 * 1024);
+        if ($hero_image_path) {
+            update_setting('hero_image', $hero_image_path, $db);
+        }
+    }
+
+    if (empty($_SESSION['errors'])) {
+        $_SESSION['success_message'] = 'Settings updated successfully.';
+    }
     header('Location: ' . BASE_URL . 'admin/settings.php');
     exit;
 }
+
+$settings['support_phone'] = get_setting('support_phone', $db);
+$settings['account_details'] = get_setting('account_details', $db);
+$settings['logo'] = get_setting('logo', $db);
+$settings['hero_image'] = get_setting('hero_image', $db);
 ?>
 <?php include 'includes/header.php'; ?>
 
 <div class="container mt-5">
     <h1>Site Settings</h1>
+
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+    <?php endif; ?>
+    <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
+        <div class="alert alert-danger">
+            <?php foreach ($_SESSION['errors'] as $error): ?>
+                <p><?php echo $error; ?></p>
+            <?php endforeach; unset($_SESSION['errors']); ?>
+        </div>
+    <?php endif; ?>
+
     <div class="card">
         <div class="card-body">
             <form action="" method="post" enctype="multipart/form-data">
@@ -78,14 +105,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="mb-3">
                     <label for="logo" class="form-label">Logo</label>
                     <input type="file" class="form-control" id="logo" name="logo">
-                    <?php if (isset($settings['logo'])): ?>
+                    <?php if (!empty($settings['logo'])): ?>
                         <img src="<?php echo BASE_URL . htmlspecialchars($settings['logo']); ?>" alt="Logo" class="img-thumbnail mt-2" style="max-height: 100px;">
                     <?php endif; ?>
                 </div>
                 <div class="mb-3">
                     <label for="hero_image" class="form-label">Hero Image</label>
                     <input type="file" class="form-control" id="hero_image" name="hero_image">
-                    <?php if (isset($settings['hero_image'])): ?>
+                    <?php if (!empty($settings['hero_image'])): ?>
                         <img src="<?php echo BASE_URL . htmlspecialchars($settings['hero_image']); ?>" alt="Hero Image" class="img-thumbnail mt-2" style="max-height: 200px;">
                     <?php endif; ?>
                 </div>

@@ -23,55 +23,51 @@ try {
     // Create AdminSettings table
     echo "<p>Creating 'AdminSettings' table if it doesn't exist...</p>";
     $db->exec("
-        CREATE TABLE IF NOT EXISTS AdminSettings (
-            setting_key VARCHAR(255) PRIMARY KEY,
-            setting_value TEXT
-        );
+        CREATE TABLE IF NOT EXISTS `AdminSettings` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `setting_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+          `setting_value` text COLLATE utf8mb4_unicode_ci NOT NULL,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `setting_key` (`setting_key`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
     echo "<p class='success'>'AdminSettings' table created or already exists.</p>";
 
     // Create PaymentNotifications table
     echo "<p>Creating 'PaymentNotifications' table if it doesn't exist...</p>";
     $db->exec("
-        CREATE TABLE IF NOT EXISTS PaymentNotifications (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            loan_id INT NOT NULL,
-            amount DECIMAL(10, 2) NOT NULL,
-            payment_date DATE NOT NULL,
-            status VARCHAR(50) DEFAULT 'pending',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
-            FOREIGN KEY (loan_id) REFERENCES Loans(id) ON DELETE CASCADE
-        );
+        CREATE TABLE IF NOT EXISTS `PaymentNotifications` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `user_id` int(11) NOT NULL,
+          `loan_id` int(11) NOT NULL,
+          `amount` decimal(10,2) NOT NULL,
+          `payment_date` date NOT NULL,
+          `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+          `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     ");
     echo "<p class='success'>'PaymentNotifications' table created or already exists.</p>";
 
-    // Add 'passport' column to 'Users' table
-    $stmt = $db->query("SHOW COLUMNS FROM `Users` LIKE 'passport'");
-    if ($stmt->rowCount() == 0) {
-        echo "<p>Adding 'passport' column to 'Users' table...</p>";
-        $db->exec("ALTER TABLE Users ADD COLUMN passport VARCHAR(255) DEFAULT NULL;");
-        echo "<p class='success'>'passport' column added.</p>";
-    } else {
-        echo "<p class='info'>'passport' column already exists in 'Users' table.</p>";
-    }
-
-    // Add guarantor columns to 'Loans' table
+    // Add guarantor columns to 'LoanApplications' table
     $loan_columns = [
-        'guarantor_occupation' => 'VARCHAR(255) DEFAULT NULL',
-        'guarantor_phone' => 'VARCHAR(255) DEFAULT NULL',
-        'guarantor_passport' => 'VARCHAR(255) DEFAULT NULL'
+        'guarantor1Occupation' => 'VARCHAR(255) DEFAULT NULL',
+        'guarantor1Phone' => 'VARCHAR(255) DEFAULT NULL',
+        'guarantor1Passport' => 'VARCHAR(255) DEFAULT NULL',
+        'guarantor2Occupation' => 'VARCHAR(255) DEFAULT NULL',
+        'guarantor2Phone' => 'VARCHAR(255) DEFAULT NULL',
+        'guarantor2Passport' => 'VARCHAR(255) DEFAULT NULL',
+        'userPassport' => 'VARCHAR(255) DEFAULT NULL'
     ];
 
     foreach ($loan_columns as $column => $definition) {
-        $stmt = $db->query("SHOW COLUMNS FROM `Loans` LIKE '$column'");
+        $stmt = $db->query("SHOW COLUMNS FROM `LoanApplications` LIKE '$column'");
         if ($stmt->rowCount() == 0) {
-            echo "<p>Adding '$column' column to 'Loans' table...</p>";
-            $db->exec("ALTER TABLE Loans ADD COLUMN $column $definition;");
+            echo "<p>Adding '$column' column to 'LoanApplications' table...</p>";
+            $db->exec("ALTER TABLE LoanApplications ADD COLUMN $column $definition;");
             echo "<p class='success'>'$column' column added.</p>";
         } else {
-            echo "<p class='info'>'$column' column already exists in 'Loans' table.</p>";
+            echo "<p class='info'>'$column' column already exists in 'LoanApplications' table.</p>";
         }
     }
 

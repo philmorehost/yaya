@@ -1,5 +1,7 @@
-<?php require_once dirname(__DIR__) . '/config.php'; ?>
-<?php require_once dirname(__DIR__) . '/database.php'; ?>
+<?php
+require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/database.php';
+
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_SESSION['user_role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'admin/login.php');
     exit;
@@ -14,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['id'])) {
         $id = (int)$_POST['id'];
-
         try {
             // Get application details
             $stmt = $db->prepare("SELECT * FROM LoanApplications WHERE id = :id");
@@ -48,5 +49,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-header('Location: ' . BASE_URL . 'admin/');
+header('Location: ' . BASE_URL . 'admin/index.php');
 exit;
