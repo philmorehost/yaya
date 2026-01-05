@@ -1,0 +1,37 @@
+[04-Jan-2026 15:46:31 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'rp.permission_id' in 'on clause' in /home/yaya/public_html/includes/helpers.php:24
+Stack trace:
+#0 /home/yaya/public_html/includes/helpers.php(24): PDOStatement->execute()
+#1 /home/yaya/public_html/admin/announcements.php(3): check_permission()
+#2 {main}
+  thrown in /home/yaya/public_html/includes/helpers.php on line 24
+[04-Jan-2026 15:46:45 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'rp.permission_id' in 'on clause' in /home/yaya/public_html/includes/helpers.php:24
+Stack trace:
+#0 /home/yaya/public_html/includes/helpers.php(24): PDOStatement->execute()
+#1 /home/yaya/public_html/admin/finance.php(3): check_permission()
+#2 {main}
+  thrown in /home/yaya/public_html/includes/helpers.php on line 24
+[04-Jan-2026 15:46:47 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'rp.permission_id' in 'on clause' in /home/yaya/public_html/includes/helpers.php:24
+Stack trace:
+#0 /home/yaya/public_html/includes/helpers.php(24): PDOStatement->execute()
+#1 /home/yaya/public_html/admin/roles.php(3): check_permission()
+#2 {main}
+  thrown in /home/yaya/public_html/includes/helpers.php on line 24
+[04-Jan-2026 15:46:47 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'rp.permission_id' in 'on clause' in /home/yaya/public_html/includes/helpers.php:24
+Stack trace:
+#0 /home/yaya/public_html/includes/helpers.php(24): PDOStatement->execute()
+#1 /home/yaya/public_html/admin/attendance.php(3): check_permission()
+#2 {main}
+  thrown in /home/yaya/public_html/includes/helpers.php on line 24
+[04-Jan-2026 15:46:57 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'rp.permission_id' in 'on clause' in /home/yaya/public_html/includes/helpers.php:24
+Stack trace:
+#0 /home/yaya/public_html/includes/helpers.php(24): PDOStatement->execute()
+#1 /home/yaya/public_html/admin/updates.php(3): check_permission()
+#2 {main}
+  thrown in /home/yaya/public_html/includes/helpers.php on line 24
+[04-Jan-2026 18:47:04 UTC] PHP Fatal error:  Uncaught PDOException: There is no active transaction in /home/yaya/public_html/admin/auto_db_fix.php:62
+Stack trace:
+#0 /home/yaya/public_html/admin/auto_db_fix.php(62): PDO->rollBack()
+#1 /home/yaya/public_html/admin/init.php(14): require_once('/home/yaya/publ...')
+#2 /home/yaya/public_html/admin/dashboard.php(2): require_once('/home/yaya/publ...')
+#3 {main}
+  thrown in /home/yaya/public_html/admin/auto_db_fix.php on line 62
