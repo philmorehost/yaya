@@ -84,7 +84,7 @@ $recent_members = $pdo->query("SELECT * FROM members ORDER BY id DESC LIMIT 5")-
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <?php foreach ($recent_sermons as $sermon): ?>
-                                <li class="list-group-item"><?php echo htmlspecialchars($sermon['title']); ?></li>
+                                <li class="list-group-item text-dark"><?php echo htmlspecialchars($sermon['title']); ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
@@ -96,7 +96,7 @@ $recent_members = $pdo->query("SELECT * FROM members ORDER BY id DESC LIMIT 5")-
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <?php foreach ($recent_announcements as $announcement): ?>
-                                <li class="list-group-item"><?php echo htmlspecialchars($announcement['title']); ?></li>
+                                <li class="list-group-item text-dark"><?php echo htmlspecialchars($announcement['title']); ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
@@ -108,7 +108,7 @@ $recent_members = $pdo->query("SELECT * FROM members ORDER BY id DESC LIMIT 5")-
                     <div class="card-body">
                         <ul class="list-group list-group-flush">
                             <?php foreach ($recent_members as $member): ?>
-                                <li class="list-group-item"><?php echo htmlspecialchars($member['name']); ?></li>
+                                <li class="list-group-item text-dark"><?php echo htmlspecialchars($member['name']); ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
