@@ -8,13 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';
     if (isset($_POST['add_department'])) {
         $name = $_POST['name'];
-        $head_id = !empty($_POST['head_id']) ? $_POST['head_id'] : null;
+        $head_id = $_POST['head_id'];
         $stmt = $pdo->prepare("INSERT INTO departments (name, head_id) VALUES (?, ?)");
         $stmt->execute([$name, $head_id]);
     } elseif (isset($_POST['edit_department'])) {
         $id = $_POST['id'];
         $name = $_POST['name'];
-        $head_id = !empty($_POST['head_id']) ? $_POST['head_id'] : null;
+        $head_id = $_POST['head_id'];
         $stmt = $pdo->prepare("UPDATE departments SET name = ?, head_id = ? WHERE id = ?");
         $stmt->execute([$name, $head_id, $id]);
     } elseif (isset($_POST['delete_department'])) {
@@ -23,21 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([$id]);
     }
     header('Location: departments.php');
-    exit();
 }
 
-// Fetch Departments with head's name and role
-$departments_stmt = $pdo->query("
-    SELECT d.*, m.name as head_name, r.name as role_name
-    FROM departments d
-    LEFT JOIN members m ON d.head_id = m.id
-    LEFT JOIN roles r ON m.role_id = r.id
-    ORDER BY d.name
-");
-$departments = $departments_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch members who have a role to be potential department heads
-$potential_heads = $pdo->query("SELECT id, name FROM members WHERE role_id IS NOT NULL ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+// Fetch Data
+$departments = $pdo->query("SELECT d.*, m.name as head_name FROM departments d LEFT JOIN members m ON d.head_id = m.id ORDER BY d.name")->fetchAll(PDO::FETCH_ASSOC);
+$members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -60,16 +50,7 @@ $potential_heads = $pdo->query("SELECT id, name FROM members WHERE role_id IS NO
                             <?php foreach ($departments as $department): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($department['name']); ?></td>
-                                    <td>
-                                        <?php if ($department['head_name']): ?>
-                                            <?php echo htmlspecialchars($department['head_name']); ?>
-                                            <?php if ($department['role_name']): ?>
-                                                <span class="badge bg-info">Head of <?php echo htmlspecialchars($department['role_name']); ?></span>
-                                            <?php endif; ?>
-                                        <?php else: ?>
-                                            <span class="text-muted">Not Assigned</span>
-                                        <?php endif; ?>
-                                    </td>
+                                    <td><?php echo htmlspecialchars($department['head_name'] ?: 'Not Assigned'); ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editDepartmentModal-<?php echo $department['id']; ?>">Edit</button>
                                         <form method="post" class="d-inline">
@@ -106,9 +87,9 @@ $potential_heads = $pdo->query("SELECT id, name FROM members WHERE role_id IS NO
                     <div class="mb-3">
                         <label for="head_id" class="form-label">Department Head</label>
                         <select class="form-select" id="head_id" name="head_id">
-                            <option value="">Select Head (Optional)</option>
-                            <?php foreach ($potential_heads as $head): ?>
-                                <option value="<?php echo $head['id']; ?>"><?php echo htmlspecialchars($head['name']); ?></option>
+                            <option value="">Select Head</option>
+                            <?php foreach ($members as $member): ?>
+                                <option value="<?php echo $member['id']; ?>"><?php echo htmlspecialchars($member['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -139,9 +120,9 @@ $potential_heads = $pdo->query("SELECT id, name FROM members WHERE role_id IS NO
                     <div class="mb-3">
                         <label for="head_id" class="form-label">Department Head</label>
                         <select class="form-select" id="head_id" name="head_id">
-                            <option value="">Select Head (Optional)</option>
-                            <?php foreach ($potential_heads as $head): ?>
-                                <option value="<?php echo $head['id']; ?>" <?php if($department['head_id'] == $head['id']) echo 'selected'; ?>><?php echo htmlspecialchars($head['name']); ?></option>
+                            <option value="">Select Head</option>
+                            <?php foreach ($members as $member): ?>
+                                <option value="<?php echo $member['id']; ?>" <?php if($department['head_id'] == $member['id']) echo 'selected'; ?>><?php echo htmlspecialchars($member['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

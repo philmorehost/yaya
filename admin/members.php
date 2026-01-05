@@ -4,50 +4,21 @@ check_permission('manage_members');
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_member'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';
     $name = $_POST['name'];
     $phone = $_POST['phone'];
     $email = $_POST['email'];
     $birthday = $_POST['birthday'];
     $gender = $_POST['gender'];
-    $role_id = !empty($_POST['role_id']) ? $_POST['role_id'] : null;
 
-    $pdo->beginTransaction();
-
-    try {
-        // Insert member first to get the new ID
-        $stmt = $pdo->prepare("INSERT INTO members (name, phone, email, birthday, gender, role_id) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$name, $phone, $email, $birthday, $gender, $role_id]);
-        $member_id = $pdo->lastInsertId();
-
-        // Generate and update membership ID
-        $membership_id = 'rccg-sop-' . str_pad($member_id, 4, '0', STR_PAD_LEFT);
-        $update_stmt = $pdo->prepare("UPDATE members SET membership_id = ? WHERE id = ?");
-        $update_stmt->execute([$membership_id, $member_id]);
-
-        $pdo->commit();
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        // Handle error, maybe log it or show a message
-    }
-
+    $stmt = $pdo->prepare("INSERT INTO members (name, phone, email, birthday, gender) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$name, $phone, $email, $birthday, $gender]);
     header('Location: members.php');
-    exit();
 }
 
-// Fetch members and their roles
-$stmt = $pdo->query("
-    SELECT m.*, r.name as role_name
-    FROM members m
-    LEFT JOIN roles r ON m.role_id = r.id
-    ORDER BY m.name
-");
+$stmt = $pdo->query("SELECT * FROM members ORDER BY name");
 $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch all roles for the dropdown
-$roles_stmt = $pdo->query("SELECT * FROM roles ORDER BY name");
-$roles = $roles_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -61,9 +32,7 @@ $roles = $roles_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <table class="table table-striped table-dark">
                         <thead>
                             <tr>
-                                <th>Membership ID</th>
                                 <th>Name</th>
-                                <th>Role</th>
                                 <th>Phone</th>
                                 <th>Email</th>
                                 <th>Birthday</th>
@@ -74,15 +43,7 @@ $roles = $roles_stmt->fetchAll(PDO::FETCH_ASSOC);
                         <tbody>
                             <?php foreach ($members as $member): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($member['membership_id'] ?: 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($member['name']); ?></td>
-                                    <td>
-                                        <?php if ($member['role_id']): ?>
-                                            <span class="badge bg-primary"><?php echo htmlspecialchars($member['role_name']); ?></span>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary">Member</span>
-                                        <?php endif; ?>
-                                    </td>
                                     <td><?php echo htmlspecialchars($member['phone']); ?></td>
                                     <td><?php echo htmlspecialchars($member['email']); ?></td>
                                     <td><?php echo htmlspecialchars($member['birthday']); ?></td>
@@ -139,16 +100,7 @@ $roles = $roles_stmt->fetchAll(PDO::FETCH_ASSOC);
                             <option value="Female">Female</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="role_id" class="form-label">Role</label>
-                        <select class="form-select" id="role_id" name="role_id">
-                            <option value="">Select a role (optional)</option>
-                            <?php foreach ($roles as $role): ?>
-                                <option value="<?php echo $role['id']; ?>"><?php echo htmlspecialchars($role['name']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <button type="submit" name="add_member" class="btn btn-primary">Save Member</button>
+                    <button type="submit" class="btn btn-primary">Save Member</button>
                 </form>
             </div>
         </div>

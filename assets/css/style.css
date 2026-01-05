@@ -48,6 +48,27 @@ body {
     border: none;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    color: #ecf0f1;
+}
+
+.form-control {
+    background-color: #4e5d6c;
+    color: #ecf0f1;
+    border-color: #6c757d;
+}
+
+.form-control:focus {
+    background-color: #5a6a7a;
+    color: #ecf0f1;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+}
+
+.table {
+    color: #ecf0f1;
+}
+
 /* Responsive Sidebar Styles */
 @media (max-width: 768px) {
     #sidebar-wrapper {
