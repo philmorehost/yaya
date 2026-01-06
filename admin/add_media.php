@@ -67,7 +67,7 @@ require_once '../includes/sidebar.php';
     ClassicEditor
         .create(document.querySelector('#content'), {
             ckfinder: {
-                uploadUrl: 'upload.php'
+                uploadUrl: `upload.php?csrf_token=<?php echo $_SESSION['csrf_token']; ?>`
             }
         })
         .catch(error => {

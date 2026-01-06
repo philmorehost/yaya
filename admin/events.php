@@ -1,66 +1,73 @@
 <?php
 require_once 'init.php';
-check_permission('manage_events');
 
-// Handle form submissions for add, edit, delete
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// CSRF Protection
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once '../includes/csrf_check.php';
-
-    if (isset($_POST['add_event'])) {
-        $title = trim($_POST['title']);
-        $description = trim($_POST['description']);
-        $date = trim($_POST['date']);
-        $location = trim($_POST['location']);
-
-        if (!empty($title) && !empty($description) && !empty($date) && !empty($location)) {
-            $stmt = $pdo->prepare("INSERT INTO events (title, description, date, location) VALUES (?, ?, ?, ?)");
-            if ($stmt->execute([$title, $description, $date, $location])) {
-                $_SESSION['success_message'] = "Event added successfully!";
-            } else {
-                $_SESSION['error_message'] = "Failed to add event.";
-            }
-        } else {
-            $_SESSION['error_message'] = "Please fill in all required fields.";
-        }
-        header("Location: events.php");
-        exit();
-    }
-
-    if (isset($_POST['update_event'])) {
-        $id = $_POST['id'];
-        $title = trim($_POST['title']);
-        $description = trim($_POST['description']);
-        $date = trim($_POST['date']);
-        $location = trim($_POST['location']);
-
-        if (!empty($title) && !empty($description) && !empty($date) && !empty($location)) {
-            $stmt = $pdo->prepare("UPDATE events SET title = ?, description = ?, date = ?, location = ? WHERE id = ?");
-            if ($stmt->execute([$title, $description, $date, $location, $id])) {
-                $_SESSION['success_message'] = "Event updated successfully!";
-            } else {
-                $_SESSION['error_message'] = "Failed to update event.";
-            }
-        } else {
-            $_SESSION['error_message'] = "Please fill in all required fields.";
-        }
-        header("Location: events.php");
-        exit();
-    }
-
-    if (isset($_POST['delete_event'])) {
-        $id = $_POST['id'];
-        $stmt = $pdo->prepare("DELETE FROM events WHERE id = ?");
-        if ($stmt->execute([$id])) {
-            $_SESSION['success_message'] = "Event deleted successfully!";
-        } else {
-            $_SESSION['error_message'] = "Failed to delete event.";
-        }
-        header("Location: events.php");
-        exit();
-    }
 }
 
-$events = $pdo->query("SELECT * FROM events ORDER BY date DESC")->fetchAll(PDO::FETCH_ASSOC);
+// `auth_check.php` now handles session and CSRF token initialization.
+
+// Handle Add Event
+if (isset($_POST['add_event'])) {
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
+    $start_time = $_POST['start_time'];
+    $end_time = !empty($_POST['end_time']) ? $_POST['end_time'] : null;
+    $location = trim($_POST['location']);
+
+    if (!empty($name) && !empty($start_time) && !empty($location)) {
+        $stmt = $pdo->prepare("INSERT INTO events (name, description, start_time, end_time, location) VALUES (?, ?, ?, ?, ?)");
+        if ($stmt->execute([$name, $description, $start_time, $end_time, $location])) {
+            $_SESSION['success_message'] = "Event added successfully!";
+        } else {
+            $_SESSION['error_message'] = "Failed to add event.";
+        }
+    } else {
+        $_SESSION['error_message'] = "Please fill in all required fields.";
+    }
+    header("Location: events.php");
+    exit();
+}
+
+// Handle Update Event
+if (isset($_POST['update_event'])) {
+    $id = $_POST['id'];
+    $name = trim($_POST['name']);
+    $description = trim($_POST['description']);
+    $start_time = $_POST['start_time'];
+    $end_time = !empty($_POST['end_time']) ? $_POST['end_time'] : null;
+    $location = trim($_POST['location']);
+
+    if (!empty($name) && !empty($start_time) && !empty($location)) {
+        $stmt = $pdo->prepare("UPDATE events SET name = ?, description = ?, start_time = ?, end_time = ?, location = ? WHERE id = ?");
+        if ($stmt->execute([$name, $description, $start_time, $end_time, $location, $id])) {
+            $_SESSION['success_message'] = "Event updated successfully!";
+        } else {
+            $_SESSION['error_message'] = "Failed to update event.";
+        }
+    } else {
+        $_SESSION['error_message'] = "Please fill in all required fields.";
+    }
+    header("Location: events.php");
+    exit();
+}
+
+// Handle Delete Event
+if (isset($_POST['delete_event'])) {
+    $id = $_POST['id'];
+    $stmt = $pdo->prepare("DELETE FROM events WHERE id = ?");
+    if ($stmt->execute([$id])) {
+        $_SESSION['success_message'] = "Event deleted successfully!";
+    } else {
+        $_SESSION['error_message'] = "Failed to delete event.";
+    }
+    header("Location: events.php");
+    exit();
+}
+
+// Fetch Data
+$events = $pdo->query("SELECT * FROM events ORDER BY start_time DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
@@ -68,7 +75,7 @@ require_once '../includes/sidebar.php';
 
 <div class="main-content">
     <div class="container-fluid">
-        <h2 class="mb-4">Manage Events</h2>
+        <h2 class="mb-4">Events Management</h2>
 
         <?php
         if (isset($_SESSION['success_message'])) {
@@ -94,8 +101,10 @@ require_once '../includes/sidebar.php';
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
                                 <th>Location</th>
                                 <th>Actions</th>
                             </tr>
@@ -103,17 +112,20 @@ require_once '../includes/sidebar.php';
                         <tbody>
                             <?php foreach ($events as $event): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($event['title']); ?></td>
-                                <td><?php echo date('M j, Y', strtotime($event['date'])); ?></td>
+                                <td><?php echo htmlspecialchars($event['name']); ?></td>
+                                <td><?php echo htmlspecialchars(substr($event['description'], 0, 50)); ?>...</td>
+                                <td><?php echo date('M j, Y, g:i A', strtotime($event['start_time'])); ?></td>
+                                <td><?php echo $event['end_time'] ? date('M j, Y, g:i A', strtotime($event['end_time'])) : 'N/A'; ?></td>
                                 <td><?php echo htmlspecialchars($event['location']); ?></td>
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary edit-btn"
                                             data-bs-toggle="modal"
                                             data-bs-target="#editEventModal"
                                             data-id="<?php echo $event['id']; ?>"
-                                            data-title="<?php echo htmlspecialchars($event['title']); ?>"
+                                            data-name="<?php echo htmlspecialchars($event['name']); ?>"
                                             data-description="<?php echo htmlspecialchars($event['description']); ?>"
-                                            data-date="<?php echo $event['date']; ?>"
+                                            data-start_time="<?php echo $event['start_time']; ?>"
+                                            data-end_time="<?php echo $event['end_time']; ?>"
                                             data-location="<?php echo htmlspecialchars($event['location']); ?>">
                                         <i class="fas fa-edit"></i>
                                     </button>
@@ -136,31 +148,35 @@ require_once '../includes/sidebar.php';
 </div>
 
 <!-- Add Event Modal -->
-<div class="modal fade" id="addEventModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content bg-dark text-white">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Event</h5>
+                <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="events.php" method="POST">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control" name="title" required>
+                        <label for="name" class="form-label">Event Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="add-description" name="description" rows="5" required></textarea>
+                        <textarea class="form-control" id="add-description" name="description"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="date" class="form-label">Date</label>
-                        <input type="date" class="form-control" name="date" required>
+                        <label for="start_time" class="form-label">Start Time</label>
+                        <input type="datetime-local" class="form-control" id="start_time" name="start_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="end_time" class="form-label">End Time (Optional)</label>
+                        <input type="datetime-local" class="form-control" id="end_time" name="end_time">
                     </div>
                     <div class="mb-3">
                         <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" name="location" required>
+                        <input type="text" class="form-control" id="location" name="location" required>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -173,11 +189,11 @@ require_once '../includes/sidebar.php';
 </div>
 
 <!-- Edit Event Modal -->
-<div class="modal fade" id="editEventModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content bg-dark text-white">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Event</h5>
+                <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -185,16 +201,20 @@ require_once '../includes/sidebar.php';
                     <input type="hidden" name="id" id="edit-id">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="mb-3">
-                        <label for="edit-title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="edit-title" name="title" required>
+                        <label for="edit-name" class="form-label">Event Name</label>
+                        <input type="text" class="form-control" id="edit-name" name="name" required>
                     </div>
                     <div class="mb-3">
                         <label for="edit-description" class="form-label">Description</label>
-                        <textarea class="form-control" id="edit-description" name="description" rows="5" required></textarea>
+                        <textarea class="form-control" id="edit-description" name="description"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="edit-date" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="edit-date" name="date" required>
+                        <label for="edit-start_time" class="form-label">Start Time</label>
+                        <input type="datetime-local" class="form-control" id="edit-start_time" name="start_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-end_time" class="form-label">End Time (Optional)</label>
+                        <input type="datetime-local" class="form-control" id="edit-end_time" name="end_time">
                     </div>
                     <div class="mb-3">
                         <label for="edit-location" class="form-label">Location</label>
@@ -215,11 +235,12 @@ require_once '../includes/sidebar.php';
 document.addEventListener('DOMContentLoaded', function () {
     let addEditor;
     let editEditor;
+    const csrfToken = "<?php echo $_SESSION['csrf_token']; ?>";
 
     ClassicEditor
         .create(document.querySelector('#add-description'), {
             ckfinder: {
-                uploadUrl: 'upload.php'
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
             }
         })
         .then(editor => {
@@ -232,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ClassicEditor
         .create(document.querySelector('#edit-description'), {
             ckfinder: {
-                uploadUrl: 'upload.php'
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
             }
         })
         .then(editor => {
@@ -242,27 +263,30 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(error);
         });
 
-    var editModal = document.getElementById('editEventModal');
-    editModal.addEventListener('show.bs.modal', function (event) {
+    var editEventModal = document.getElementById('editEventModal');
+    editEventModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var id = button.getAttribute('data-id');
-        var title = button.getAttribute('data-title');
+        var name = button.getAttribute('data-name');
         var description = button.getAttribute('data-description');
-        var date = button.getAttribute('data-date');
+        var startTime = button.getAttribute('data-start_time');
+        var endTime = button.getAttribute('data-end_time');
         var location = button.getAttribute('data-location');
 
-        var modalTitle = editModal.querySelector('.modal-title');
-        var idInput = editModal.querySelector('#edit-id');
-        var titleInput = editModal.querySelector('#edit-title');
-        var dateInput = editModal.querySelector('#edit-date');
-        var locationInput = editModal.querySelector('#edit-location');
+        var modalTitle = editEventModal.querySelector('.modal-title');
+        var modalBodyInputId = editEventModal.querySelector('#edit-id');
+        var modalBodyInputName = editEventModal.querySelector('#edit-name');
+        var modalBodyInputStartTime = editEventModal.querySelector('#edit-start_time');
+        var modalBodyInputEndTime = editEventModal.querySelector('#edit-end_time');
+        var modalBodyInputLocation = editEventModal.querySelector('#edit-location');
 
-        modalTitle.textContent = 'Edit Event: ' + title;
-        idInput.value = id;
-        titleInput.value = title;
+        modalTitle.textContent = 'Edit Event: ' + name;
+        modalBodyInputId.value = id;
+        modalBodyInputName.value = name;
         editEditor.setData(description);
-        dateInput.value = date;
-        locationInput.value = location;
+        modalBodyInputStartTime.value = startTime;
+        modalBodyInputEndTime.value = endTime;
+        modalBodyInputLocation.value = location;
     });
 });
 </script>

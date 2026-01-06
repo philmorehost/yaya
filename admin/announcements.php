@@ -200,11 +200,12 @@ require_once '../includes/sidebar.php';
 document.addEventListener('DOMContentLoaded', function () {
     let addEditor;
     let editEditor;
+    const csrfToken = "<?php echo $_SESSION['csrf_token']; ?>";
 
     ClassicEditor
         .create(document.querySelector('#add-content'), {
             ckfinder: {
-                uploadUrl: 'upload.php'
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
             }
         })
         .then(editor => {
@@ -217,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
     ClassicEditor
         .create(document.querySelector('#edit-content'), {
             ckfinder: {
-                uploadUrl: 'upload.php'
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
             }
         })
         .then(editor => {
