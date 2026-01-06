@@ -63,13 +63,6 @@ try {
         </div>
     </div>
 
-    <?php if (isset($settings['support_phone'])): ?>
-    <div class="whatsapp-support">
-        <a href="https://wa.me/<?php echo htmlspecialchars($settings['support_phone']); ?>" target="_blank">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Support">
-        </a>
-    </div>
-    <?php endif; ?>
 </div>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

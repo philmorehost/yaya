@@ -27,7 +27,39 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
         echo '<div class="alert alert-success">' . $_SESSION['success_message'] . '</div>';
         unset($_SESSION['success_message']);
     }
+
+    // Fetch stats
+    $total_users = $db->query("SELECT COUNT(*) FROM Users")->fetchColumn();
+    $total_loan_applications = $db->query("SELECT COUNT(*) FROM LoanApplications")->fetchColumn();
+    $total_loan_disbursed = $db->query("SELECT SUM(loanAmount) FROM LoanApplications WHERE status = 'Disbursed'")->fetchColumn();
     ?>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Users</h5>
+                    <p class="card-text"><?php echo $total_users; ?></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Loan Applications</h5>
+                    <p class="card-text"><?php echo $total_loan_applications; ?></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Loan Disbursed</h5>
+                    <p class="card-text">₦<?php echo number_format($total_loan_disbursed, 2); ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="card">
         <div class="card-header">
