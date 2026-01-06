@@ -2,9 +2,17 @@
 function upload_file($file, $allowed_types, $max_size) {
     $upload_dir = dirname(__DIR__) . '/uploads/';
 
-    if (!is_dir($upload_dir) || !is_writable($upload_dir)) {
-        $_SESSION['errors'][] = "Upload directory is not writable or does not exist.";
-        error_log("Upload directory is not writable or does not exist: " . $upload_dir, 3, dirname(__DIR__) . '/logs/errors.log');
+    if (!is_dir($upload_dir)) {
+        if (!mkdir($upload_dir, 0777, true)) {
+            $_SESSION['errors'][] = "Upload directory could not be created. Please check permissions.";
+            error_log("Failed to create upload directory: " . $upload_dir, 3, dirname(__DIR__) . '/logs/errors.log');
+            return null;
+        }
+    }
+
+    if (!is_writable($upload_dir)) {
+        $_SESSION['errors'][] = "Upload directory is not writable.";
+        error_log("Upload directory is not writable: " . $upload_dir, 3, dirname(__DIR__) . '/logs/errors.log');
         return null;
     }
 
