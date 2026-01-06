@@ -5,7 +5,7 @@
 <?php
 $settings = [];
 try {
-    $stmt = $db->query("SELECT * FROM AdminSettings");
+    $stmt = $db->query("SELECT setting_key, setting_value FROM AdminSettings");
     $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
 } catch (PDOException $e) {
     // Log the error or handle it gracefully
