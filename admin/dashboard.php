@@ -12,12 +12,14 @@ if (!$latest_attendance) {
     $latest_attendance = 0;
 }
 
-// Month's Offering & Tithe
-$offering_query = "SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND MONTH(giving_date) = MONTH(CURRENT_DATE()) AND YEAR(giving_date) = YEAR(CURRENT_DATE())";
-$current_month_offering = $pdo->query($offering_query)->fetchColumn();
+// Recent Members
+$recent_members = $pdo->query("SELECT * FROM members ORDER BY id DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 
-$tithe_query = "SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND MONTH(giving_date) = MONTH(CURRENT_DATE()) AND YEAR(giving_date) = YEAR(CURRENT_DATE())";
-$current_month_tithe = $pdo->query($tithe_query)->fetchColumn();
+// Recent Media
+$recent_media = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
+
+// Recent Announcements
+$recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY created_at DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -38,7 +40,7 @@ $current_month_tithe = $pdo->query($tithe_query)->fetchColumn();
         <?php endif; ?>
 
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="card text-white bg-primary mb-3">
                     <div class="card-header">Total Members</div>
                     <div class="card-body">
@@ -46,7 +48,7 @@ $current_month_tithe = $pdo->query($tithe_query)->fetchColumn();
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="card text-white bg-success mb-3">
                     <div class="card-header">Sunday Attendance</div>
                     <div class="card-body">
@@ -54,19 +56,81 @@ $current_month_tithe = $pdo->query($tithe_query)->fetchColumn();
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-info mb-3">
-                    <div class="card-header">Month's Offering</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">Recent Members</div>
                     <div class="card-body">
-                        <h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_offering, 2); ?></h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($recent_members as $member): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($member['name']); ?></td>
+                                        <td><?php echo htmlspecialchars($member['email']); ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card text-white bg-warning mb-3">
-                    <div class="card-header">Month's Tithe</div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">Recent Media</div>
                     <div class="card-body">
-                        <h5 class="card-title"><?php echo CURRENCY_SYMBOL; ?><?php echo number_format($current_month_tithe, 2); ?></h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($recent_media as $media): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($media['title']); ?></td>
+                                        <td><?php echo date('M d, Y', strtotime($media['publication_date'])); ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">Recent Announcements</div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($recent_announcements as $announcement): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($announcement['title']); ?></td>
+                                        <td><?php echo date('M d, Y', strtotime($announcement['created_at'])); ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
