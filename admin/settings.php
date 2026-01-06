@@ -20,7 +20,7 @@ function get_setting($key, $db) {
 function update_setting($key, $value, $db) {
     try {
         $sql = "INSERT INTO AdminSettings (setting_key, setting_value) VALUES (:key, :value)
-                ON DUPLICATE KEY UPDATE setting_value = :value";
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)";
         $stmt = $db->prepare($sql);
         $stmt->execute([':key' => $key, ':value' => $value]);
     } catch (PDOException $e) {
