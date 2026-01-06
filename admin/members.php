@@ -50,7 +50,7 @@ $roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_A
                             <?php foreach ($members as $member): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($member['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($member['member_id']); ?></td>
+                                    <td><?php echo htmlspecialchars($member['member_id'] ?? ''); ?></td>
                                     <td><span class="badge bg-info"><?php echo htmlspecialchars($member['role_name'] ?: 'Member'); ?></span></td>
                                     <td><?php echo htmlspecialchars($member['phone']); ?></td>
                                     <td><?php echo htmlspecialchars($member['email']); ?></td>

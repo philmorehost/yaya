@@ -22,6 +22,18 @@ require_once 'includes/public_header.php';
             </div>
         </div>
         <?php endif; ?>
+        <?php if (member_has_permission('view_events') || !$role_id): ?>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-alt fa-3x mb-3"></i>
+                    <h5 class="card-title">Events</h5>
+                    <p class="card-text">See what's happening.</p>
+                    <a href="member_events.php" class="btn btn-primary">View Events</a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
         <?php if (member_has_permission('view_media') || !$role_id): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
