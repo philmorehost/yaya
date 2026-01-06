@@ -16,9 +16,11 @@
         <a href="members.php" class="list-group-item list-group-item-action">Members</a>
         <a href="attendance.php" class="list-group-item list-group-item-action">Attendance</a>
         <a href="finance.php" class="list-group-item list-group-item-action">Finance</a>
+        <a href="giving_accounts.php" class="list-group-item list-group-item-action">Giving Accounts</a>
         <a href="events.php" class="list-group-item list-group-item-action">Events</a>
         <a href="media.php" class="list-group-item list-group-item-action">Media</a>
         <a href="departments.php" class="list-group-item list-group-item-action">Departments</a>
+        <a href="department_applications.php" class="list-group-item list-group-item-action">Department Applications</a>
         <a href="roles.php" class="list-group-item list-group-item-action">Roles</a>
 
         <div class="list-group-item list-group-item-action list-group-item-heading">Settings</div>

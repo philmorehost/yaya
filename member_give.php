@@ -20,12 +20,16 @@ $accounts = $pdo->query("SELECT * FROM giving_accounts ORDER BY account_name")->
     <div class="row">
         <?php if ($accounts): ?>
             <?php foreach ($accounts as $account): ?>
-                <div class="col-md-4 mb-4">
+                <div class="col-md-6 mb-4">
                     <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0" style="color: #001f3f;"><?php echo htmlspecialchars($account['account_name']); ?></h5>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title text-center" style="color: #001f3f;"><?php echo htmlspecialchars($account['account_name']); ?></h5>
-                            <hr>
-                            <div class="card-text"><?php echo nl2br(htmlspecialchars($account['account_details'])); ?></div>
+                            <h6 class="card-subtitle mb-2 text-muted">Account Details</h6>
+                            <p class="card-text"><?php echo nl2br(htmlspecialchars($account['account_details'])); ?></p>
+                            <h6 class="card-subtitle mt-4 mb-2 text-muted">Instructions</h6>
+                            <p class="card-text"><?php echo nl2br(htmlspecialchars($account['instructions'])); ?></p>
                         </div>
                     </div>
                 </div>

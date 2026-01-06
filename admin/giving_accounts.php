@@ -1,6 +1,6 @@
 <?php
-require_once '../includes/auth_check.php';
-require_once '../config/db_connect.php';
+require_once 'init.php';
+check_permission('manage_finance');
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
@@ -10,14 +10,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['add_account'])) {
         $account_name = $_POST['account_name'];
         $account_details = $_POST['account_details'];
-        $stmt = $pdo->prepare("INSERT INTO giving_accounts (account_name, account_details) VALUES (?, ?)");
-        $stmt->execute([$account_name, $account_details]);
+        $instructions = $_POST['instructions'];
+        $stmt = $pdo->prepare("INSERT INTO giving_accounts (account_name, account_details, instructions) VALUES (?, ?, ?)");
+        $stmt->execute([$account_name, $account_details, $instructions]);
     } elseif (isset($_POST['edit_account'])) {
         $id = $_POST['id'];
         $account_name = $_POST['account_name'];
         $account_details = $_POST['account_details'];
-        $stmt = $pdo->prepare("UPDATE giving_accounts SET account_name = ?, account_details = ? WHERE id = ?");
-        $stmt->execute([$account_name, $account_details, $id]);
+        $instructions = $_POST['instructions'];
+        $stmt = $pdo->prepare("UPDATE giving_accounts SET account_name = ?, account_details = ?, instructions = ? WHERE id = ?");
+        $stmt->execute([$account_name, $account_details, $instructions, $id]);
     } elseif (isset($_POST['delete_account'])) {
         $id = $_POST['id'];
         $stmt = $pdo->prepare("DELETE FROM giving_accounts WHERE id = ?");
@@ -26,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header('Location: giving_accounts.php');
 }
 
-// Fetch Data
 $accounts = $pdo->query("SELECT * FROM giving_accounts ORDER BY account_name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -42,6 +43,8 @@ $accounts = $pdo->query("SELECT * FROM giving_accounts ORDER BY account_name")->
                         <thead>
                             <tr>
                                 <th>Account Name</th>
+                                <th>Account Details</th>
+                                <th>Instructions</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -49,6 +52,8 @@ $accounts = $pdo->query("SELECT * FROM giving_accounts ORDER BY account_name")->
                             <?php foreach ($accounts as $account): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($account['account_name']); ?></td>
+                                    <td><?php echo nl2br(htmlspecialchars($account['account_details'])); ?></td>
+                                    <td><?php echo nl2br(htmlspecialchars($account['instructions'])); ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editAccountModal-<?php echo $account['id']; ?>">Edit</button>
                                         <form method="post" class="d-inline">
@@ -84,7 +89,11 @@ $accounts = $pdo->query("SELECT * FROM giving_accounts ORDER BY account_name")->
                     </div>
                     <div class="mb-3">
                         <label for="account_details" class="form-label">Account Details</label>
-                        <textarea class="form-control" id="account_details" name="account_details" rows="5" required></textarea>
+                        <textarea class="form-control" id="account_details" name="account_details" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="instructions" class="form-label">Instructions</label>
+                        <textarea class="form-control" id="instructions" name="instructions" rows="3"></textarea>
                     </div>
                     <button type="submit" name="add_account" class="btn btn-primary">Save Account</button>
                 </form>
@@ -112,7 +121,11 @@ $accounts = $pdo->query("SELECT * FROM giving_accounts ORDER BY account_name")->
                     </div>
                     <div class="mb-3">
                         <label for="account_details" class="form-label">Account Details</label>
-                        <textarea class="form-control" id="account_details" name="account_details" rows="5" required><?php echo htmlspecialchars($account['account_details']); ?></textarea>
+                        <textarea class="form-control" id="account_details" name="account_details" rows="3" required><?php echo htmlspecialchars($account['account_details']); ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="instructions" class="form-label">Instructions</label>
+                        <textarea class="form-control" id="instructions" name="instructions" rows="3"><?php echo htmlspecialchars($account['instructions']); ?></textarea>
                     </div>
                     <button type="submit" name="edit_account" class="btn btn-primary">Update Account</button>
                 </form>

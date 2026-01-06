@@ -44,9 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['expenditure_submit']))
 
 // Fetch data for display
 $members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
-// The $givings query is corrected but not used in this view.
-// It is kept for potential future use or reporting context.
-$givings = $pdo->query("SELECT g.*, m.name FROM giving g LEFT JOIN members m ON g.member_id = m.id ORDER BY g.giving_date DESC LIMIT 10")->fetchAll(PDO::FETCH_ASSOC);
+$givings = $pdo->query("SELECT g.*, m.name FROM giving g LEFT JOIN members m ON g.member_id = m.id ORDER BY g.giving_date DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -132,10 +130,30 @@ $givings = $pdo->query("SELECT g.*, m.name FROM giving g LEFT JOIN members m ON 
         </div>
 
         <div class="card mt-4">
-            <div class="card-header">Financial Reports</div>
+            <div class="card-header">Finance History</div>
             <div class="card-body">
-                <!-- Reporting feature to be added here -->
-                 <a href="financial_report.php" class="btn btn-info">Generate Financial Report</a>
+                <div class="table-responsive">
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Member</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($givings as $giving): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($giving['giving_date']); ?></td>
+                                    <td><?php echo htmlspecialchars($giving['name'] ?: 'Anonymous'); ?></td>
+                                    <td><?php echo htmlspecialchars($giving['type']); ?></td>
+                                    <td><?php echo htmlspecialchars($giving['amount']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

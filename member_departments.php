@@ -7,6 +7,16 @@ if ($role_id && !member_has_permission('view_departments')) {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['apply_department'])) {
+    $department_id = $_POST['department_id'];
+    $member_id = $_SESSION['member_id'];
+    $stmt = $pdo->prepare("INSERT INTO department_applications (member_id, department_id) VALUES (?, ?)");
+    $stmt->execute([$member_id, $department_id]);
+    $_SESSION['success_message'] = 'Your application has been submitted!';
+    header('Location: member_departments.php');
+    exit;
+}
+
 $departments = $pdo->query("SELECT d.*, m.name as head_name FROM departments d LEFT JOIN members m ON d.head_id = m.id ORDER BY d.name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -15,6 +25,13 @@ $departments = $pdo->query("SELECT d.*, m.name as head_name FROM departments d L
         <h2>Departments</h2>
         <p class="lead">Explore our departments and find a place to serve.</p>
     </div>
+
+    <?php
+    if (isset($_SESSION['success_message'])) {
+        echo '<div class="alert alert-success">' . $_SESSION['success_message'] . '</div>';
+        unset($_SESSION['success_message']);
+    }
+    ?>
 
     <div class="row">
         <?php if ($departments): ?>
@@ -25,7 +42,10 @@ $departments = $pdo->query("SELECT d.*, m.name as head_name FROM departments d L
                             <h5 class="card-title text-center" style="color: #001f3f;"><?php echo htmlspecialchars($department['name']); ?></h5>
                             <hr>
                             <p class="card-text"><strong>Department Head:</strong> <?php echo htmlspecialchars($department['head_name'] ?: 'Not Assigned'); ?></p>
-                            <button class="btn btn-primary w-100">Apply to Join</button>
+                            <form method="post">
+                                <input type="hidden" name="department_id" value="<?php echo $department['id']; ?>">
+                                <button type="submit" name="apply_department" class="btn btn-primary w-100">Apply to Join</button>
+                            </form>
                         </div>
                     </div>
                 </div>

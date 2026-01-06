@@ -9,8 +9,15 @@ require_once 'includes/public_header.php';
         <p class="lead">This is your member dashboard. From here, you can access announcements, media, giving, and more.</p>
     </div>
 
+    <?php
+    if (isset($_SESSION['new_member_id'])) {
+        echo '<div class="alert alert-success">Your registration was successful! Your Member ID is: <strong>' . $_SESSION['new_member_id'] . '</strong>. Please save this ID for future use.</div>';
+        unset($_SESSION['new_member_id']);
+    }
+    ?>
+
     <div class="row">
-        <?php if (member_has_permission('view_announcements') || !$role_id): ?>
+        <?php if (member_has_permission('view_announcements')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -22,7 +29,7 @@ require_once 'includes/public_header.php';
             </div>
         </div>
         <?php endif; ?>
-        <?php if (member_has_permission('view_events') || !$role_id): ?>
+        <?php if (member_has_permission('view_events')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -34,7 +41,7 @@ require_once 'includes/public_header.php';
             </div>
         </div>
         <?php endif; ?>
-        <?php if (member_has_permission('view_media') || !$role_id): ?>
+        <?php if (member_has_permission('view_media')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -46,7 +53,7 @@ require_once 'includes/public_header.php';
             </div>
         </div>
         <?php endif; ?>
-        <?php if (member_has_permission('view_give') || !$role_id): ?>
+        <?php if (member_has_permission('view_give')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -58,7 +65,7 @@ require_once 'includes/public_header.php';
             </div>
         </div>
         <?php endif; ?>
-        <?php if (member_has_permission('view_departments') || !$role_id): ?>
+        <?php if (member_has_permission('view_departments')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">

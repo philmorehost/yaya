@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'config/db_connect.php';
 require_once 'includes/public_header.php';
 
@@ -6,6 +7,8 @@ $error_message = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $birthday = $_POST['birthday'];
     $password = $_POST['password'];
     $password_confirm = $_POST['password_confirm'];
 
@@ -19,11 +22,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $member_id = 'MEM' . uniqid();
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("INSERT INTO members (member_id, name, email, password) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$member_id, $name, $email, $hashed_password]);
+            $stmt = $pdo->prepare("INSERT INTO members (member_id, name, email, phone, birthday, password) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$member_id, $name, $email, $phone, $birthday, $hashed_password]);
 
-            $_SESSION['success_message'] = 'Registration successful! You can now log in.';
-            header('Location: member_login.php');
+            $new_member_id = $pdo->lastInsertId();
+
+            $_SESSION['member_loggedin'] = true;
+            $_SESSION['member_id'] = $new_member_id;
+            $_SESSION['member_name'] = $name;
+            $_SESSION['new_member_id'] = $member_id;
+
+            header('Location: member_dashboard.php');
             exit;
         }
     }
@@ -49,6 +58,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
                             <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone" name="phone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="birthday" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="birthday" name="birthday">
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>

@@ -40,6 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['checkin_submit'])) {
 
 $stmt = $pdo->query("SELECT * FROM members ORDER BY name");
 $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$headcount_history = $pdo->query("SELECT * FROM attendance_headcount ORDER BY service_date DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -103,6 +105,36 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <button type="submit" name="checkin_submit" class="btn btn-primary">Check In</button>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">Attendance History</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr>
+                                <th>Service Date</th>
+                                <th>Men</th>
+                                <th>Women</th>
+                                <th>Children</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($headcount_history as $record): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($record['service_date']); ?></td>
+                                    <td><?php echo htmlspecialchars($record['men']); ?></td>
+                                    <td><?php echo htmlspecialchars($record['women']); ?></td>
+                                    <td><?php echo htmlspecialchars($record['children']); ?></td>
+                                    <td><?php echo htmlspecialchars($record['men'] + $record['women'] + $record['children']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

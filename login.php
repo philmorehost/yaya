@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
+    // Check admin_users table first
     $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE email = ?");
     $stmt->execute([$email]);
     $admin = $stmt->fetch();
@@ -22,9 +23,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['admin_role_id'] = $admin['role_id'];
         header('Location: admin/dashboard.php');
         exit;
-    } else {
-        $error = 'Invalid credentials!';
     }
+
+    // If not an admin, check members table for users with a role
+    $stmt = $pdo->prepare("SELECT * FROM members WHERE email = ? AND role_id IS NOT NULL");
+    $stmt->execute([$email]);
+    $member = $stmt->fetch();
+
+    if ($member && password_verify($password, $member['password'])) {
+        $_SESSION['admin_loggedin'] = true;
+        $_SESSION['admin_id'] = $member['id'];
+        $_SESSION['admin_email'] = $member['email'];
+        $_SESSION['admin_role_id'] = $member['role_id'];
+        header('Location: admin/dashboard.php');
+        exit;
+    }
+
+    $error = 'Invalid credentials!';
 }
 ?>
 <!DOCTYPE html>
