@@ -82,7 +82,7 @@ $member = $stmt->fetch(PDO::FETCH_ASSOC);
             <form method="post">
                 <div class="mb-3">
                     <label for="member_id_display" class="form-label">Member ID</label>
-                    <input type="text" class="form-control" id="member_id_display" value="<?php echo htmlspecialchars($member['member_id']); ?>" readonly>
+                    <input type="text" class="form-control" id="member_id_display" value="<?php echo htmlspecialchars($member['member_id'] ?? ''); ?>" readonly>
                 </div>
                 <div class="mb-3">
                     <label for="name" class="form-label">Full Name</label>

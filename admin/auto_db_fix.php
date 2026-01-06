@@ -5,8 +5,27 @@
 // Check if the fix has already been applied to prevent re-running
 $fix_applied_check = $pdo->query("SELECT setting_value FROM settings WHERE setting_name = 'db_fix_1_4_applied'");
 if ($fix_applied_check && $fix_applied_check->fetchColumn()) {
-    return; // Exit if the fix is already done
+    //return; // Exit if the fix is already done
 }
+
+// Check for and add member_id column
+$check_member_id = $pdo->query("SHOW COLUMNS FROM `members` LIKE 'member_id'");
+if ($check_member_id->rowCount() == 0) {
+    $pdo->exec("ALTER TABLE `members` ADD COLUMN `member_id` VARCHAR(255) UNIQUE AFTER `id`");
+}
+
+// Check for and add password column
+$check_password = $pdo->query("SHOW COLUMNS FROM `members` LIKE 'password'");
+if ($check_password->rowCount() == 0) {
+    $pdo->exec("ALTER TABLE `members` ADD COLUMN `password` VARCHAR(255) AFTER `email`");
+}
+
+// Check for and add role_id column
+$check_role_id = $pdo->query("SHOW COLUMNS FROM `members` LIKE 'role_id'");
+if ($check_role_id->rowCount() == 0) {
+    $pdo->exec("ALTER TABLE `members` ADD COLUMN `role_id` INT(11) NULL AFTER `gender`");
+}
+
 
 // Check if the old, incorrect column 'permission_name' exists
 $check_column_stmt = $pdo->prepare("
@@ -63,27 +82,6 @@ if ($incorrect_schema_exists) {
         // If the fix fails, we should probably stop execution to avoid further errors.
         die("A critical error occurred while trying to automatically fix the database. Please contact support. Error: " . $e->getMessage());
     }
-}
-
-try {
-    // Add member_id column if it doesn't exist
-    $pdo->exec("ALTER TABLE members ADD COLUMN member_id VARCHAR(255) UNIQUE AFTER id");
-} catch (PDOException $e) {
-    // Ignore if column already exists
-}
-
-try {
-    // Add password column if it doesn't exist
-    $pdo->exec("ALTER TABLE members ADD COLUMN password VARCHAR(255) AFTER email");
-} catch (PDOException $e) {
-    // Ignore if column already exists
-}
-
-try {
-    // Add role_id column if it doesn't exist
-    $pdo->exec("ALTER TABLE members ADD COLUMN role_id INT(11) NULL AFTER gender");
-} catch (PDOException $e) {
-    // Ignore if column already exists
 }
 
 // 6. Mark the fix as applied so it doesn't run again.

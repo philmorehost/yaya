@@ -15,6 +15,14 @@ function check_permission($permission_name) {
 
     $role_id = $_SESSION['admin_role_id'];
 
+    // Super Admin role check
+    $stmt = $pdo->prepare("SELECT name FROM roles WHERE id = ?");
+    $stmt->execute([$role_id]);
+    $role_name = $stmt->fetchColumn();
+    if ($role_name === 'Super Admin') {
+        return true;
+    }
+
     $stmt = $pdo->prepare("
         SELECT COUNT(*)
         FROM role_permissions rp
