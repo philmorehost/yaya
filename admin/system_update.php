@@ -20,8 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "CSRF token validation failed.";
     } else {
         try {
-            $db->beginTransaction();
-
             $messages[] = "Starting database update...";
 
             // Create AdminSettings table
@@ -75,13 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            $db->commit();
             $messages[] = "Database update completed successfully!";
 
         } catch (PDOException $e) {
-            $db->rollBack();
             $errors[] = "An error occurred during the update: " . $e->getMessage();
-            $errors[] = "The database has been restored to its previous state.";
         }
     }
 }

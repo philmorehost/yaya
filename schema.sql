@@ -77,7 +77,7 @@ CREATE TABLE `Users` (
 -- Dumping data for table `Users`
 --
 INSERT INTO `Users` (`id`, `fullName`, `email`, `password`, `role`, `created_at`) VALUES
-(1, 'Admin User', 'admin@example.com', '$2y$10$7DHCllkDc2espy87nyEzv.rLyvzR8Nrd8oltGp8PKivq3p2.CE0ei', 'admin', '2024-05-22 10:00:00');
+(1, 'Admin User', 'admin@example.com', '$2y$10$ZOXYxaNzn5wzppJ2VLlcP.zvqaenh43vSq22.W1ws4pnJBl4O9QMW', 'admin', '2024-05-22 10:00:00');
 
 --
 -- Table structure for table `Articles`
