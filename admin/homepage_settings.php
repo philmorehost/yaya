@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     update_setting('hero_type', $_POST['hero_type']);
     update_setting('hero_video_url', $_POST['hero_video_url']);
     update_setting('upcoming_event_id', $_POST['upcoming_event_id']);
-    update_setting('latest_sermon_id', $_POST['latest_sermon_id']);
 
     // Function to handle a file upload
     function handle_upload($file_key, $setting_name, $prefix = '') {
@@ -54,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $events = $pdo->query("SELECT * FROM events ORDER BY start_time DESC")->fetchAll(PDO::FETCH_ASSOC);
-$sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -121,15 +119,6 @@ $sermons = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")->fe
                             <option value="">Select Event</option>
                             <?php foreach ($events as $event): ?>
                                 <option value="<?php echo $event['id']; ?>" <?php if(get_setting('upcoming_event_id') == $event['id']) echo 'selected'; ?>><?php echo htmlspecialchars($event['name']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="latest_sermon_id" class="form-label">Latest Sermon</label>
-                        <select class="form-select" id="latest_sermon_id" name="latest_sermon_id">
-                            <option value="">Select Sermon</option>
-                            <?php foreach ($sermons as $sermon): ?>
-                                <option value="<?php echo $sermon['id']; ?>" <?php if(get_setting('latest_sermon_id') == $sermon['id']) echo 'selected'; ?>><?php echo htmlspecialchars($sermon['title']); ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

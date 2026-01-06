@@ -22,13 +22,9 @@ if ($upcoming_event_id) {
     $event = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-// Latest Sermon Data
-$latest_sermon_id = get_setting('latest_sermon_id');
-if ($latest_sermon_id) {
-    $stmt = $pdo->prepare("SELECT * FROM media WHERE id = ?");
-    $stmt->execute([$latest_sermon_id]);
-    $sermon = $stmt->fetch(PDO::FETCH_ASSOC);
-}
+// Latest Sermon Data (Automated)
+$stmt = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC LIMIT 1");
+$sermon = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Announcements
 $announcements = [];

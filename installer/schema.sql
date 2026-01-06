@@ -161,5 +161,6 @@ TRUNCATE TABLE `attendance_headcount`;
 TRUNCATE TABLE `attendance_log`;
 TRUNCATE TABLE `expenditures`;
 TRUNCATE TABLE `events`;
+TRUNCATE TABLE `media`;
 TRUNCATE TABLE `announcements`;
 TRUNCATE TABLE `connection_requests`;
