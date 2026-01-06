@@ -1,54 +1,65 @@
 <?php
 require_once 'init.php';
+require_once '../includes/csrf_check.php';
 
-// 1. Authentication Check (Generic)
-if (!is_admin_loggedin()) {
-    echo json_encode(['error' => ['message' => 'Authentication required.']]);
-    http_response_code(401);
+// Function to send a JSON error response
+function send_error($message) {
+    echo json_encode(['error' => ['message' => $message]]);
     exit;
 }
 
-header('Content-Type: application/json');
-
-// 2. CSRF Token Validation (from the GET parameter)
-if (!isset($_GET['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_GET['csrf_token'])) {
-    echo json_encode(['error' => ['message' => 'Invalid CSRF token.']]);
-    http_response_code(403);
-    exit;
+// Check if a file was uploaded
+if (!isset($_FILES['upload']) || !is_uploaded_file($_FILES['upload']['tmp_name'])) {
+    send_error('No file was uploaded.');
 }
 
-if (isset($_FILES['upload'])) {
-    $file = $_FILES['upload'];
+$file = $_FILES['upload'];
+$file_tmp = $file['tmp_name'];
+$file_size = $file['size'];
+$file_error = $file['error'];
 
-    // 3. File Type Validation
-    $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-    $fileMimeType = mime_content_type($file['tmp_name']);
-    if (!in_array($fileMimeType, $allowedMimeTypes)) {
-        echo json_encode(['error' => ['message' => 'Invalid file type. Only JPG, PNG, and GIF are allowed.']]);
-        http_response_code(400);
-        exit;
+// Check for upload errors
+if ($file_error !== UPLOAD_ERR_OK) {
+    send_error('An error occurred during file upload. Error code: ' . $file_error);
+}
+
+// Check file size (e.g., 2MB limit)
+if ($file_size > 2097152) {
+    send_error('The uploaded file is too large. Maximum size is 2MB.');
+}
+
+// Validate MIME type
+$finfo = finfo_open(FILEINFO_MIME_TYPE);
+$mime_type = finfo_file($finfo, $file_tmp);
+finfo_close($finfo);
+
+$allowed_mime_types = ['image/jpeg', 'image/png', 'image/gif'];
+if (!in_array($mime_type, $allowed_mime_types)) {
+    send_error('Invalid file type. Only JPG, PNG, and GIF images are allowed.');
+}
+
+// Generate a unique filename
+$file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+$file_name_new = uniqid('img_', true) . '.' . $file_ext;
+$file_destination = '../uploads/' . $file_name_new;
+
+// Ensure the uploads directory exists
+if (!is_dir('../uploads')) {
+    if (!mkdir('../uploads', 0777, true)) {
+        send_error('Failed to create the uploads directory.');
     }
+}
 
-    // 4. File Size Limit (e.g., 5MB)
-    if ($file['size'] > 5 * 1024 * 1024) {
-        echo json_encode(['error' => ['message' => 'File is too large. Maximum size is 5MB.']]);
-        http_response_code(400);
-        exit;
-    }
+// Move the file
+if (move_uploaded_file($file_tmp, $file_destination)) {
+    // Respond with the URL of the uploaded file
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    $host = $_SERVER['HTTP_HOST'];
+    $base_path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\'); // Get the script's directory
+    $url = $protocol . $host . str_replace('/admin', '', $base_path) . '/uploads/' . $file_name_new;
 
-    // Sanitize the filename
-    $fileName = time() . '_' . preg_replace('/[^A-Za-z0-9\._-]/', '', basename($file['name']));
-    $fileDestination = '../uploads/' . $fileName;
-
-    if (move_uploaded_file($file['tmp_name'], $fileDestination)) {
-        $url = '/uploads/' . $fileName;
-        echo json_encode(['url' => $url]);
-    } else {
-        // More specific error for debugging
-        echo json_encode(['error' => ['message' => 'Failed to move the uploaded file. Check directory permissions.']]);
-        http_response_code(500);
-    }
+    echo json_encode(['url' => $url]);
 } else {
-    echo json_encode(['error' => ['message' => 'No file was uploaded.']]);
-    http_response_code(400);
+    send_error('Failed to move the uploaded file.');
 }
+?>

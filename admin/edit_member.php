@@ -13,15 +13,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $birthday = $_POST['birthday'];
     $gender = $_POST['gender'];
+    $role_id = $_POST['role_id'] ?: null;
+    $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("UPDATE members SET name = ?, phone = ?, email = ?, birthday = ?, gender = ? WHERE id = ?");
-    $stmt->execute([$name, $phone, $email, $birthday, $gender, $id]);
+    $sql = "UPDATE members SET name = ?, phone = ?, email = ?, birthday = ?, gender = ?, role_id = ?";
+    $params = [$name, $phone, $email, $birthday, $gender, $role_id];
+
+    if (!empty($password)) {
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $sql .= ", password = ?";
+        $params[] = $hashed_password;
+    }
+
+    $sql .= " WHERE id = ?";
+    $params[] = $id;
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     header('Location: members.php');
 }
 
 $stmt = $pdo->prepare("SELECT * FROM members WHERE id = ?");
 $stmt->execute([$id]);
 $member = $stmt->fetch(PDO::FETCH_ASSOC);
+$roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -53,6 +68,19 @@ $member = $stmt->fetch(PDO::FETCH_ASSOC);
                             <option value="Male" <?php if ($member['gender'] == 'Male') echo 'selected'; ?>>Male</option>
                             <option value="Female" <?php if ($member['gender'] == 'Female') echo 'selected'; ?>>Female</option>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role_id" class="form-label">Role</label>
+                        <select class="form-select" id="role_id" name="role_id">
+                            <option value="">Member</option>
+                            <?php foreach ($roles as $role): ?>
+                                <option value="<?php echo $role['id']; ?>" <?php if ($member['role_id'] == $role['id']) echo 'selected'; ?>><?php echo htmlspecialchars($role['name']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">New Password (optional)</label>
+                        <input type="password" class="form-control" id="password" name="password">
                     </div>
                     <button type="submit" class="btn btn-primary">Update Member</button>
                     <a href="members.php" class="btn btn-secondary">Cancel</a>

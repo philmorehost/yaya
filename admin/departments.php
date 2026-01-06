@@ -1,5 +1,6 @@
 <?php
 require_once 'init.php';
+check_permission('manage_departments');
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
@@ -8,13 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';
     if (isset($_POST['add_department'])) {
         $name = $_POST['name'];
-        $head_id = $_POST['head_id'];
+        $head_id = $_POST['head_id'] ?: null;
         $stmt = $pdo->prepare("INSERT INTO departments (name, head_id) VALUES (?, ?)");
         $stmt->execute([$name, $head_id]);
     } elseif (isset($_POST['edit_department'])) {
         $id = $_POST['id'];
         $name = $_POST['name'];
-        $head_id = $_POST['head_id'];
+        $head_id = $_POST['head_id'] ?: null;
         $stmt = $pdo->prepare("UPDATE departments SET name = ?, head_id = ? WHERE id = ?");
         $stmt->execute([$name, $head_id, $id]);
     } elseif (isset($_POST['delete_department'])) {
@@ -26,8 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Fetch Data
-$departments = $pdo->query("SELECT d.*, m.name as head_name FROM departments d LEFT JOIN members m ON d.head_id = m.id ORDER BY d.name")->fetchAll(PDO::FETCH_ASSOC);
-$members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$departments_stmt = $pdo->query("
+    SELECT d.*, m.name as head_name, r.name as role_name
+    FROM departments d
+    LEFT JOIN members m ON d.head_id = m.id
+    LEFT JOIN roles r ON m.role_id = r.id
+    ORDER BY d.name
+");
+$departments = $departments_stmt->fetchAll(PDO::FETCH_ASSOC);
+$members_with_roles = $pdo->query("SELECT * FROM members WHERE role_id IS NOT NULL ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -50,7 +58,14 @@ $members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FET
                             <?php foreach ($departments as $department): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($department['name']); ?></td>
-                                    <td><?php echo htmlspecialchars($department['head_name'] ?: 'Not Assigned'); ?></td>
+                                    <td>
+                                        <?php if ($department['head_name']): ?>
+                                            <?php echo htmlspecialchars($department['head_name']); ?>
+                                            <span class="badge bg-success">Department Head of <?php echo htmlspecialchars($department['role_name']); ?></span>
+                                        <?php else: ?>
+                                            <span class="text-muted">Not Assigned</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editDepartmentModal-<?php echo $department['id']; ?>">Edit</button>
                                         <form method="post" class="d-inline">
@@ -88,7 +103,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FET
                         <label for="head_id" class="form-label">Department Head</label>
                         <select class="form-select" id="head_id" name="head_id">
                             <option value="">Select Head</option>
-                            <?php foreach ($members as $member): ?>
+                            <?php foreach ($members_with_roles as $member): ?>
                                 <option value="<?php echo $member['id']; ?>"><?php echo htmlspecialchars($member['name']); ?></option>
                             <?php endforeach; ?>
                         </select>
@@ -121,7 +136,7 @@ $members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FET
                         <label for="head_id" class="form-label">Department Head</label>
                         <select class="form-select" id="head_id" name="head_id">
                             <option value="">Select Head</option>
-                            <?php foreach ($members as $member): ?>
+                            <?php foreach ($members_with_roles as $member): ?>
                                 <option value="<?php echo $member['id']; ?>" <?php if($department['head_id'] == $member['id']) echo 'selected'; ?>><?php echo htmlspecialchars($member['name']); ?></option>
                             <?php endforeach; ?>
                         </select>

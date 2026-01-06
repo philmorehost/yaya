@@ -195,7 +195,7 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let addEditor;

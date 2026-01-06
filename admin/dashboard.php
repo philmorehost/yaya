@@ -60,11 +60,11 @@ $recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY create
 
         <div class="row">
             <div class="col-md-4">
-                <div class="card mb-3">
+                <div class="card bg-dark text-white mb-3">
                     <div class="card-header">Recent Members</div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover table-dark">
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -85,11 +85,11 @@ $recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY create
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card mb-3">
+                <div class="card bg-dark text-white mb-3">
                     <div class="card-header">Recent Media</div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover table-dark">
                                 <thead>
                                     <tr>
                                         <th>Title</th>
@@ -110,11 +110,11 @@ $recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY create
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card mb-3">
+                <div class="card bg-dark text-white mb-3">
                     <div class="card-header">Recent Announcements</div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover">
+                            <table class="table table-hover table-dark">
                                 <thead>
                                     <tr>
                                         <th>Title</th>

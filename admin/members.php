@@ -11,14 +11,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $birthday = $_POST['birthday'];
     $gender = $_POST['gender'];
+    $role_id = $_POST['role_id'] ?: null;
+    $member_id = 'MEM' . uniqid();
+    $password = password_hash('password', PASSWORD_DEFAULT); // Default password
 
-    $stmt = $pdo->prepare("INSERT INTO members (name, phone, email, birthday, gender) VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([$name, $phone, $email, $birthday, $gender]);
+    $stmt = $pdo->prepare("INSERT INTO members (member_id, name, phone, email, birthday, gender, role_id, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$member_id, $name, $phone, $email, $birthday, $gender, $role_id, $password]);
     header('Location: members.php');
 }
 
-$stmt = $pdo->query("SELECT * FROM members ORDER BY name");
+$stmt = $pdo->query("SELECT m.*, r.name as role_name FROM members m LEFT JOIN roles r ON m.role_id = r.id ORDER BY m.name");
 $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">
@@ -33,6 +37,8 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <thead>
                             <tr>
                                 <th>Name</th>
+                                <th>Member ID</th>
+                                <th>Role</th>
                                 <th>Phone</th>
                                 <th>Email</th>
                                 <th>Birthday</th>
@@ -44,12 +50,15 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php foreach ($members as $member): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($member['name']); ?></td>
+                                    <td><?php echo htmlspecialchars($member['member_id']); ?></td>
+                                    <td><span class="badge bg-info"><?php echo htmlspecialchars($member['role_name'] ?: 'Member'); ?></span></td>
                                     <td><?php echo htmlspecialchars($member['phone']); ?></td>
                                     <td><?php echo htmlspecialchars($member['email']); ?></td>
                                     <td><?php echo htmlspecialchars($member['birthday']); ?></td>
                                     <td><?php echo htmlspecialchars($member['gender']); ?></td>
                                     <td>
                                         <a href="edit_member.php?id=<?php echo $member['id']; ?>" class="btn btn-sm btn-info">Edit</a>
+                                        <a href="login_as_member.php?id=<?php echo $member['id']; ?>" class="btn btn-sm btn-warning">Login as Member</a>
                                         <form method="post" action="delete_member.php" class="d-inline">
                                             <input type="hidden" name="id" value="<?php echo $member['id']; ?>">
                                             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
@@ -98,6 +107,15 @@ $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <select class="form-select" id="gender" name="gender">
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role_id" class="form-label">Role</label>
+                        <select class="form-select" id="role_id" name="role_id">
+                            <option value="">Member</option>
+                            <?php foreach ($roles as $role): ?>
+                                <option value="<?php echo $role['id']; ?>"><?php echo htmlspecialchars($role['name']); ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Save Member</button>

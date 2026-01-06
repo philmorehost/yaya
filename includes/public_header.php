@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RCCG YAYA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/public_style.css">
 </head>
 <body>
@@ -29,6 +30,7 @@
                     <li class="nav-item"><a class="nav-link" href="media.php">Media</a></li>
                     <li class="nav-item"><a class="nav-link" href="give.php">Give</a></li>
                     <li class="nav-item"><a class="nav-link" href="connect.php">Connect</a></li>
+                    <li class="nav-item"><a class="nav-link" href="member_login.php">Member Login</a></li>
                 </ul>
             </div>
         </div>

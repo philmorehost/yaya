@@ -12,9 +12,6 @@ body {
     height: 80vh;
     color: white;
     text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
 }
 
@@ -26,18 +23,10 @@ body {
     min-height: 100%;
     width: auto;
     height: auto;
+.
     z-index: -1;
     transform: translateX(-50%) translateY(-50%);
     background-size: cover;
-}
-
-.hero-section .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 31, 63, 0.7); /* Darker Navy Blue Overlay */
 }
 
 .countdown-card {
@@ -54,4 +43,32 @@ body {
 .sermon-card {
     background-color: #f8f9fa;
     border-radius: 15px;
+}
+
+.mobile-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #001f3f;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.footer-icon {
+    color: white;
+    text-decoration: none;
+    text-align: center;
+}
+
+.footer-icon i {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.footer-icon span {
+    font-size: 12px;
 }

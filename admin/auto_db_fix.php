@@ -65,6 +65,29 @@ if ($incorrect_schema_exists) {
     }
 }
 
+try {
+    // Add member_id column if it doesn't exist
+    $pdo->exec("ALTER TABLE members ADD COLUMN member_id VARCHAR(255) UNIQUE AFTER id");
+} catch (PDOException $e) {
+    // Ignore if column already exists
+}
+
+try {
+    // Add password column if it doesn't exist
+    $pdo->exec("ALTER TABLE members ADD COLUMN password VARCHAR(255) AFTER email");
+} catch (PDOException $e) {
+    // Ignore if column already exists
+}
+
+try {
+    // Add role_id column if it doesn't exist
+    $pdo->exec("ALTER TABLE members ADD COLUMN role_id INT(11) NULL AFTER gender");
+} catch (PDOException $e) {
+    // Ignore if column already exists
+}
+
 // 6. Mark the fix as applied so it doesn't run again.
 $mark_fix_stmt = $pdo->prepare("INSERT INTO settings (setting_name, setting_value) VALUES ('db_fix_1_4_applied', '1') ON DUPLICATE KEY UPDATE setting_value = '1'");
 $mark_fix_stmt->execute();
+
+?>
