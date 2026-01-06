@@ -1,14 +1,20 @@
 <?php
-require_once '../includes/auth_check.php';
-require_once '../config/db_connect.php';
-require_once '../includes/csrf_check.php';
+require_once 'init.php';
+check_permission('manage_media');
 
-$id = $_POST['id'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    require_once '../includes/csrf_check.php';
 
-if (isset($id)) {
-    $stmt = $pdo->prepare("DELETE FROM media WHERE id = ?");
-    $stmt->execute([$id]);
+    $media_id = $_POST['id'] ?? null;
+    if ($media_id) {
+        $stmt = $pdo->prepare("DELETE FROM media WHERE id = ?");
+        if ($stmt->execute([$media_id])) {
+            $_SESSION['success_message'] = "Media post deleted successfully!";
+        } else {
+            $_SESSION['error_message'] = "Failed to delete media post.";
+        }
+    }
 }
 
-header('Location: media.php');
-exit;
+header("Location: media.php");
+exit();
