@@ -19,9 +19,13 @@ function get_setting($key, $db) {
 
 function update_setting($key, $value, $db) {
     try {
-        $sql = "INSERT INTO AdminSettings (setting_key, setting_value) VALUES (:key, :value)
-                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)";
-        $stmt = $db->prepare($sql);
+        $stmt = $db->prepare("SELECT setting_key FROM AdminSettings WHERE setting_key = :key");
+        $stmt->execute([':key' => $key]);
+        if ($stmt->fetch()) {
+            $stmt = $db->prepare("UPDATE AdminSettings SET setting_value = :value WHERE setting_key = :key");
+        } else {
+            $stmt = $db->prepare("INSERT INTO AdminSettings (setting_key, setting_value) VALUES (:key, :value)");
+        }
         $stmt->execute([':key' => $key, ':value' => $value]);
     } catch (PDOException $e) {
         $_SESSION['errors'][] = 'There was an error updating the settings. The database may not be up to date.';
