@@ -60,7 +60,7 @@ $recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY create
 
         <div class="row">
             <div class="col-md-4">
-                <div class="card mb-3">
+                <div class="card dashboard-card mb-3">
                     <div class="card-header">Recent Members</div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -85,7 +85,7 @@ $recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY create
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card mb-3">
+                <div class="card dashboard-card mb-3">
                     <div class="card-header">Recent Media</div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -110,7 +110,7 @@ $recent_announcements = $pdo->query("SELECT * FROM announcements ORDER BY create
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card mb-3">
+                <div class="card dashboard-card mb-3">
                     <div class="card-header">Recent Announcements</div>
                     <div class="card-body">
                         <div class="table-responsive">

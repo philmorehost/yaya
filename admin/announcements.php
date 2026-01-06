@@ -228,7 +228,14 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(error);
         });
 
-    var editModal = document.getElementById('editAnnouncementModal');
+    const addModal = document.getElementById('addAnnouncementModal');
+    addModal.addEventListener('hidden.bs.modal', function () {
+        if (addEditor) {
+            addEditor.setData('');
+        }
+    });
+
+    const editModal = document.getElementById('editAnnouncementModal');
     editModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var id = button.getAttribute('data-id');

@@ -263,7 +263,14 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(error);
         });
 
-    var editEventModal = document.getElementById('editEventModal');
+    const addModal = document.getElementById('addEventModal');
+    addModal.addEventListener('hidden.bs.modal', function () {
+        if (addEditor) {
+            addEditor.setData('');
+        }
+    });
+
+    const editEventModal = document.getElementById('editEventModal');
     editEventModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var id = button.getAttribute('data-id');

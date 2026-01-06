@@ -50,11 +50,6 @@ try {
             <source src="<?php echo htmlspecialchars($hero_video_url); ?>" type="video/mp4">
         </video>
     <?php endif; ?>
-    <div class="overlay"></div>
-    <div class="container text-center" style="z-index: 1;">
-        <h1 class="display-4">Welcome to RCCG YAYA</h1>
-        <p class="lead">Young Adults and Youth Affairs</p>
-    </div>
 </header>
 
 <div class="container">
