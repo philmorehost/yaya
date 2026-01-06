@@ -1,0 +1,10 @@
+[Tue Jan  6 21:42:35 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55796 Accepted
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55796 [302]: GET /
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55796 Closing
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55798 Accepted
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55798 [200]: GET /pages/error.php?nodb=1
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55798 Closing
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55812 Accepted
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55812 [200]: GET /css/style.css
+[Tue Jan  6 21:42:40 2026] 127.0.0.1:55812 Closing
