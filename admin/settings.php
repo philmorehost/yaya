@@ -112,6 +112,7 @@ $settings['hero_image'] = get_setting('hero_image', $db);
                 <div class="mb-3">
                     <label for="hero_image" class="form-label">Hero Image</label>
                     <input type="file" class="form-control" id="hero_image" name="hero_image">
+                    <small class="form-text text-muted">Recommended dimensions: 1200px by 400px</small>
                     <?php if (!empty($settings['hero_image'])): ?>
                         <img src="<?php echo BASE_URL . htmlspecialchars($settings['hero_image']); ?>" alt="Hero Image" class="img-thumbnail mt-2" style="max-height: 200px;">
                     <?php endif; ?>

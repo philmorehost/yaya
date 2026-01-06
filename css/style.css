@@ -87,8 +87,12 @@ h1, h2, h3, h4, h5, h6 {
 * Homepage Specific Styles
 */
 .hero-section {
-    padding: 4rem 0;
-    text-align: center;
+    min-height: 40vh; /* Responsive height */
+    background-size: cover; /* Cover the entire area */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
 }
 
 .hero-section h1 {
