@@ -73,6 +73,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
+            // Add status column to 'Users' table
+            $stmt = $db->query("SHOW COLUMNS FROM `Users` LIKE 'status'");
+            if ($stmt->rowCount() == 0) {
+                $messages[] = "Adding 'status' column to 'Users' table...";
+                $db->exec("ALTER TABLE Users ADD COLUMN status VARCHAR(50) NOT NULL DEFAULT 'active';");
+                $messages[] = "'status' column added.";
+            } else {
+                $messages[] = "'status' column already exists in 'Users' table.";
+            }
+
             $messages[] = "Database update completed successfully!";
 
         } catch (PDOException $e) {
