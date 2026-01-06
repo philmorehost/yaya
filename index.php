@@ -14,11 +14,15 @@ try {
 ?>
 
 <div class="container mt-5">
-    <?php if (isset($settings['hero_image'])): ?>
+    <?php if (isset($settings['hero_image']) && !empty($settings['hero_image'])): ?>
         <div class="hero-section" style="background-image: url('<?php echo BASE_URL . htmlspecialchars($settings['hero_image']); ?>');">
+        </div>
     <?php else: ?>
         <div class="hero-section">
+        </div>
     <?php endif; ?>
+
+    <div class="text-center py-5">
         <h1>Empowering Generations, Securing Futures.</h1>
         <p class="lead">From your first savings account to your first business venture, Watchmen Finance Hub is here to help teens, youths, and adults thrive together.</p>
         <p class="h4 text-secondary"><strong>ZERO INTEREST ON ALL MONEY BORROWED</strong></p>
