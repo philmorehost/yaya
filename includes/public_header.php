@@ -29,6 +29,7 @@
                     <li class="nav-item"><a class="nav-link" href="media.php">Media</a></li>
                     <li class="nav-item"><a class="nav-link" href="give.php">Give</a></li>
                     <li class="nav-item"><a class="nav-link" href="connect.php">Connect</a></li>
+                    <li class="nav-item"><a class="nav-link" href="member_login.php">Member Login</a></li>
                 </ul>
             </div>
         </div>
