@@ -1,10 +1,10 @@
-[Tue Jan  6 14:52:08 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48146 Accepted
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48146 [302]: GET /admin/login.php
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48146 Closing
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48148 Accepted
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48148 [200]: GET /pages/error.php?nodb=1
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48148 Closing
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48150 Accepted
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48150 [200]: GET /css/style.css
-[Tue Jan  6 14:52:12 2026] 127.0.0.1:48150 Closing
+[Tue Jan  6 15:28:25 2026] PHP 8.3.6 Development Server (http://0.0.0.0:8000) started
+[Tue Jan  6 15:28:30 2026] 127.0.0.1:49960 Accepted
+[Tue Jan  6 15:28:30 2026] 127.0.0.1:49960 [302]: GET /
+[Tue Jan  6 15:28:30 2026] 127.0.0.1:49960 Closing
+[Tue Jan  6 15:28:31 2026] 127.0.0.1:49966 Accepted
+[Tue Jan  6 15:28:31 2026] 127.0.0.1:49966 [200]: GET /pages/error.php?nodb=1
+[Tue Jan  6 15:28:31 2026] 127.0.0.1:49966 Closing
+[Tue Jan  6 15:28:31 2026] 127.0.0.1:49978 Accepted
+[Tue Jan  6 15:28:31 2026] 127.0.0.1:49978 [200]: GET /css/style.css
+[Tue Jan  6 15:28:31 2026] 127.0.0.1:49978 Closing
