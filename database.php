@@ -20,7 +20,7 @@ try {
 } catch (PDOException $e) {
     // Log the error and show a generic error page
     error_log("MySQL Connection Failed: " . $e->getMessage(), 3, __DIR__ . '/logs/errors.log');
-    header('Location: ' . BASE_URL . 'pages/error.php');
+    header('Location: ' . BASE_URL . 'pages/error.php?nodb=1');
     exit;
 }
 ?>

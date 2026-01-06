@@ -14,12 +14,14 @@
             <div class="container-fluid">
                 <?php
                 $logo = null;
-                try {
-                    $stmt = $db->query("SELECT * FROM AdminSettings WHERE setting_key = 'logo'");
-                    $logo = $stmt->fetch();
-                } catch (PDOException $e) {
-                    // Log the error or handle it gracefully
-                    // For now, we'll just suppress the error
+                $logo = null;
+                if (!isset($_GET['nodb']) && isset($db) && $db instanceof PDO) {
+                    try {
+                        $stmt = $db->query("SELECT setting_value FROM AdminSettings WHERE setting_key = 'logo'");
+                        $logo = $stmt->fetch();
+                    } catch (PDOException $e) {
+                        // Suppress the error if the table doesn't exist yet, for example.
+                    }
                 }
                 ?>
                 <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
