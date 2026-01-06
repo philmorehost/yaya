@@ -113,7 +113,7 @@ require_once '../includes/sidebar.php';
                             <?php foreach ($events as $event): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($event['name']); ?></td>
-                                <td><?php echo htmlspecialchars(substr($event['description'], 0, 50)); ?>...</td>
+                                <td><?php echo htmlspecialchars(substr(strip_tags($event['description']), 0, 50)); ?>...</td>
                                 <td><?php echo date('M j, Y, g:i A', strtotime($event['start_time'])); ?></td>
                                 <td><?php echo $event['end_time'] ? date('M j, Y, g:i A', strtotime($event['end_time'])) : 'N/A'; ?></td>
                                 <td><?php echo htmlspecialchars($event['location']); ?></td>

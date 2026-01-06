@@ -13,17 +13,11 @@ if (!$latest_attendance) {
 }
 
 // Month's Offering & Tithe
-$giving_count = $pdo->query("SELECT COUNT(*) FROM giving")->fetchColumn();
-if ($giving_count == 0) {
-    $current_month_offering = 0;
-    $current_month_tithe = 0;
-} else {
-    $offering_query = "SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND MONTH(giving_date) = MONTH(CURRENT_DATE()) AND YEAR(giving_date) = YEAR(CURRENT_DATE())";
-    $current_month_offering = $pdo->query($offering_query)->fetchColumn();
+$offering_query = "SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Offering' AND MONTH(giving_date) = MONTH(CURRENT_DATE()) AND YEAR(giving_date) = YEAR(CURRENT_DATE())";
+$current_month_offering = $pdo->query($offering_query)->fetchColumn();
 
-    $tithe_query = "SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND MONTH(giving_date) = MONTH(CURRENT_DATE()) AND YEAR(giving_date) = YEAR(CURRENT_DATE())";
-    $current_month_tithe = $pdo->query($tithe_query)->fetchColumn();
-}
+$tithe_query = "SELECT COALESCE(SUM(amount), 0) FROM giving WHERE type = 'Tithe' AND MONTH(giving_date) = MONTH(CURRENT_DATE()) AND YEAR(giving_date) = YEAR(CURRENT_DATE())";
+$current_month_tithe = $pdo->query($tithe_query)->fetchColumn();
 ?>
 
 <div class="main-content">

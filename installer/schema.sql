@@ -155,6 +155,7 @@ CREATE TABLE IF NOT EXISTS `connection_requests` (
 INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.4') ON DUPLICATE KEY UPDATE setting_value = '1.4';
 
 -- Truncate tables to ensure a clean slate, just in case they existed before. This is the final step.
+TRUNCATE TABLE `giving`;
 TRUNCATE TABLE `members`;
 TRUNCATE TABLE `attendance_headcount`;
 TRUNCATE TABLE `attendance_log`;
