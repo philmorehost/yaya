@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modalTitle.textContent = `Loan #${loan.id} - Breakdown`;
         tableBody.innerHTML = ''; // Clear previous content
 
-        const totalMonths = 12;
+        const totalMonths = 10;
         const monthlyPayment = parseFloat(loan.monthly_repayment);
         const totalAmount = parseFloat(loan.amount);
         // Calculate how many payments have been made based on the balance

@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $updateStmt = $db->prepare("UPDATE LoanApplications SET status = 'Disbursed', disbursed_at = CURRENT_TIMESTAMP WHERE id = :id");
                 $updateStmt->execute([':id' => $id]);
 
-                // Calculate monthly repayment (assuming 12 months, 0 interest)
-                $monthly_repayment = $application['loanAmount'] / 12;
+                // Calculate monthly repayment (10 months, 0 interest)
+                $monthly_repayment = $application['loanAmount'] / 10;
 
                 // Create a new loan
                 $loanStmt = $db->prepare(
