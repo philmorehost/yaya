@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/style.css">
 </head>
 <body>
+    <?php
+    if (isset($_SESSION['admin_return_session'])) {
+        echo '<div class="alert alert-warning text-center sticky-top mb-0 rounded-0">You are currently viewing the site as a user. <a href="' . BASE_URL . 'admin/return_to_admin.php" class="alert-link fw-bold">Return to your Admin Session</a>.</div>';
+    }
+    ?>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">

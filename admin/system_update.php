@@ -83,6 +83,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $messages[] = "'status' column already exists in 'Users' table.";
             }
 
+            // Create Loans table
+            $messages[] = "Creating 'Loans' table if it doesn't exist...";
+            $db->exec("
+                CREATE TABLE IF NOT EXISTS `Loans` (
+                    `id` INT AUTO_INCREMENT PRIMARY KEY,
+                    `application_id` INT NOT NULL,
+                    `user_id` INT NOT NULL,
+                    `amount` DECIMAL(10, 2) NOT NULL,
+                    `balance` DECIMAL(10, 2) NOT NULL,
+                    `next_due_date` DATE NOT NULL,
+                    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (`application_id`) REFERENCES `LoanApplications`(`id`) ON DELETE CASCADE,
+                    FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE CASCADE
+                );
+            ");
+            $messages[] = "'Loans' table created or already exists.";
+
             $messages[] = "Database update completed successfully!";
 
             // Add monthly_repayment column to 'Loans' table
