@@ -168,6 +168,9 @@ $roles = $pdo->query("SELECT * FROM roles ORDER BY name")->fetchAll(PDO::FETCH_A
                 <form method="post" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="mb-3">
+                        <p>Please upload a CSV file with the correct column format. <br>
+                            <a href="../assets/sample_members.csv" download>Click here to download a sample CSV file.</a>
+                        </p>
                         <label for="csv_file" class="form-label">CSV File</label>
                         <input type="file" class="form-control" id="csv_file" name="csv_file" required>
                     </div>
