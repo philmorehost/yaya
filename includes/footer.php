@@ -14,7 +14,7 @@
                 <a href="<?php echo BASE_URL; ?>pages/news.php"><i class="fas fa-newspaper"></i><div>News</div></a>
                 <a href="<?php echo BASE_URL; ?>pages/dashboard.php"><i class="fas fa-tachometer-alt"></i><div>Dashboard</div></a>
                 <a href="<?php echo BASE_URL; ?>pages/notifications.php"><i class="fas fa-bell"></i><div>Notifications</div></a>
-                <a href="<?php echo BASE_URL; ?>pages/profile.php"><i class="fas fa-user"></i><div>Profile</div></a>
+                <a href="<?php echo BASE_URL; ?>pages/profile.php"><i class="fas fa-user-circle"></i><div>My Profile</div></a>
             <?php endif; ?>
         <?php else: ?>
             <a href="<?php echo BASE_URL; ?>pages/apply.php"><i class="fas fa-file-alt"></i><div>Apply</div></a>

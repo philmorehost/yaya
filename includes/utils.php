@@ -59,3 +59,16 @@ function upload_file($file, $allowed_types, $max_size) {
         return null;
     }
 }
+
+function mask_string($string, $visible_start = 3, $visible_end = 4) {
+    if (empty($string)) {
+        return '';
+    }
+    $length = strlen($string);
+    $masked_length = $length - ($visible_start + $visible_end);
+    if ($masked_length <= 0) {
+        // Not long enough to mask, return a generic mask
+        return '****';
+    }
+    return substr($string, 0, $visible_start) . str_repeat('*', $masked_length) . substr($string, -$visible_end);
+}

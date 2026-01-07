@@ -1,6 +1,7 @@
 <?php
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
+require_once dirname(__DIR__) . '/includes/utils.php';
 
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_SESSION['user_role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'admin/login.php');
@@ -14,9 +15,9 @@ if (!$user_id) {
 }
 
 // Fetch user data
-$stmt = $db->prepare("SELECT id, fullName, email FROM Users WHERE id = :id");
+$stmt = $db->prepare("SELECT * FROM Users WHERE id = :id");
 $stmt->execute([':id' => $user_id]);
-$user = $stmt->fetch();
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fullName = $_POST['fullName'];
@@ -61,7 +62,34 @@ include 'includes/header.php';
                     <input type="password" class="form-control" id="password" name="password">
                     <small class="form-text text-muted">Leave blank to keep the current password.</small>
                 </div>
-                <button type="submit" class="btn btn-primary">Update User</button>
+
+                <h5 class="mt-4">Additional Information (Read-Only)</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">BVN</label>
+                        <input type="text" class="form-control" value="<?php echo htmlspecialchars(mask_string($user['bvn'] ?? '')); ?>" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">NIN</label>
+                        <input type="text" class="form-control" value="<?php echo htmlspecialchars(mask_string($user['nin'] ?? '')); ?>" readonly>
+                    </div>
+                </div>
+                 <div class="mb-3">
+                    <label class="form-label">Home Address</label>
+                    <textarea class="form-control" readonly><?php echo htmlspecialchars($user['home_address'] ?? ''); ?></textarea>
+                </div>
+                 <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Marital Status</label>
+                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['marital_status'] ?? ''); ?>" readonly>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Gender</label>
+                        <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['gender'] ?? ''); ?>" readonly>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Update User</button>
             </form>
         </div>
     </div>

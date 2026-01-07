@@ -143,7 +143,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Add columns to existing tables
         $all_columns = [
             'Users' => [
-                'status' => "VARCHAR(50) NOT NULL DEFAULT 'active'"
+                'status' => "VARCHAR(50) NOT NULL DEFAULT 'active'",
+                'bvn' => 'VARCHAR(11) DEFAULT NULL',
+                'nin' => 'VARCHAR(11) DEFAULT NULL',
+                'home_address' => 'TEXT DEFAULT NULL',
+                'marital_status' => "VARCHAR(50) DEFAULT NULL",
+                'gender' => "VARCHAR(50) DEFAULT NULL",
+                'nationality' => 'VARCHAR(100) DEFAULT NULL',
+                'date_of_birth' => 'DATE DEFAULT NULL',
+                'occupation' => 'VARCHAR(255) DEFAULT NULL'
             ],
             'LoanApplications' => [
                 'loanPurpose' => 'VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL',
