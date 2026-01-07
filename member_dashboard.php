@@ -17,7 +17,6 @@ require_once 'includes/public_header.php';
     ?>
 
     <div class="row">
-        <?php if (member_has_permission('view_announcements')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -28,8 +27,6 @@ require_once 'includes/public_header.php';
                 </div>
             </div>
         </div>
-        <?php endif; ?>
-        <?php if (member_has_permission('view_events')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -40,8 +37,6 @@ require_once 'includes/public_header.php';
                 </div>
             </div>
         </div>
-        <?php endif; ?>
-        <?php if (member_has_permission('view_media')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -52,8 +47,6 @@ require_once 'includes/public_header.php';
                 </div>
             </div>
         </div>
-        <?php endif; ?>
-        <?php if (member_has_permission('view_give')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -64,8 +57,6 @@ require_once 'includes/public_header.php';
                 </div>
             </div>
         </div>
-        <?php endif; ?>
-        <?php if (member_has_permission('view_departments')): ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">
@@ -76,7 +67,6 @@ require_once 'includes/public_header.php';
                 </div>
             </div>
         </div>
-        <?php endif; ?>
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body text-center">

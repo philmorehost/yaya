@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
             background-color: #2c3e50; /* Subtle dark background */
@@ -83,7 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <button type="submit" class="btn btn-primary">Login</button>
             </div>
             <div class="text-center mt-3">
-                <a href="forgot_password.php" class="text-light">Forgot Password?</a>
+                <a href="forgot_password.php" class="text-light"><i class="fas fa-key"></i> Forgot Password?</a>
+            </div>
+            <div class="text-center mt-3">
+                <a href="connect.php" class="text-light"><i class="fas fa-user-plus"></i> Register</a>
             </div>
         </form>
     </div>
