@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ckfinder: {
                 uploadUrl: `upload.php?csrf_token=${csrfToken}`
             },
-            contentsCss: ['../assets/css/editor_style.css']
+            contentsCss: ['../assets/css/editor_style.css?v=2']
         })
         .then(editor => {
             addEditor = editor;
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ckfinder: {
                 uploadUrl: `upload.php?csrf_token=${csrfToken}`
             },
-            contentsCss: ['../assets/css/editor_style.css']
+            contentsCss: ['../assets/css/editor_style.css?v=2']
         })
         .then(editor => {
             editEditor = editor;

@@ -5,7 +5,7 @@
 // Check if the fix has already been applied to prevent re-running
 $fix_applied_check = $pdo->query("SELECT setting_value FROM settings WHERE setting_name = 'db_fix_1_6_applied'");
 if ($fix_applied_check && $fix_applied_check->fetchColumn()) {
-    //return; // Exit if the fix is already done
+    return; // Exit if the fix is already done
 }
 
 // Check for and add member_id column
