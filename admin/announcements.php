@@ -205,13 +205,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let addEditor;
     let editEditor;
     const csrfToken = "<?php echo $_SESSION['csrf_token']; ?>";
+    const editorCssUrl = `${window.location.origin}/assets/css/editor_style.css`;
 
     ClassicEditor
         .create(document.querySelector('#add-content'), {
             ckfinder: {
                 uploadUrl: `upload.php?csrf_token=${csrfToken}`
             },
-            contentsCss: ['../assets/css/editor_style.css?v=2']
+            contentsCss: [editorCssUrl]
         })
         .then(editor => {
             addEditor = editor;
@@ -225,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ckfinder: {
                 uploadUrl: `upload.php?csrf_token=${csrfToken}`
             },
-            contentsCss: ['../assets/css/editor_style.css?v=2']
+            contentsCss: [editorCssUrl]
         })
         .then(editor => {
             editEditor = editor;
