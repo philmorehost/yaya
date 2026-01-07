@@ -185,6 +185,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors)) {
+            try {
+                $messages[] = "Checking for and fixing existing loans with zero monthly repayment...";
+                $update_count = $db->exec("UPDATE Loans SET monthly_repayment = amount / 10 WHERE monthly_repayment = 0.00 OR monthly_repayment IS NULL");
+                if ($update_count > 0) {
+                    $messages[] = "Successfully fixed $update_count existing loan(s).";
+                } else {
+                    $messages[] = "No existing loans needed fixing.";
+                }
+            } catch (PDOException $e) {
+                $errors[] = "Error fixing existing loan data: " . $e->getMessage();
+            }
+        }
+
+        if (empty($errors)) {
             $_SESSION['success_message'] = "Database update completed successfully!";
         }
     }
