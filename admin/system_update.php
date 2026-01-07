@@ -3,7 +3,6 @@ require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/database.php';
 require_once dirname(__DIR__) . '/includes/utils.php';
 
-// Admin authentication check
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_SESSION['user_role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'admin/login.php');
     exit;
@@ -15,76 +14,95 @@ include 'includes/header.php';
 $messages = [];
 $errors = [];
 
+// --- Utility function to check if a column exists ---
+$columnExists = function ($tableName, $columnName) use ($db) {
+    try {
+        $stmt = $db->prepare("SHOW COLUMNS FROM `$tableName` LIKE :columnName");
+        $stmt->execute([':columnName' => $columnName]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        // Table might not exist, in which case the column doesn't either.
+        return false;
+    }
+};
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $errors[] = "CSRF token validation failed.";
     } else {
-        try {
-            $messages[] = "Starting database update...";
+        $messages[] = "Starting database update...";
 
-            // Create AdminSettings table
-            $messages[] = "Creating 'AdminSettings' table if it doesn't exist...";
+        // Each operation is now wrapped in its own try-catch block for granular error reporting.
+
+        try {
+            $messages[] = "Checking 'Users' table...";
             $db->exec("
-                CREATE TABLE IF NOT EXISTS `AdminSettings` (
+                CREATE TABLE IF NOT EXISTS `Users` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
-                  `setting_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-                  `setting_value` text COLLATE utf8mb4_unicode_ci NOT NULL,
-                  PRIMARY KEY (`id`),
-                  UNIQUE KEY `setting_key` (`setting_key`)
+                  `fullName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                  `role` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
+                  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                   PRIMARY KEY (`id`),
+                   UNIQUE KEY `email` (`email`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ");
-            $messages[] = "'AdminSettings' table created or already exists.";
+            $messages[] = "'Users' table check complete.";
+        } catch (PDOException $e) {
+            $errors[] = "Error with 'Users' table: " . $e->getMessage();
+        }
 
-            // Create PaymentNotifications table
-            $messages[] = "Creating 'PaymentNotifications' table if it doesn't exist...";
+        try {
+            $messages[] = "Checking 'LoanApplications' table...";
             $db->exec("
-                CREATE TABLE IF NOT EXISTS `PaymentNotifications` (
+                CREATE TABLE IF NOT EXISTS `LoanApplications` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
                   `user_id` int(11) NOT NULL,
-                  `loan_id` int(11) NOT NULL,
-                  `amount` decimal(10,2) NOT NULL,
-                  `payment_date` date NOT NULL,
-                  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+                  `hubCategory` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `fullName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `membershipNumber` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `loanPurpose` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `loanAmount` decimal(10,2) DEFAULT NULL,
+                  `monthlyIncome` decimal(10,2) DEFAULT NULL,
+                  `existingSavings` decimal(10,2) DEFAULT NULL,
+                  `guarantor1Name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `guarantor2Name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'Pending',
                   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-                  PRIMARY KEY (`id`)
+                  `disbursed_at` timestamp NULL DEFAULT NULL,
+                  PRIMARY KEY (`id`),
+                  FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE RESTRICT
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
             ");
-            $messages[] = "'PaymentNotifications' table created or already exists.";
+            $messages[] = "'LoanApplications' table check complete.";
+        } catch (PDOException $e) {
+            $errors[] = "Error with 'LoanApplications' table: " . $e->getMessage();
+        }
 
-            // Add guarantor columns to 'LoanApplications' table
-            $loan_columns = [
-                'guarantor1Occupation' => 'VARCHAR(255) DEFAULT NULL',
-                'guarantor1Phone' => 'VARCHAR(255) DEFAULT NULL',
-                'guarantor1Passport' => 'VARCHAR(255) DEFAULT NULL',
-                'guarantor2Occupation' => 'VARCHAR(255) DEFAULT NULL',
-                'guarantor2Phone' => 'VARCHAR(255) DEFAULT NULL',
-                'guarantor2Passport' => 'VARCHAR(255) DEFAULT NULL',
-                'userPassport' => 'VARCHAR(255) DEFAULT NULL'
-            ];
+        try {
+            $messages[] = "Checking 'Articles' table...";
+            $db->exec("
+                CREATE TABLE IF NOT EXISTS `Articles` (
+                  `id` int(11) NOT NULL AUTO_INCREMENT,
+                  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+                  `author_id` int(11) NOT NULL,
+                  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+                  PRIMARY KEY (`id`),
+                  FOREIGN KEY (`author_id`) REFERENCES `Users`(`id`) ON DELETE RESTRICT
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+            ");
+            $messages[] = "'Articles' table check complete.";
+        } catch (PDOException $e) {
+            $errors[] = "Error with 'Articles' table: " . $e->getMessage();
+        }
 
-            foreach ($loan_columns as $column => $definition) {
-                $stmt = $db->query("SHOW COLUMNS FROM `LoanApplications` LIKE '$column'");
-                if ($stmt->rowCount() == 0) {
-                    $messages[] = "Adding '$column' column to 'LoanApplications' table...";
-                    $db->exec("ALTER TABLE LoanApplications ADD COLUMN $column $definition;");
-                    $messages[] = "'$column' column added.";
-                } else {
-                    $messages[] = "'$column' column already exists in 'LoanApplications' table.";
-                }
-            }
-
-            // Add status column to 'Users' table
-            $stmt = $db->query("SHOW COLUMNS FROM `Users` LIKE 'status'");
-            if ($stmt->rowCount() == 0) {
-                $messages[] = "Adding 'status' column to 'Users' table...";
-                $db->exec("ALTER TABLE Users ADD COLUMN status VARCHAR(50) NOT NULL DEFAULT 'active';");
-                $messages[] = "'status' column added.";
-            } else {
-                $messages[] = "'status' column already exists in 'Users' table.";
-            }
-
-            // Create Loans table
-            $messages[] = "Creating 'Loans' table if it doesn't exist...";
+        try {
+            $messages[] = "Checking 'Loans' table...";
             $db->exec("
                 CREATE TABLE IF NOT EXISTS `Loans` (
                     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -94,26 +112,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     `balance` DECIMAL(10, 2) NOT NULL,
                     `next_due_date` DATE NOT NULL,
                     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (`application_id`) REFERENCES `LoanApplications`(`id`) ON DELETE CASCADE,
-                    FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE CASCADE
+                    FOREIGN KEY (`application_id`) REFERENCES `LoanApplications`(`id`) ON DELETE RESTRICT,
+                    FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE RESTRICT
                 );
             ");
-            $messages[] = "'Loans' table created or already exists.";
+             $messages[] = "'Loans' table check complete.";
+        } catch (PDOException $e) {
+            $errors[] = "Error with 'Loans' table: " . $e->getMessage();
+        }
 
-            $messages[] = "Database update completed successfully!";
-
-            // Add monthly_repayment column to 'Loans' table
-            $stmt = $db->query("SHOW COLUMNS FROM `Loans` LIKE 'monthly_repayment'");
-            if ($stmt->rowCount() == 0) {
-                $messages[] = "Adding 'monthly_repayment' column to 'Loans' table...";
-                $db->exec("ALTER TABLE Loans ADD COLUMN monthly_repayment DECIMAL(10, 2) NOT NULL DEFAULT 0.00;");
-                $messages[] = "'monthly_repayment' column added.";
-            } else {
-                $messages[] = "'monthly_repayment' column already exists in 'Loans' table.";
-            }
-
-            // Create Repayments table
-            $messages[] = "Creating 'Repayments' table if it doesn't exist...";
+        try {
+            $messages[] = "Checking 'Repayments' table...";
             $db->exec("
                 CREATE TABLE IF NOT EXISTS `Repayments` (
                     `id` INT AUTO_INCREMENT PRIMARY KEY,
@@ -126,10 +135,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     FOREIGN KEY (`recorded_by`) REFERENCES `Users`(`id`) ON DELETE RESTRICT
                 );
             ");
-            $messages[] = "'Repayments' table created or already exists.";
-
+            $messages[] = "'Repayments' table check complete.";
         } catch (PDOException $e) {
-            $errors[] = "An error occurred during the update: " . $e->getMessage();
+            $errors[] = "Error with 'Repayments' table: " . $e->getMessage();
+        }
+
+        // Add columns to existing tables
+        $all_columns = [
+            'Users' => [
+                'status' => "VARCHAR(50) NOT NULL DEFAULT 'active'"
+            ],
+            'LoanApplications' => [
+                'loanPurpose' => 'VARCHAR(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL',
+                'guarantor1Occupation' => 'VARCHAR(255) DEFAULT NULL',
+                'guarantor1Phone' => 'VARCHAR(255) DEFAULT NULL',
+                'guarantor1Passport' => 'VARCHAR(255) DEFAULT NULL',
+                'guarantor2Occupation' => 'VARCHAR(255) DEFAULT NULL',
+                'guarantor2Phone' => 'VARCHAR(255) DEFAULT NULL',
+                'guarantor2Passport' => 'VARCHAR(255) DEFAULT NULL',
+                'userPassport' => 'VARCHAR(255) DEFAULT NULL'
+            ],
+            'Loans' => [
+                 'monthly_repayment' => 'DECIMAL(10, 2) NOT NULL DEFAULT 0.00'
+            ]
+        ];
+
+        foreach ($all_columns as $table => $columns) {
+            foreach ($columns as $column => $definition) {
+                try {
+                    if (!$columnExists($table, $column)) {
+                        $messages[] = "Adding '$column' to '$table' table...";
+                        $db->exec("ALTER TABLE `$table` ADD COLUMN `$column` $definition;");
+                        $messages[] = "'$column' column added successfully.";
+                    } else {
+                        $messages[] = "'$column' column already exists in '$table'.";
+                    }
+                } catch (PDOException $e) {
+                    $errors[] = "Error adding column '$column' to '$table': " . $e->getMessage();
+                }
+            }
+        }
+
+        if (empty($errors)) {
+            $_SESSION['success_message'] = "Database update completed successfully!";
         }
     }
 }
@@ -139,6 +187,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>System Database Update</h1>
     <p>This tool will update your database schema to the latest version. It is safe to run this multiple times.</p>
     <p>Click the button below to start the update process.</p>
+
+    <?php
+    if (!empty($_SESSION['success_message'])) {
+        echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['success_message']) . '</div>';
+        unset($_SESSION['success_message']);
+    }
+    ?>
 
     <?php if (!empty($messages)): ?>
         <div class="alert alert-info">
@@ -150,6 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if (!empty($errors)): ?>
         <div class="alert alert-danger">
+            <strong>The following errors occurred:</strong>
             <?php foreach ($errors as $error): ?>
                 <p><?php echo htmlspecialchars($error); ?></p>
             <?php endforeach; ?>

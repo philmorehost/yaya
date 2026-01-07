@@ -33,7 +33,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
                     </thead>
                     <tbody>
                         <?php
-                        $stmt = $db->query("SELECT id, fullName, email, created_at, status FROM Users ORDER BY created_at DESC");
+                        $stmt = $db->query("SELECT id, fullName, email, created_at, status FROM Users WHERE status != 'deleted' ORDER BY created_at DESC");
                         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         if ($users) {
                             foreach ($users as $user) {

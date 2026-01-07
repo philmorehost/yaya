@@ -10,11 +10,11 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
 if (isset($_GET['id'])) {
     $user_id = $_GET['id'];
 
-    // Delete the user
-    $stmt = $db->prepare("DELETE FROM Users WHERE id = :id");
+    // Soft delete the user by updating their status
+    $stmt = $db->prepare("UPDATE Users SET status = 'deleted' WHERE id = :id");
     $stmt->execute([':id' => $user_id]);
 
-    $_SESSION['success_message'] = 'User deleted successfully.';
+    $_SESSION['success_message'] = 'User account has been marked as deleted.';
 }
 
 header('Location: ' . BASE_URL . 'admin/manage_users.php');

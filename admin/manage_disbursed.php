@@ -1,6 +1,6 @@
 <?php
 require_once dirname(__DIR__) . '/config.php';
-require_once dirname(__DIR__) . '/includes/header.php';
+require_once 'includes/header.php';
 require_once dirname(__DIR__) . '/database.php';
 
 // Ensure user is admin
@@ -13,7 +13,7 @@ $loans = [];
 
 try {
     $stmt = $db->query(
-        "SELECT l.*, u.first_name, u.last_name, la.loan_purpose
+        "SELECT l.*, u.fullName, la.loanPurpose
          FROM Loans l
          JOIN Users u ON l.user_id = u.id
          JOIN LoanApplications la ON l.application_id = la.id
@@ -69,7 +69,7 @@ try {
                     <?php foreach ($loans as $loan) : ?>
                         <tr>
                             <td>#<?php echo htmlspecialchars($loan['id']); ?></td>
-                            <td><?php echo htmlspecialchars($loan['first_name'] . ' ' . $loan['last_name']); ?></td>
+                            <td><?php echo htmlspecialchars($loan['fullName']); ?></td>
                             <td>₦<?php echo number_format($loan['amount'], 2); ?></td>
                             <td>₦<?php echo number_format($loan['balance'], 2); ?></td>
                             <td>₦<?php echo number_format($loan['monthly_repayment'], 2); ?></td>
@@ -85,9 +85,6 @@ try {
                                 ?>
                             </td>
                             <td>
-                                <a href="#" class="btn btn-sm btn-info" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </a>
                                 <button type="button" class="btn btn-sm btn-success record-payment-btn"
                                         data-bs-toggle="modal"
                                         data-bs-target="#recordPaymentModal"
