@@ -23,7 +23,7 @@ require_once 'includes/public_header.php';
                     <i class="fas fa-bullhorn fa-3x mb-3"></i>
                     <h5 class="card-title">Announcements</h5>
                     <p class="card-text">View the latest announcements.</p>
-                    <a href="member_announcements.php" class="btn btn-primary">View Announcements</a>
+                    <a href="member_announcements.php?v=2" class="btn btn-primary">View Announcements</a>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@ require_once 'includes/public_header.php';
                     <i class="fas fa-calendar-alt fa-3x mb-3"></i>
                     <h5 class="card-title">Events</h5>
                     <p class="card-text">See what's happening.</p>
-                    <a href="member_events.php" class="btn btn-primary">View Events</a>
+                    <a href="member_events.php?v=2" class="btn btn-primary">View Events</a>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@ require_once 'includes/public_header.php';
                     <i class="fas fa-video fa-3x mb-3"></i>
                     <h5 class="card-title">Media</h5>
                     <p class="card-text">Watch the latest sermons and media.</p>
-                    <a href="member_media.php" class="btn btn-primary">View Media</a>
+                    <a href="member_media.php?v=2" class="btn btn-primary">View Media</a>
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@ require_once 'includes/public_header.php';
                     <i class="fas fa-hand-holding-heart fa-3x mb-3"></i>
                     <h5 class="card-title">Give</h5>
                     <p class="card-text">Support our mission and ministries.</p>
-                    <a href="member_give.php" class="btn btn-primary">Give Online</a>
+                    <a href="member_give.php?v=2" class="btn btn-primary">Give Online</a>
                 </div>
             </div>
         </div>
@@ -63,7 +63,7 @@ require_once 'includes/public_header.php';
                     <i class="fas fa-users fa-3x mb-3"></i>
                     <h5 class="card-title">Departments</h5>
                     <p class="card-text">Find a place to serve.</p>
-                    <a href="member_departments.php" class="btn btn-primary">View Departments</a>
+                    <a href="member_departments.php?v=2" class="btn btn-primary">View Departments</a>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@ require_once 'includes/public_header.php';
                     <i class="fas fa-user-edit fa-3x mb-3"></i>
                     <h5 class="card-title">Profile</h5>
                     <p class="card-text">Update your personal information.</p>
-                    <a href="member_profile.php" class="btn btn-primary">Edit Profile</a>
+                    <a href="member_profile.php?v=2" class="btn btn-primary">Edit Profile</a>
                 </div>
             </div>
         </div>
