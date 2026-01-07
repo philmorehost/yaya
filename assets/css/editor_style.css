@@ -1,0 +1,5 @@
+/* assets/css/editor_style.css */
+body {
+    color: #000 !important; /* Use !important to ensure it overrides any other styles */
+    background-color: #fff;
+}

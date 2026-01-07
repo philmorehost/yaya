@@ -83,7 +83,8 @@ require_once '../includes/sidebar.php';
         .create(document.querySelector('#content'), {
             ckfinder: {
                 uploadUrl: 'upload.php?csrf_token=<?php echo $_SESSION['csrf_token']; ?>'
-            }
+            },
+            contentsCss: ['../assets/css/editor_style.css']
         })
         .catch(error => {
             console.error(error);
