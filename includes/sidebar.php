@@ -12,6 +12,7 @@
     </div>
     <div class="list-group list-group-flush">
         <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+        <a href="guide.php" class="list-group-item list-group-item-action">Guide</a>
         <?php if (check_permission('manage_announcements')): ?>
             <a href="announcements.php" class="list-group-item list-group-item-action">Announcements</a>
         <?php endif; ?>
