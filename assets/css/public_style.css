@@ -78,3 +78,8 @@ body {
         padding-bottom: 70px; /* Height of the mobile footer */
     }
 }
+
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}

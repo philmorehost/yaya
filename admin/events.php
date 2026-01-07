@@ -1,5 +1,10 @@
 <?php
 require_once 'init.php';
+if (!check_permission('manage_events')) {
+    $_SESSION['error_message'] = 'You do not have permission to access this page.';
+    header('Location: dashboard.php');
+    exit;
+}
 
 // CSRF Protection
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,32 +1,26 @@
 <?php
 require_once 'init.php';
-check_permission('manage_settings');
+if (!check_permission('manage_settings')) {
+    $_SESSION['error_message'] = 'You do not have permission to access this page.';
+    header('Location: dashboard.php');
+    exit;
+}
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
-// Handle form submission
+// Handle Form Submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';
+    update_setting('smtp_host', $_POST['smtp_host']);
+    update_setting('smtp_port', $_POST['smtp_port']);
+    update_setting('smtp_user', $_POST['smtp_user']);
+    update_setting('smtp_pass', $_POST['smtp_pass']);
+    update_setting('smtp_from_email', $_POST['smtp_from_email']);
+    update_setting('smtp_from_name', $_POST['smtp_from_name']);
 
-    // An array of settings to update
-    $smtp_settings = [
-        'smtp_host',
-        'smtp_port',
-        'smtp_user',
-        'smtp_pass',
-        'smtp_encryption',
-        'smtp_sender_email'
-    ];
-
-    foreach ($smtp_settings as $setting_name) {
-        if (isset($_POST[$setting_name])) {
-            update_setting($setting_name, $_POST[$setting_name]);
-        }
-    }
-
-    $_SESSION['success_message'] = "SMTP settings saved successfully!";
-    header("Location: smtp_settings.php");
-    exit();
+    $_SESSION['success_message'] = "SMTP settings updated successfully!";
+    header('Location: smtp_settings.php');
+    exit;
 }
 ?>
 
@@ -34,17 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container-fluid">
         <h2 class="mb-4">SMTP Settings</h2>
 
-        <?php
-        if (isset($_SESSION['success_message'])) {
-            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">' . $_SESSION['success_message'] . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
-            unset($_SESSION['success_message']);
-        }
-        ?>
+        <?php if(isset($_SESSION['success_message'])): ?>
+            <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+        <?php endif; ?>
 
         <div class="card">
-            <div class="card-header">
-                Configure SMTP for Sending Emails
-            </div>
             <div class="card-body">
                 <form method="post">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
@@ -65,16 +53,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <input type="password" class="form-control" id="smtp_pass" name="smtp_pass" value="<?php echo htmlspecialchars(get_setting('smtp_pass')); ?>">
                     </div>
                     <div class="mb-3">
-                        <label for="smtp_encryption" class="form-label">Encryption</label>
-                        <select class="form-select" id="smtp_encryption" name="smtp_encryption">
-                            <option value="none" <?php if(get_setting('smtp_encryption') == 'none') echo 'selected'; ?>>None</option>
-                            <option value="ssl" <?php if(get_setting('smtp_encryption') == 'ssl') echo 'selected'; ?>>SSL</option>
-                            <option value="tls" <?php if(get_setting('smtp_encryption') == 'tls') echo 'selected'; ?>>TLS</option>
-                        </select>
+                        <label for="smtp_from_email" class="form-label">From Email</label>
+                        <input type="email" class="form-control" id="smtp_from_email" name="smtp_from_email" value="<?php echo htmlspecialchars(get_setting('smtp_from_email')); ?>">
                     </div>
                     <div class="mb-3">
-                        <label for="smtp_sender_email" class="form-label">Sender Email</label>
-                        <input type="email" class="form-control" id="smtp_sender_email" name="smtp_sender_email" value="<?php echo htmlspecialchars(get_setting('smtp_sender_email')); ?>">
+                        <label for="smtp_from_name" class="form-label">From Name</label>
+                        <input type="text" class="form-control" id="smtp_from_name" name="smtp_from_name" value="<?php echo htmlspecialchars(get_setting('smtp_from_name')); ?>">
                     </div>
                     <button type="submit" class="btn btn-primary">Save Settings</button>
                 </form>

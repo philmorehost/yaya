@@ -52,6 +52,10 @@ h1, h2, h3, h4, h5, h6 {
     color: #ecf0f1;
 }
 
+.form-label {
+    color: #ecf0f1;
+}
+
 .form-control {
     background-color: #4e5d6c;
     color: #ecf0f1;
@@ -126,4 +130,9 @@ h1, h2, h3, h4, h5, h6 {
     body {
         padding-bottom: 70px; /* Height of the mobile footer */
     }
+}
+
+html, body {
+    overflow-x: hidden;
+    width: 100%;
 }

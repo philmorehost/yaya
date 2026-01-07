@@ -34,8 +34,7 @@ function check_permission($permission_name) {
     if ($stmt->fetchColumn() > 0) {
         return true;
     } else {
-        // Optional: Redirect or show an error message
-        die('You do not have permission to access this page.');
+        return false;
     }
 }
 

@@ -1,6 +1,10 @@
 <?php
 require_once 'init.php';
-check_permission('manage_announcements');
+if (!check_permission('manage_announcements')) {
+    $_SESSION['error_message'] = 'You do not have permission to access this page.';
+    header('Location: dashboard.php');
+    exit;
+}
 
 // Handle form submissions for add, edit, delete
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

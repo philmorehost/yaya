@@ -1,6 +1,10 @@
 <?php
 require_once 'init.php';
-check_permission('manage_departments');
+if (!check_permission('manage_departments')) {
+    $_SESSION['error_message'] = 'You do not have permission to access this page.';
+    header('Location: dashboard.php');
+    exit;
+}
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 
