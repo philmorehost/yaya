@@ -3,12 +3,14 @@
         <?php if (isset($_SESSION['is_loggedin']) && $_SESSION['is_loggedin'] === true): ?>
             <?php if ($_SESSION['user_role'] === 'admin'): ?>
                 <a href="<?php echo BASE_URL; ?>admin/manage_users.php"><i class="fas fa-users"></i><div>Users</div></a>
+                <a href="<?php echo BASE_URL; ?>admin/manage_disbursed.php"><i class="fas fa-money-check-alt"></i><div>Manage Loans</div></a>
                 <a href="<?php echo BASE_URL; ?>admin/manage_articles.php"><i class="fas fa-newspaper"></i><div>Articles</div></a>
                 <a href="<?php echo BASE_URL; ?>admin/"><i class="fas fa-tachometer-alt"></i><div>Dashboard</div></a>
                 <a href="<?php echo BASE_URL; ?>admin/notifications.php"><i class="fas fa-bell"></i><div>Notifications</div></a>
                 <a href="<?php echo BASE_URL; ?>admin/settings.php"><i class="fas fa-cog"></i><div>Settings</div></a>
             <?php else: ?>
                 <a href="<?php echo BASE_URL; ?>pages/apply.php"><i class="fas fa-file-alt"></i><div>Apply</div></a>
+                <a href="<?php echo BASE_URL; ?>pages/disbursed.php"><i class="fas fa-money-bill-wave"></i><div>My Loans</div></a>
                 <a href="<?php echo BASE_URL; ?>pages/news.php"><i class="fas fa-newspaper"></i><div>News</div></a>
                 <a href="<?php echo BASE_URL; ?>pages/dashboard.php"><i class="fas fa-tachometer-alt"></i><div>Dashboard</div></a>
                 <a href="<?php echo BASE_URL; ?>pages/notifications.php"><i class="fas fa-bell"></i><div>Notifications</div></a>

@@ -85,6 +85,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $messages[] = "Database update completed successfully!";
 
+            // Add monthly_repayment column to 'Loans' table
+            $stmt = $db->query("SHOW COLUMNS FROM `Loans` LIKE 'monthly_repayment'");
+            if ($stmt->rowCount() == 0) {
+                $messages[] = "Adding 'monthly_repayment' column to 'Loans' table...";
+                $db->exec("ALTER TABLE Loans ADD COLUMN monthly_repayment DECIMAL(10, 2) NOT NULL DEFAULT 0.00;");
+                $messages[] = "'monthly_repayment' column added.";
+            } else {
+                $messages[] = "'monthly_repayment' column already exists in 'Loans' table.";
+            }
+
+            // Create Repayments table
+            $messages[] = "Creating 'Repayments' table if it doesn't exist...";
+            $db->exec("
+                CREATE TABLE IF NOT EXISTS `Repayments` (
+                    `id` INT AUTO_INCREMENT PRIMARY KEY,
+                    `loan_id` INT NOT NULL,
+                    `amount_paid` DECIMAL(10, 2) NOT NULL,
+                    `payment_date` DATE NOT NULL,
+                    `recorded_by` INT NOT NULL,
+                    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (`loan_id`) REFERENCES `Loans`(`id`) ON DELETE CASCADE,
+                    FOREIGN KEY (`recorded_by`) REFERENCES `Users`(`id`) ON DELETE RESTRICT
+                );
+            ");
+            $messages[] = "'Repayments' table created or already exists.";
+
         } catch (PDOException $e) {
             $errors[] = "An error occurred during the update: " . $e->getMessage();
         }
