@@ -73,6 +73,10 @@ h1, h2, h3, h4, h5, h6 {
     color: #ecf0f1;
 }
 
+.table-responsive {
+    overflow: auto;
+}
+
 /* Responsive Sidebar Styles */
 @media (max-width: 768px) {
     #sidebar-wrapper {
