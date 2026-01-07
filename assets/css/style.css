@@ -40,6 +40,7 @@ body {
 #page-content-wrapper {
     flex: 1;
     padding: 20px;
+    min-width: 0;
 }
 
 .card {
@@ -74,7 +75,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .table-responsive {
-    overflow: auto;
+    overflow-x: auto;
 }
 
 /* Responsive Sidebar Styles */
@@ -147,8 +148,4 @@ video,
 iframe {
     max-width: 100%;
     height: auto;
-}
-
-body {
-    overflow-x: hidden;
 }
