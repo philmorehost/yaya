@@ -2,10 +2,6 @@
 require_once 'includes/member_init.php';
 require_once 'includes/public_header.php';
 
-if ($role_id && !member_has_permission('view_give')) {
-    header('Location: member_dashboard.php');
-    exit;
-}
 
 $accounts = $pdo->query("SELECT * FROM giving_accounts ORDER BY account_name")->fetchAll(PDO::FETCH_ASSOC);
 

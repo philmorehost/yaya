@@ -2,10 +2,6 @@
 require_once 'includes/member_init.php';
 require_once 'includes/public_header.php';
 
-if ($role_id && !member_has_permission('view_departments')) {
-    header('Location: member_dashboard.php');
-    exit;
-}
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['apply_department'])) {
     $department_id = $_POST['department_id'];

@@ -77,9 +77,18 @@ body {
     overflow: auto;
 }
 
+.navbar-brand img {
+    height: 40px;
+    width: auto;
+    max-width: 100%;
+}
+
 @media (max-width: 767.98px) {
     body {
         padding-bottom: 70px; /* Height of the mobile footer */
+    }
+    .navbar-brand img {
+        height: 30px;
     }
 }
 

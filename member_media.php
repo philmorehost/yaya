@@ -2,10 +2,6 @@
 require_once 'includes/member_init.php';
 require_once 'includes/public_header.php';
 
-if ($role_id && !member_has_permission('view_media')) {
-    header('Location: member_dashboard.php');
-    exit;
-}
 
 $media_posts = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>

@@ -2,10 +2,6 @@
 require_once 'includes/member_init.php';
 require_once 'includes/public_header.php';
 
-if ($role_id && !member_has_permission('view_announcements')) {
-    header('Location: member_dashboard.php');
-    exit;
-}
 
 $announcements = $pdo->query("
     SELECT a.*, u.email as author_email

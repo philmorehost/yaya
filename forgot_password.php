@@ -16,7 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $pdo->prepare("INSERT INTO password_resets (email, token) VALUES (?, ?)");
         $stmt->execute([$member['email'], $token]);
 
-        $reset_link = 'http://' . $_SERVER['HTTP_HOST'] . '/reset_password.php?token=' . $token;
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+        $reset_link = $protocol . $_SERVER['HTTP_HOST'] . '/reset_password.php?token=' . $token;
 
         // **Note:** Email sending is not implemented in this environment.
         // In a real-world scenario, you would use a library like PHPMailer to send the email.

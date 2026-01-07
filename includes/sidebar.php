@@ -45,10 +45,6 @@
             <a href="homepage_settings.php" class="list-group-item list-group-item-action">Homepage Settings</a>
             <a href="smtp_settings.php" class="list-group-item list-group-item-action">SMTP Settings</a>
         <?php endif; ?>
-        <?php if (check_permission('manage_updates')): ?>
-            <a href="updates.php" class="list-group-item list-group-item-action">System Updates</a>
-        <?php endif; ?>
-
         <a href="../logout.php" class="list-group-item list-group-item-action">Logout</a>
     </div>
 </div>

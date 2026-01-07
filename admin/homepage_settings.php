@@ -11,6 +11,30 @@ require_once '../includes/sidebar.php';
 // Handle Form Submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     require_once '../includes/csrf_check.php';
+
+    // Handle Logo Upload
+    if (isset($_FILES['site_logo']) && $_FILES['site_logo']['error'] == 0) {
+        $target_dir = "../uploads/";
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+        $target_file = $target_dir . basename($_FILES["site_logo"]["name"]);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+        // Check if image file is a actual image or fake image
+        $check = getimagesize($_FILES["site_logo"]["tmp_name"]);
+        if($check !== false) {
+            // Allow certain file formats
+            if($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg" || $imageFileType == "gif" ) {
+                if (move_uploaded_file($_FILES["site_logo"]["tmp_name"], $target_file)) {
+                    // Path stored should be relative to the root
+                    $logo_url = "uploads/" . basename($_FILES["site_logo"]["name"]);
+                    update_setting('site_logo_url', $logo_url);
+                }
+            }
+        }
+    }
+
     update_setting('hero_type', $_POST['hero_type']);
     update_setting('hero_image_url', $_POST['hero_image_url']);
     update_setting('hero_video_url', $_POST['hero_video_url']);
@@ -35,8 +59,20 @@ $events = $pdo->query("SELECT id, name FROM events ORDER BY start_time DESC")->f
 
         <div class="card">
             <div class="card-body">
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+
+                    <div class="mb-3">
+                        <label for="site_logo" class="form-label">Site Logo</label>
+                        <input type="file" class="form-control" id="site_logo" name="site_logo">
+                        <?php $logo_url = get_setting('site_logo_url'); ?>
+                        <?php if ($logo_url): ?>
+                            <div class="mt-2">
+                                <small>Current Logo:</small><br>
+                                <img src="../<?php echo htmlspecialchars($logo_url); ?>" alt="Site Logo" style="max-height: 50px; background-color: #fff; padding: 5px;">
+                            </div>
+                        <?php endif; ?>
+                    </div>
                     <div class="mb-3">
                         <label for="hero_type" class="form-label">Hero Section Type</label>
                         <select class="form-select" id="hero_type" name="hero_type">

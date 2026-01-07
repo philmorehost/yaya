@@ -2,10 +2,6 @@
 require_once 'includes/member_init.php';
 require_once 'includes/public_header.php';
 
-if ($role_id && !member_has_permission('view_events')) {
-    header('Location: member_dashboard.php');
-    exit;
-}
 
 $events = $pdo->query("SELECT * FROM events ORDER BY start_time DESC")->fetchAll(PDO::FETCH_ASSOC);
 ?>
