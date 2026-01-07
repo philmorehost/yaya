@@ -3,7 +3,7 @@
 // It will check for an old, incorrect table structure and replace it with the correct one.
 
 // Check if the fix has already been applied to prevent re-running
-$fix_applied_check = $pdo->query("SELECT setting_value FROM settings WHERE setting_name = 'db_fix_1_5_applied'");
+$fix_applied_check = $pdo->query("SELECT setting_value FROM settings WHERE setting_name = 'db_fix_1_6_applied'");
 if ($fix_applied_check && $fix_applied_check->fetchColumn()) {
     //return; // Exit if the fix is already done
 }
@@ -44,10 +44,15 @@ $pdo->exec("
         `id` INT(11) NOT NULL AUTO_INCREMENT,
         `account_name` VARCHAR(255) NOT NULL,
         `account_details` TEXT NOT NULL,
-        `instructions` TEXT,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
+
+// Check for and add instructions column to giving_accounts
+$check_instructions = $pdo->query("SHOW COLUMNS FROM `giving_accounts` LIKE 'instructions'");
+if ($check_instructions->rowCount() == 0) {
+    $pdo->exec("ALTER TABLE `giving_accounts` ADD COLUMN `instructions` TEXT NULL AFTER `account_details`");
+}
 
 // Create department_applications table
 $pdo->exec("
@@ -73,7 +78,7 @@ $pdo->exec("
 ");
 
 // 6. Mark the fix as applied so it doesn't run again.
-$mark_fix_stmt = $pdo->prepare("INSERT INTO settings (setting_name, setting_value) VALUES ('db_fix_1_5_applied', '1') ON DUPLICATE KEY UPDATE setting_value = '1'");
+$mark_fix_stmt = $pdo->prepare("INSERT INTO settings (setting_name, setting_value) VALUES ('db_fix_1_6_applied', '1') ON DUPLICATE KEY UPDATE setting_value = '1'");
 $mark_fix_stmt->execute();
 
 ?>
