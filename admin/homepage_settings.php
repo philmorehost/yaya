@@ -35,8 +35,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // Handle Hero Image Upload
+    if (isset($_FILES['hero_image']) && $_FILES['hero_image']['error'] == 0) {
+        $target_dir = "../uploads/";
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0755, true);
+        }
+        $hero_image_filename = "hero_" . uniqid() . "." . strtolower(pathinfo(basename($_FILES["hero_image"]["name"]), PATHINFO_EXTENSION));
+        $target_file = $target_dir . $hero_image_filename;
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+        $check = getimagesize($_FILES["hero_image"]["tmp_name"]);
+        if($check !== false) {
+            if($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg") {
+                if (move_uploaded_file($_FILES["hero_image"]["tmp_name"], $target_file)) {
+                    $hero_image_url = "uploads/" . $hero_image_filename;
+                    update_setting('hero_image_url', $hero_image_url);
+                }
+            }
+        }
+    } elseif (!empty($_POST['hero_image_url'])) {
+        update_setting('hero_image_url', $_POST['hero_image_url']);
+    }
+
     update_setting('hero_type', $_POST['hero_type']);
-    update_setting('hero_image_url', $_POST['hero_image_url']);
     update_setting('hero_video_url', $_POST['hero_video_url']);
     update_setting('upcoming_event_id', $_POST['upcoming_event_id']);
 
@@ -81,8 +103,16 @@ $events = $pdo->query("SELECT id, name FROM events ORDER BY start_time DESC")->f
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="hero_image_url" class="form-label">Hero Image URL</label>
-                        <input type="text" class="form-control" id="hero_image_url" name="hero_image_url" value="<?php echo htmlspecialchars(get_setting('hero_image_url')); ?>">
+                        <label for="hero_image" class="form-label">Hero Image</label>
+                        <input type="file" class="form-control" id="hero_image" name="hero_image">
+                        <input type="hidden" name="hero_image_url" value="<?php echo htmlspecialchars(get_setting('hero_image_url')); ?>">
+                        <?php $hero_image_url = get_setting('hero_image_url'); ?>
+                        <?php if ($hero_image_url): ?>
+                            <div class="mt-2">
+                                <small>Current Image:</small><br>
+                                <img src="../<?php echo htmlspecialchars($hero_image_url); ?>" alt="Hero Image" style="max-height: 100px; background-color: #fff; padding: 5px;">
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="mb-3">
                         <label for="hero_video_url" class="form-label">Hero Video URL (MP4)</label>

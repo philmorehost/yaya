@@ -55,16 +55,12 @@ if (!is_dir($uploads_dir)) {
 
 // Move the file
 if (move_uploaded_file($file_tmp, $file_destination)) {
-    // More reliable URL construction
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
-    $host = $_SERVER['HTTP_HOST'];
-    // Correctly determine the base URL by removing /admin from the current script's path
-    $script_dir = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
-    $base_url = rtrim(str_replace('/admin', '', $script_dir), '/');
-    $url = $protocol . $host . $base_url . '/uploads/' . $file_name_new;
-
+    // Use a simple, root-relative URL, which is more reliable.
+    $url = '/uploads/' . $file_name_new;
+    // CKEditor's file upload response format requires a "url" key.
     echo json_encode(['url' => $url]);
 } else {
-    send_error('Failed to move the uploaded file. Check directory permissions.');
+    // Provide a more specific error message for easier debugging.
+    send_error('Failed to move the uploaded file. Please check that the /uploads directory exists and is writable by the web server.');
 }
 ?>
