@@ -39,6 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 require_once '../includes/header.php';
+?>
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<?php
 require_once '../includes/sidebar.php';
 ?>
 
@@ -77,36 +81,54 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
-<script>
-    let editor;
-    ClassicEditor
-        .create(document.querySelector('#content'), {
-            ckfinder: {
-                uploadUrl: 'upload.php?csrf_token=<?php echo $_SESSION['csrf_token']; ?>'
-            },
-            contentsCss: ['../assets/css/editor_style.css']
-        })
-        .then(newEditor => {
-            editor = newEditor;
-        })
-        .catch(error => {
-            console.error(error);
-        });
-
-    // More robustly ensure the textarea is updated before the form submits
-    // by attaching the logic to the button's click event.
-    const submitButton = document.querySelector('button[type="submit"]');
-    if (submitButton) {
-        submitButton.addEventListener('click', function() {
-            if (editor) {
-                const contentArea = document.querySelector('#content');
-                if (contentArea) {
-                    contentArea.value = editor.getData();
-                }
-            }
-        });
-    }
-</script>
-
 <?php require_once '../includes/footer.php'; ?>
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('#content, #description').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                var formData = new FormData();
+                formData.append('upload', files[0]);
+                formData.append('csrf_token', '<?php echo $_SESSION['csrf_token']; ?>');
+                $.ajax({
+                    url: 'upload.php',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        var response = JSON.parse(data);
+                        if (response.url) {
+                            $('#content, #description').summernote('insertImage', response.url);
+                        } else if (response.error) {
+                            alert(response.error.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Error uploading image.');
+                    }
+                });
+            }
+        }
+    });
+
+    $('form').on('submit', function() {
+        $('#content').val($('#content').summernote('code'));
+    });
+});
+</script>
