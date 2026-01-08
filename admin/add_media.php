@@ -24,10 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 require_once '../includes/header.php';
-?>
-<!-- Summernote CSS -->
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
-<?php
 require_once '../includes/sidebar.php';
 ?>
 
@@ -67,8 +63,6 @@ require_once '../includes/sidebar.php';
 </div>
 
 <?php require_once '../includes/footer.php'; ?>
-<!-- Summernote JS -->
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
 <script>
 $(document).ready(function() {

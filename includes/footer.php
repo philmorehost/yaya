@@ -6,7 +6,10 @@
         <a href="finance.php" class="footer-icon"><i class="fas fa-wallet"></i><span>Finance</span></a>
         <a href="attendance.php" class="footer-icon"><i class="fas fa-user-check"></i><span>Attendance</span></a>
     </div>
+    <!-- Summernote requires jQuery and Popper.js, which is in Bootstrap's bundle -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
     <script>
         document.getElementById("menu-toggle").addEventListener("click", function(e) {
             e.preventDefault();
