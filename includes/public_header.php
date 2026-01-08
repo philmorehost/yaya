@@ -11,6 +11,10 @@
 </head>
 <body>
     <?php require_once 'includes/helpers.php'; ?>
+
+    <!-- ShareThis Sticky Share Buttons container -->
+    <div class="sharethis-sticky-share-buttons"></div>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="index.php">

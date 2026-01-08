@@ -93,11 +93,19 @@ require_once '../includes/sidebar.php';
             console.error(error);
         });
 
-    document.querySelector('form').addEventListener('submit', function(event) {
-        if (editor) {
-            document.querySelector('#content').value = editor.getData();
-        }
-    });
+    // More robustly ensure the textarea is updated before the form submits
+    // by attaching the logic to the button's click event.
+    const submitButton = document.querySelector('button[type="submit"]');
+    if (submitButton) {
+        submitButton.addEventListener('click', function() {
+            if (editor) {
+                const contentArea = document.querySelector('#content');
+                if (contentArea) {
+                    contentArea.value = editor.getData();
+                }
+            }
+        });
+    }
 </script>
 
 <?php require_once '../includes/footer.php'; ?>
