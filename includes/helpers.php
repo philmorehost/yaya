@@ -16,18 +16,25 @@ function update_setting($setting_name, $setting_value) {
 
 function check_permission($permission) {
     global $pdo;
-    if (!isset($_SESSION['admin_id'])) {
+
+    // Defensive check for the role_id in the session
+    $role_id = $_SESSION['role_id'] ?? $_SESSION['admin_role_id'] ?? null;
+    if (!$role_id) {
         return false;
+    }
+
+    // Super Admin (role_id = 1) has all permissions
+    if ($role_id == 1) {
+        return true;
     }
 
     $stmt = $pdo->prepare("
         SELECT rp.role_id
-        FROM admin_users au
-        JOIN role_permissions rp ON au.role_id = rp.role_id
+        FROM role_permissions rp
         JOIN permissions p ON rp.permission_id = p.id
-        WHERE au.id = ? AND p.name = ?
+        WHERE rp.role_id = ? AND p.name = ?
     ");
-    $stmt->execute([$_SESSION['admin_id'], $permission]);
+    $stmt->execute([$role_id, $permission]);
     return $stmt->fetchColumn() !== false;
 }
 

@@ -41,10 +41,11 @@ if (!in_array($mime_type, $allowed_mime_types)) {
 // Generate a unique filename
 $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
 $file_name_new = uniqid('img_', true) . '.' . $file_ext;
-$file_destination = '../uploads/' . $file_name_new;
+// Use a robust absolute path for the uploads directory
+$uploads_dir = dirname(__DIR__) . '/uploads';
+$file_destination = $uploads_dir . '/' . $file_name_new;
 
 // Ensure the uploads directory exists and is writable
-$uploads_dir = '../uploads';
 if (!is_dir($uploads_dir)) {
     if (!mkdir($uploads_dir, 0755, true)) {
         send_error('Failed to create the uploads directory.');
