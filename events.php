@@ -22,7 +22,7 @@ $events = $pdo->query("SELECT * FROM events ORDER BY start_time DESC")->fetchAll
                                 <?php echo date('D, M j, Y, g:i a', strtotime($event['start_time'])); ?> -
                                 <?php echo date('g:i a', strtotime($event['end_time'])); ?>
                             </p>
-                            <p class="card-text flex-grow-1"><?php echo nl2br(htmlspecialchars($event['description'])); ?></p>
+                            <div class="card-text flex-grow-1 event-description"><?php echo sanitize_html($event['description']); ?></div>
                         </div>
                     </div>
                 </div>

@@ -43,23 +43,28 @@ $file_ext = pathinfo($file['name'], PATHINFO_EXTENSION);
 $file_name_new = uniqid('img_', true) . '.' . $file_ext;
 $file_destination = '../uploads/' . $file_name_new;
 
-// Ensure the uploads directory exists
-if (!is_dir('../uploads')) {
-    if (!mkdir('../uploads', 0777, true)) {
+// Ensure the uploads directory exists and is writable
+$uploads_dir = '../uploads';
+if (!is_dir($uploads_dir)) {
+    if (!mkdir($uploads_dir, 0755, true)) {
         send_error('Failed to create the uploads directory.');
     }
+} elseif (!is_writable($uploads_dir)) {
+    send_error('The uploads directory is not writable.');
 }
 
 // Move the file
 if (move_uploaded_file($file_tmp, $file_destination)) {
-    // Respond with the URL of the uploaded file
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+    // More reliable URL construction
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
     $host = $_SERVER['HTTP_HOST'];
-    $base_path = rtrim(dirname($_SERVER['PHP_SELF']), '/\\'); // Get the script's directory
-    $url = $protocol . $host . str_replace('/admin', '', $base_path) . '/uploads/' . $file_name_new;
+    // Correctly determine the base URL by removing /admin from the current script's path
+    $script_dir = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+    $base_url = rtrim(str_replace('/admin', '', $script_dir), '/');
+    $url = $protocol . $host . $base_url . '/uploads/' . $file_name_new;
 
     echo json_encode(['url' => $url]);
 } else {
-    send_error('Failed to move the uploaded file.');
+    send_error('Failed to move the uploaded file. Check directory permissions.');
 }
 ?>

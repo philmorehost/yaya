@@ -79,6 +79,7 @@ require_once '../includes/sidebar.php';
 
 <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
 <script>
+    let editor;
     ClassicEditor
         .create(document.querySelector('#content'), {
             ckfinder: {
@@ -86,9 +87,18 @@ require_once '../includes/sidebar.php';
             },
             contentsCss: ['../assets/css/editor_style.css']
         })
+        .then(newEditor => {
+            editor = newEditor;
+        })
         .catch(error => {
             console.error(error);
         });
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        if (editor) {
+            document.querySelector('#content').value = editor.getData();
+        }
+    });
 </script>
 
 <?php require_once '../includes/footer.php'; ?>
