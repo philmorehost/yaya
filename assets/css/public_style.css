@@ -90,6 +90,9 @@ body {
     .navbar-brand img {
         height: 30px;
     }
+    .hero-section {
+        height: 60vh;
+    }
 }
 
 *,
