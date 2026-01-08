@@ -19,6 +19,9 @@
         <?php if (check_permission('manage_members')): ?>
             <a href="members.php" class="list-group-item list-group-item-action">Members</a>
         <?php endif; ?>
+        <?php if (check_permission('send_email')): ?>
+            <a href="send_email.php" class="list-group-item list-group-item-action">Send Email</a>
+        <?php endif; ?>
         <?php if (check_permission('manage_attendance')): ?>
             <a href="attendance.php" class="list-group-item list-group-item-action">Attendance</a>
         <?php endif; ?>
