@@ -77,6 +77,24 @@ $pdo->exec("
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
 
+// Create department_members table for many-to-many relationship
+$pdo->exec("
+    CREATE TABLE IF NOT EXISTS `department_members` (
+        `department_id` INT(11) NOT NULL,
+        `member_id` INT(11) NOT NULL,
+        PRIMARY KEY (`department_id`, `member_id`),
+        FOREIGN KEY (`department_id`) REFERENCES `departments`(`id`) ON DELETE CASCADE,
+        FOREIGN KEY (`member_id`) REFERENCES `members`(`id`) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+");
+
+// Add 'send_email' permission if it doesn't exist
+$check_permission = $pdo->query("SELECT id FROM permissions WHERE name = 'send_email'");
+if ($check_permission->rowCount() == 0) {
+    $pdo->exec("INSERT INTO `permissions` (`name`, `description`) VALUES ('send_email', 'Allow user to send emails to members')");
+}
+
+
 // 6. Mark the fix as applied so it doesn't run again.
 $mark_fix_stmt = $pdo->prepare("INSERT INTO settings (setting_name, setting_value) VALUES ('db_fix_1_6_applied', '1') ON DUPLICATE KEY UPDATE setting_value = '1'");
 $mark_fix_stmt->execute();

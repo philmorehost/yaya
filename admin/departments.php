@@ -71,6 +71,7 @@ $members_with_roles = $pdo->query("SELECT * FROM members WHERE role_id IS NOT NU
                                         <?php endif; ?>
                                     </td>
                                     <td>
+                                        <a href="manage_department_members.php?id=<?php echo $department['id']; ?>" class="btn btn-sm btn-primary">Manage Members</a>
                                         <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editDepartmentModal-<?php echo $department['id']; ?>">Edit</button>
                                         <form method="post" class="d-inline">
                                             <input type="hidden" name="id" value="<?php echo $department['id']; ?>">
