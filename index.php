@@ -44,7 +44,7 @@ try {
 ?>
 
 <!-- Hero Section -->
-<header class="hero-section" style="<?php echo ($hero_type == 'image' && $hero_image_url) ? 'background-image: url(' . htmlspecialchars($hero_image_url) . '); background-size: cover; background-position: center;' : ''; ?>">
+<header class="hero-section" style="<?php echo ($hero_type == 'image' && $hero_image_url) ? 'background-image: url(' . htmlspecialchars($hero_image_url) . '); background-size: contain; background-position: center; background-repeat: no-repeat;' : ''; ?>">
     <?php if ($hero_type == 'video' && $hero_video_url): ?>
         <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
             <source src="<?php echo htmlspecialchars($hero_video_url); ?>" type="video/mp4">

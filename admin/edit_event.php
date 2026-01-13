@@ -91,18 +91,52 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
-<script>
-    ClassicEditor
-        .create(document.querySelector('#description'), {
-            ckfinder: {
-                uploadUrl: 'upload.php?csrf_token=<?php echo $_SESSION['csrf_token']; ?>'
-            },
-            contentsCss: ['../assets/css/editor_style.css']
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script>
-
 <?php require_once '../includes/footer.php'; ?>
+
+<script>
+$(document).ready(function() {
+    $('#description').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                var formData = new FormData();
+                formData.append('upload', files[0]);
+                formData.append('csrf_token', '<?php echo $_SESSION['csrf_token']; ?>');
+                $.ajax({
+                    url: 'upload.php',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        var response = JSON.parse(data);
+                        if (response.url) {
+                            $('#description').summernote('insertImage', response.url);
+                        } else if (response.error) {
+                            alert(response.error.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Error uploading image.');
+                    }
+                });
+            }
+        }
+    });
+
+    $('form').on('submit', function() {
+        $('#description').val($('#description').summernote('code'));
+    });
+});
+</script>

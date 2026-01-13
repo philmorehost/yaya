@@ -20,7 +20,7 @@ $media_posts = $pdo->query("SELECT * FROM media ORDER BY publication_date DESC")
                             <h5 class="card-title" style="color: #001f3f;"><?php echo htmlspecialchars($post['title']); ?></h5>
                             <p class="card-text text-muted"><?php echo date('F j, Y', strtotime($post['publication_date'])); ?></p>
                             <hr>
-                            <div class="card-text"><?php echo nl2br(htmlspecialchars($post['content'])); ?></div>
+                            <div class="card-text"><?php echo sanitize_html($post['content']); ?></div>
                         </div>
                     </div>
                 </div>

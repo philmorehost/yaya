@@ -34,7 +34,7 @@ if (!$announcement) {
             </p>
             <hr>
             <div class="announcement-content">
-                <?php echo nl2br(htmlspecialchars($announcement['content'])); ?>
+                <?php echo sanitize_html($announcement['content']); ?>
             </div>
             <hr>
             <a href="index.php" class="btn btn-primary">Back to Home</a>
