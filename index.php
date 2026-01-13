@@ -1,54 +1,47 @@
-<?php
-/**
- * index.php - Main entry point for the application
- * 
- * This is a placeholder file that can be customized for your specific needs.
- */
+<?php require_once __DIR__ . '/config.php'; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 
-// Optional: Set content type
-header('Content-Type: text/html; charset=utf-8');
+<div class="container mt-5">
+    <div class="hero-section">
+        <h1>Empowering Generations, Securing Futures.</h1>
+        <p class="lead">From your first savings account to your first business venture, Watchmen Finance Hub is here to help teens, youths, and adults thrive together.</p>
+        <p class="h4 text-secondary"><strong>ZERO INTEREST ON ALL MONEY BORROWED</strong></p>
+    </div>
 
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Placeholder</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-        }
-        .info {
-            color: #666;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Website Placeholder</h1>
-        <p>This is a placeholder page. Content will be added soon.</p>
-        <div class="info">
-            <p>File: index.php</p>
-            <p><?php echo 'Current time: ' . date('Y-m-d H:i:s'); ?></p>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card info-card">
+                <div class="card-body">
+                    <h2 class="card-title">For Teens</h2>
+                    <p class="card-text">Start small, learn big. Micro-loans for educational tools and projects.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card info-card">
+                <div class="card-body">
+                    <h2 class="card-title">For Youth</h2>
+                    <p class="card-text">Fuel your ambition. Equipment loans and startup capital.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card info-card">
+                <div class="card-body">
+                    <h2 class="card-title">For Adults</h2>
+                    <p class="card-text">Build your legacy. Personal, mortgage, and business expansion loans.</p>
+                </div>
+            </div>
         </div>
     </div>
-</body>
-</html>
+
+    <div class="card mt-5">
+        <div class="card-body text-center">
+            <h2 class="card-title">REGISTRATION FEE: #4,000</h2>
+            <p class="card-text">Weekly Contribution: #1,200</p>
+            <a href="<?php echo BASE_URL; ?>pages/apply.php" class="btn btn-primary btn-lg mt-3">Apply Now</a>
+        </div>
+    </div>
+</div>
+
+<?php include __DIR__ . '/includes/footer.php'; ?>
