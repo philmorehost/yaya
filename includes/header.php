@@ -56,6 +56,9 @@
                                 <a class="nav-link" href="<?php echo BASE_URL; ?>pages/dashboard.php">Dashboard</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>pages/payment_history.php">Payment History</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="<?php echo BASE_URL; ?>actions/logout_user.php">Logout</a>
                             </li>
                         <?php else: ?>

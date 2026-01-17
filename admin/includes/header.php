@@ -50,6 +50,9 @@
                             <a class="nav-link" href="<?php echo BASE_URL; ?>admin/notifications.php">Payment Notifications</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>admin/manage_repayments.php">Repayment History</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="<?php echo BASE_URL; ?>admin/system_update.php">System Update</a>
                         </li>
                         <li class="nav-item">

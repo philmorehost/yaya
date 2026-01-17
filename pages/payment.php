@@ -50,7 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include dirname(__DIR__) . '/includes/header.php'; ?>
 
 <div class="container mt-5">
-    <h1>Make a Payment</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Make a Payment</h1>
+        <a href="<?php echo BASE_URL; ?>pages/payment_history.php" class="btn btn-outline-primary">View Payment History</a>
+    </div>
     <div class="card">
         <div class="card-body">
             <h2>Account Details</h2>
