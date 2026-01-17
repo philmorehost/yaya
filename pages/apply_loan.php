@@ -45,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'hubCategory' => FILTER_SANITIZE_STRING, 'fullName' => FILTER_SANITIZE_STRING,
         'membershipNumber' => FILTER_SANITIZE_STRING, 'email' => FILTER_VALIDATE_EMAIL,
         'phone' => FILTER_SANITIZE_STRING, 'loanPurpose' => FILTER_SANITIZE_STRING,
-        'loanAmount' => FILTER_VALIDATE_FLOAT, 'monthlyIncome' => FILTER_VALIDATE_FLOAT,
+        'loanAmount' => FILTER_VALIDATE_FLOAT, 'loanDuration' => FILTER_VALIDATE_INT,
+        'monthlyIncome' => FILTER_VALIDATE_FLOAT,
         'existingSavings' => FILTER_VALIDATE_FLOAT, 'guarantor1Name' => FILTER_SANITIZE_STRING,
         'guarantor1Occupation' => FILTER_SANITIZE_STRING, 'guarantor1Phone' => FILTER_SANITIZE_STRING,
         'guarantor2Name' => FILTER_SANITIZE_STRING, 'guarantor2Occupation' => FILTER_SANITIZE_STRING,
@@ -67,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($_SESSION['errors'])) {
         try {
-            $sql = "INSERT INTO LoanApplications (user_id, hubCategory, fullName, membershipNumber, email, phone, loanPurpose, loanAmount, monthlyIncome, existingSavings, guarantor1Name, guarantor1Occupation, guarantor1Phone, guarantor1Passport, guarantor2Name, guarantor2Occupation, guarantor2Phone, guarantor2Passport, userPassport) VALUES (:user_id, :hubCategory, :fullName, :membershipNumber, :email, :phone, :loanPurpose, :loanAmount, :monthlyIncome, :existingSavings, :guarantor1Name, :guarantor1Occupation, :guarantor1Phone, :guarantor1Passport, :guarantor2Name, :guarantor2Occupation, :guarantor2Phone, :guarantor2Passport, :userPassport)";
+            $sql = "INSERT INTO LoanApplications (user_id, hubCategory, fullName, membershipNumber, email, phone, loanPurpose, loanAmount, loanDuration, monthlyIncome, existingSavings, guarantor1Name, guarantor1Occupation, guarantor1Phone, guarantor1Passport, guarantor2Name, guarantor2Occupation, guarantor2Phone, guarantor2Passport, userPassport) VALUES (:user_id, :hubCategory, :fullName, :membershipNumber, :email, :phone, :loanPurpose, :loanAmount, :loanDuration, :monthlyIncome, :existingSavings, :guarantor1Name, :guarantor1Occupation, :guarantor1Phone, :guarantor1Passport, :guarantor2Name, :guarantor2Occupation, :guarantor2Phone, :guarantor2Passport, :userPassport)";
 
             $stmt = $db->prepare($sql);
 
@@ -139,6 +140,17 @@ include dirname(__DIR__) . '/includes/header.php';
                             <div class="row">
                                 <div class="col-md-6 mb-3"><label for="loanPurpose" class="form-label">Loan Purpose</label><select class="form-select" id="loanPurpose" name="loanPurpose" required><option selected disabled value="">Choose...</option><option>School fees</option><option>Laptop/Tools</option><option>Small Business</option><option>Home Improvement</option></select></div>
                                 <div class="col-md-6 mb-3"><label for="loanAmount" class="form-label">Amount Requested (₦)</label><input type="number" class="form-control" id="loanAmount" name="loanAmount" required></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="loanDuration" class="form-label">Loan Duration (Months)</label>
+                                    <select class="form-select" id="loanDuration" name="loanDuration" required>
+                                        <option selected disabled value="">Choose...</option>
+                                        <?php for ($i = 1; $i <= 24; $i++): ?>
+                                            <option value="<?php echo $i; ?>"><?php echo $i; ?> Month<?php echo $i > 1 ? 's' : ''; ?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3"><label for="monthlyIncome" class="form-label">Monthly Income/Allowance (₦)</label><input type="number" class="form-control" id="monthlyIncome" name="monthlyIncome" required></div>

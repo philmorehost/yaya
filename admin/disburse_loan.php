@@ -30,13 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $updateStmt = $db->prepare("UPDATE LoanApplications SET status = 'Disbursed', disbursed_at = CURRENT_TIMESTAMP WHERE id = :id");
                 $updateStmt->execute([':id' => $id]);
 
-                // Calculate monthly repayment (10 months, 0 interest)
-                $monthly_repayment = $application['loanAmount'] / 10;
+                // Calculate monthly repayment (using loanDuration, 0 interest)
+                $loanDuration = (int)$application['loanDuration'];
+                if ($loanDuration <= 0) $loanDuration = 10; // Fallback
+                $monthly_repayment = $application['loanAmount'] / $loanDuration;
 
                 // Create a new loan
                 $loanStmt = $db->prepare(
-                    "INSERT INTO Loans (application_id, user_id, amount, balance, next_due_date, monthly_repayment)
-                     VALUES (:application_id, :user_id, :amount, :balance, :next_due_date, :monthly_repayment)"
+                    "INSERT INTO Loans (application_id, user_id, amount, balance, next_due_date, monthly_repayment, loanDuration)
+                     VALUES (:application_id, :user_id, :amount, :balance, :next_due_date, :monthly_repayment, :loanDuration)"
                 );
                 $loanStmt->execute([
                     ':application_id' => $id,
@@ -44,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':amount' => $application['loanAmount'],
                     ':balance' => $application['loanAmount'],
                     ':next_due_date' => date('Y-m-d', strtotime('+1 month')),
-                    ':monthly_repayment' => $monthly_repayment
+                    ':monthly_repayment' => $monthly_repayment,
+                    ':loanDuration' => $loanDuration
                 ]);
 
                 $db->commit();

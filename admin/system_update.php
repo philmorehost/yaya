@@ -161,10 +161,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'guarantor2Occupation' => 'VARCHAR(255) DEFAULT NULL',
                 'guarantor2Phone' => 'VARCHAR(255) DEFAULT NULL',
                 'guarantor2Passport' => 'VARCHAR(255) DEFAULT NULL',
-                'userPassport' => 'VARCHAR(255) DEFAULT NULL'
+                'userPassport' => 'VARCHAR(255) DEFAULT NULL',
+                'loanDuration' => 'INT NOT NULL DEFAULT 10'
             ],
             'Loans' => [
-                 'monthly_repayment' => 'DECIMAL(10, 2) NOT NULL DEFAULT 0.00'
+                 'monthly_repayment' => 'DECIMAL(10, 2) NOT NULL DEFAULT 0.00',
+                 'loanDuration' => 'INT NOT NULL DEFAULT 10'
             ],
             'Repayments' => [
                 'amount_paid' => 'DECIMAL(10, 2) NOT NULL',

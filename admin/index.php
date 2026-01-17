@@ -91,6 +91,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
                                 echo "<td>₦" . htmlspecialchars(number_format($app['loanAmount'], 2)) . "</td>";
                                 echo "<td><span class='badge bg-" . ($app['status'] === 'Approved' ? 'success' : ($app['status'] === 'Disapproved' ? 'danger' : 'warning')) . "'>" . htmlspecialchars($app['status']) . "</span></td>";
                                 echo "<td>
+                                        <a href='edit_application.php?id=" . $app['id'] . "' class='btn btn-primary btn-sm'>Edit</a>
                                         <form action='update_status.php' method='post' style='display:inline-block;'>
                                             <input type='hidden' name='csrf_token' value='" . $_SESSION['csrf_token'] . "'>
                                             <input type='hidden' name='id' value='" . $app['id'] . "'>
