@@ -4,7 +4,7 @@
 
 <div class="container mt-5">
     <div class="text-center mb-5">
-        <h1>The Watchmen News</h1>
+        <h1>News</h1>
         <p class="lead">Financial literacy tips for teens and investment advice for adults.</p>
     </div>
 

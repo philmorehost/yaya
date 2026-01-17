@@ -16,7 +16,7 @@ if ($all_ok) {
 ?>
 
 <div class="text-center">
-    <h4>Welcome to the Watchmen Finance Hub Installation!</h4>
+    <h4>Welcome to the Finance Hub Installation!</h4>
     <p>This wizard will guide you through the setup process. Please ensure the following requirements are met before proceeding.</p>
 </div>
 

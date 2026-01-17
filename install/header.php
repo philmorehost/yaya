@@ -11,6 +11,6 @@
     <div class="container installer-container">
         <div class="card shadow">
             <div class="card-header text-center">
-                <h4>Watchmen Finance Hub - Installation</h4>
+                <h4>Finance Hub - Installation</h4>
             </div>
             <div class="card-body p-4">

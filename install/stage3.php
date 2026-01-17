@@ -6,7 +6,7 @@ $admin_password = 'password123';
 
 <div class="text-center">
     <h4 class="text-success">Installation Complete!</h4>
-    <p>Congratulations, Watchmen Finance Hub has been installed successfully.</p>
+    <p>Congratulations, Finance Hub has been installed successfully.</p>
 </div>
 
 <div class="alert alert-info mt-4">
