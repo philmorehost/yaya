@@ -1,5 +1,7 @@
 <?php
 require_once 'init.php';
+check_permission('manage_media');
+
 require_once '../includes/header.php';
 require_once '../includes/sidebar.php';
 

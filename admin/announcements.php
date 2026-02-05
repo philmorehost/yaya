@@ -153,7 +153,7 @@ require_once '../includes/sidebar.php';
                     </div>
                     <div class="mb-3">
                         <label for="content" class="form-label">Content</label>
-                        <textarea class="form-control" name="content" rows="10" required></textarea>
+                        <textarea class="form-control" id="add-content" name="content" rows="10" required></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -195,9 +195,47 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
+<script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var editModal = document.getElementById('editAnnouncementModal');
+    let addEditor;
+    let editEditor;
+    const csrfToken = "<?php echo $_SESSION['csrf_token']; ?>";
+
+    ClassicEditor
+        .create(document.querySelector('#add-content'), {
+            ckfinder: {
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
+            }
+        })
+        .then(editor => {
+            addEditor = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    ClassicEditor
+        .create(document.querySelector('#edit-content'), {
+            ckfinder: {
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
+            }
+        })
+        .then(editor => {
+            editEditor = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    const addModal = document.getElementById('addAnnouncementModal');
+    addModal.addEventListener('hidden.bs.modal', function () {
+        if (addEditor) {
+            addEditor.setData('');
+        }
+    });
+
+    const editModal = document.getElementById('editAnnouncementModal');
     editModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var id = button.getAttribute('data-id');
@@ -207,12 +245,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var modalTitle = editModal.querySelector('.modal-title');
         var idInput = editModal.querySelector('#edit-id');
         var titleInput = editModal.querySelector('#edit-title');
-        var contentInput = editModal.querySelector('#edit-content');
 
         modalTitle.textContent = 'Edit Announcement: ' + title;
         idInput.value = id;
         titleInput.value = title;
-        contentInput.value = content;
+        editEditor.setData(content);
     });
 });
 </script>

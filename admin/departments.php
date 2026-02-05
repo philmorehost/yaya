@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // Fetch Data
 $departments = $pdo->query("SELECT d.*, m.name as head_name FROM departments d LEFT JOIN members m ON d.head_id = m.id ORDER BY d.name")->fetchAll(PDO::FETCH_ASSOC);
-$members = $pdo->query("SELECT * FROM members ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
+$members = $pdo->query("SELECT * FROM members WHERE role_id IS NOT NULL ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="main-content">

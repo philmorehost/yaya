@@ -55,6 +55,18 @@ CREATE TABLE IF NOT EXISTS `members` (
   `birthday` date DEFAULT NULL,
   `gender` varchar(50) DEFAULT NULL,
   `workforce_unit_id` int(11) DEFAULT NULL,
+  `member_id` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `role_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `member_id` (`member_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `member_sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -153,6 +165,9 @@ CREATE TABLE IF NOT EXISTS `connection_requests` (
 -- Set initial schema version to 1.0 for fresh installs
 -- Set initial schema version to 1.4 for fresh installs
 INSERT INTO `settings` (`setting_name`, `setting_value`) VALUES ('schema_version', '1.4') ON DUPLICATE KEY UPDATE setting_value = '1.4';
+
+-- Add default "Ordinary Member" role
+INSERT INTO `roles` (`name`) VALUES ('Ordinary Member');
 
 -- Truncate tables to ensure a clean slate, just in case they existed before. This is the final step.
 TRUNCATE TABLE `giving`;

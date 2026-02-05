@@ -113,7 +113,7 @@ require_once '../includes/sidebar.php';
                             <?php foreach ($events as $event): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($event['name']); ?></td>
-                                <td><?php echo htmlspecialchars($event['description']); ?></td>
+                                <td><?php echo htmlspecialchars(substr(strip_tags($event['description']), 0, 50)); ?>...</td>
                                 <td><?php echo date('M j, Y, g:i A', strtotime($event['start_time'])); ?></td>
                                 <td><?php echo $event['end_time'] ? date('M j, Y, g:i A', strtotime($event['end_time'])) : 'N/A'; ?></td>
                                 <td><?php echo htmlspecialchars($event['location']); ?></td>
@@ -164,7 +164,7 @@ require_once '../includes/sidebar.php';
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description"></textarea>
+                        <textarea class="form-control" id="add-description" name="description"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="start_time" class="form-label">Start Time</label>
@@ -230,11 +230,47 @@ require_once '../includes/sidebar.php';
     </div>
 </div>
 
-<?php require_once '../includes/footer.php'; ?>
-
+<script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    var editEventModal = document.getElementById('editEventModal');
+    let addEditor;
+    let editEditor;
+    const csrfToken = "<?php echo $_SESSION['csrf_token']; ?>";
+
+    ClassicEditor
+        .create(document.querySelector('#add-description'), {
+            ckfinder: {
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
+            }
+        })
+        .then(editor => {
+            addEditor = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    ClassicEditor
+        .create(document.querySelector('#edit-description'), {
+            ckfinder: {
+                uploadUrl: `upload.php?csrf_token=${csrfToken}`
+            }
+        })
+        .then(editor => {
+            editEditor = editor;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    const addModal = document.getElementById('addEventModal');
+    addModal.addEventListener('hidden.bs.modal', function () {
+        if (addEditor) {
+            addEditor.setData('');
+        }
+    });
+
+    const editEventModal = document.getElementById('editEventModal');
     editEventModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var id = button.getAttribute('data-id');
@@ -247,7 +283,6 @@ document.addEventListener('DOMContentLoaded', function () {
         var modalTitle = editEventModal.querySelector('.modal-title');
         var modalBodyInputId = editEventModal.querySelector('#edit-id');
         var modalBodyInputName = editEventModal.querySelector('#edit-name');
-        var modalBodyInputDescription = editEventModal.querySelector('#edit-description');
         var modalBodyInputStartTime = editEventModal.querySelector('#edit-start_time');
         var modalBodyInputEndTime = editEventModal.querySelector('#edit-end_time');
         var modalBodyInputLocation = editEventModal.querySelector('#edit-location');
@@ -255,10 +290,12 @@ document.addEventListener('DOMContentLoaded', function () {
         modalTitle.textContent = 'Edit Event: ' + name;
         modalBodyInputId.value = id;
         modalBodyInputName.value = name;
-        modalBodyInputDescription.value = description;
+        editEditor.setData(description);
         modalBodyInputStartTime.value = startTime;
         modalBodyInputEndTime.value = endTime;
         modalBodyInputLocation.value = location;
     });
 });
 </script>
+
+<?php require_once '../includes/footer.php'; ?>
