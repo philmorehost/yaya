@@ -1,155 +1,189 @@
-<?php require_once dirname(__DIR__) . '/config.php'; ?>
-<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
+require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/database.php';
+require_once dirname(__DIR__) . '/includes/utils.php';
+
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true) {
-    // Store the intended destination in the session
     $_SESSION['return_to'] = BASE_URL . 'pages/apply.php';
     header('Location: ' . BASE_URL . 'pages/login.php');
     exit;
 }
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
-?>
-<?php include dirname(__DIR__) . '/includes/header.php'; ?>
 
-<div class="container mt-5">
+$user_id = $_SESSION['user_id'];
+$user = null;
+
+// Fetch existing user data to pre-fill the form
+try {
+    $stmt = $db->prepare("SELECT * FROM Users WHERE id = :id");
+    $stmt->execute([':id' => $user_id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // If the table or columns don't exist yet, we can't pre-fill.
+    error_log("Error fetching user data for apply form: " . $e->getMessage(), 3, dirname(__DIR__) . '/logs/errors.log');
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $_SESSION['errors'][] = 'CSRF token validation failed.';
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+    // --- Form Data Processing ---
+    $bvn = filter_input(INPUT_POST, 'bvn', FILTER_SANITIZE_STRING);
+    $nin = filter_input(INPUT_POST, 'nin', FILTER_SANITIZE_STRING);
+    $home_address = filter_input(INPUT_POST, 'home_address', FILTER_SANITIZE_STRING);
+    $marital_status = filter_input(INPUT_POST, 'marital_status', FILTER_SANITIZE_STRING);
+    $gender = filter_input(INPUT_POST, 'gender', FILTER_SANITIZE_STRING);
+    $nationality = filter_input(INPUT_POST, 'nationality', FILTER_SANITIZE_STRING);
+    $date_of_birth = filter_input(INPUT_POST, 'date_of_birth', FILTER_SANITIZE_STRING);
+    $occupation = filter_input(INPUT_POST, 'occupation', FILTER_SANITIZE_STRING);
+
+    // --- Basic Validation ---
+    if (empty($bvn) || empty($nin) || empty($home_address) || empty($marital_status) || empty($gender) || empty($nationality) || empty($date_of_birth) || empty($occupation)) {
+        $_SESSION['errors'][] = 'All fields are required. Please fill out the entire form.';
+    }
+    if (strlen($bvn) !== 11 || !ctype_digit($bvn)) {
+        $_SESSION['errors'][] = 'Invalid BVN. It must be 11 digits.';
+    }
+    if (strlen($nin) !== 11 || !ctype_digit($nin)) {
+        $_SESSION['errors'][] = 'Invalid NIN. It must be 11 digits.';
+    }
+
+    if (empty($_SESSION['errors'])) {
+        try {
+            $updateStmt = $db->prepare(
+                "UPDATE Users SET
+                    bvn = :bvn,
+                    nin = :nin,
+                    home_address = :home_address,
+                    marital_status = :marital_status,
+                    gender = :gender,
+                    nationality = :nationality,
+                    date_of_birth = :date_of_birth,
+                    occupation = :occupation
+                 WHERE id = :user_id"
+            );
+
+            $updateStmt->execute([
+                ':bvn' => $bvn,
+                ':nin' => $nin,
+                ':home_address' => $home_address,
+                ':marital_status' => $marital_status,
+                ':gender' => $gender,
+                ':nationality' => $nationality,
+                ':date_of_birth' => $date_of_birth,
+                ':occupation' => $occupation,
+                ':user_id' => $user_id
+            ]);
+
+            $_SESSION['success_message'] = 'Your profile information has been updated successfully! You can now proceed with your loan application.';
+            // Redirect to avoid form resubmission
+            header('Location: ' . BASE_URL . 'pages/apply_loan.php');
+            exit;
+
+        } catch (PDOException $e) {
+            error_log("User profile update failed: " . $e->getMessage(), 3, dirname(__DIR__) . '/logs/errors.log');
+            $_SESSION['errors'][] = 'A database error occurred. Please try again.';
+        }
+    }
+     // If there are errors, redirect back to the form to display them
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+// Generate a new CSRF token for the form
+$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+include dirname(__DIR__) . '/includes/header.php';
+?>
+
+<div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-header">
-                    <h2>Loan Application</h2>
+                    <h2>Update Your Profile Information</h2>
                 </div>
                 <div class="card-body">
-                    <p class="card-text text-center">Take the next step towards your financial goals.</p>
+                    <p class="card-text text-center">To apply for a loan, please complete your profile with the information below.</p>
 
                     <?php
                     if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])) {
                         echo '<div class="alert alert-danger" role="alert">';
                         foreach ($_SESSION['errors'] as $error) {
-                            echo '<p class="mb-0">' . $error . '</p>';
+                            echo '<p class="mb-0">' . htmlspecialchars($error) . '</p>';
                         }
                         echo '</div>';
                         unset($_SESSION['errors']);
                     }
                     ?>
+                     <?php
+                    if (isset($_SESSION['success_message'])) {
+                        echo '<div class="alert alert-success">' . htmlspecialchars($_SESSION['success_message']) . '</div>';
+                        unset($_SESSION['success_message']);
+                    }
+                    ?>
 
-                    <form action="<?php echo BASE_URL; ?>actions/submit_application.php" method="POST" enctype="multipart/form-data">
+                    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
 
-                        <fieldset class="mb-4">
-                            <legend class="h5">Step 1: Eligibility Check</legend>
-                            <p>Please select your category to see tailored rates.</p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="hubCategory" id="juniorHub" value="junior" required <?php if (isset($_SESSION['form_data']['hubCategory']) && $_SESSION['form_data']['hubCategory'] == 'junior') echo 'checked'; ?>>
-                                <label class="form-check-label" for="juniorHub"><strong>Junior Hub (Ages 13-17):</strong> Requires a parent/guardian co-signer.</label>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bvn" class="form-label">BVN (Bank Verification Number)</label>
+                                <input type="text" class="form-control" id="bvn" name="bvn" required maxlength="11" value="<?php echo htmlspecialchars($user['bvn'] ?? ''); ?>">
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="hubCategory" id="nextGenHub" value="nextgen" <?php if (isset($_SESSION['form_data']['hubCategory']) && $_SESSION['form_data']['hubCategory'] == 'nextgen') echo 'checked'; ?>>
-                                <label class="form-check-label" for="nextGenHub"><strong>NextGen Hub (Ages 18-30):</strong> Focused on education and entrepreneurship.</label>
+                            <div class="col-md-6 mb-3">
+                                <label for="nin" class="form-label">NIN (National Identification Number)</label>
+                                <input type="text" class="form-control" id="nin" name="nin" required maxlength="11" value="<?php echo htmlspecialchars($user['nin'] ?? ''); ?>">
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="hubCategory" id="legacyHub" value="legacy" <?php if (isset($_SESSION['form_data']['hubCategory']) && $_SESSION['form_data']['hubCategory'] == 'legacy') echo 'checked'; ?>>
-                                <label class="form-check-label" for="legacyHub"><strong>Legacy Hub (Ages 31+):</strong> Focused on asset acquisition and stability.</label>
-                            </div>
-                        </fieldset>
+                        </div>
 
-                        <fieldset>
-                            <legend class="h5">Step 2: Application Details</legend>
-                            <div class="mb-3">
-                                <label for="fullName" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="fullName" name="fullName" required value="<?php echo isset($_SESSION['form_data']['fullName']) ? $_SESSION['form_data']['fullName'] : ''; ?>">
-                            </div>
-                            <div class="mb-3">
-                                <label for="membershipNumber" class="form-label">Cooperative Membership Number</label>
-                                <input type="text" class="form-control" id="membershipNumber" name="membershipNumber" required value="<?php echo isset($_SESSION['form_data']['membershipNumber']) ? $_SESSION['form_data']['membershipNumber'] : ''; ?>">
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" id="email" name="email" required value="<?php echo isset($_SESSION['form_data']['email']) ? $_SESSION['form_data']['email'] : ''; ?>">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="phone" class="form-label">Phone Number</label>
-                                    <input type="tel" class="form-control" id="phone" name="phone" required value="<?php echo isset($_SESSION['form_data']['phone']) ? $_SESSION['form_data']['phone'] : ''; ?>">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="userPassport" class="form-label">Your Passport</label>
-                                <input type="file" class="form-control" id="userPassport" name="userPassport" required>
-                            </div>
-                        </fieldset>
+                        <div class="mb-3">
+                            <label for="home_address" class="form-label">Home Address</label>
+                            <textarea class="form-control" id="home_address" name="home_address" rows="3" required><?php echo htmlspecialchars($user['home_address'] ?? ''); ?></textarea>
+                        </div>
 
-                        <fieldset>
-                            <legend class="h5">Step 3: Loan Details</legend>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="loanPurpose" class="form-label">Loan Purpose</label>
-                                    <select class="form-select" id="loanPurpose" name="loanPurpose" required>
-                                        <option selected disabled value="">Choose...</option>
-                                        <option <?php if (isset($_SESSION['form_data']['loanPurpose']) && $_SESSION['form_data']['loanPurpose'] == 'School fees') echo 'selected'; ?>>School fees</option>
-                                        <option <?php if (isset($_SESSION['form_data']['loanPurpose']) && $_SESSION['form_data']['loanPurpose'] == 'Laptop/Tools') echo 'selected'; ?>>Laptop/Tools</option>
-                                        <option <?php if (isset($_SESSION['form_data']['loanPurpose']) && $_SESSION['form_data']['loanPurpose'] == 'Small Business') echo 'selected'; ?>>Small Business</option>
-                                        <option <?php if (isset($_SESSION['form_data']['loanPurpose']) && $_SESSION['form_data']['loanPurpose'] == 'Home Improvement') echo 'selected'; ?>>Home Improvement</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="loanAmount" class="form-label">Amount Requested (₦)</label>
-                                    <input type="number" class="form-control" id="loanAmount" name="loanAmount" required value="<?php echo isset($_SESSION['form_data']['loanAmount']) ? $_SESSION['form_data']['loanAmount'] : ''; ?>">
-                                </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="marital_status" class="form-label">Marital Status</label>
+                                <select class="form-select" id="marital_status" name="marital_status" required>
+                                    <option value="" disabled <?php echo empty($user['marital_status']) ? 'selected' : ''; ?>>Choose...</option>
+                                    <option value="Single" <?php echo (($user['marital_status'] ?? '') === 'Single') ? 'selected' : ''; ?>>Single</option>
+                                    <option value="Married" <?php echo (($user['marital_status'] ?? '') === 'Married') ? 'selected' : ''; ?>>Married</option>
+                                    <option value="Divorced" <?php echo (($user['marital_status'] ?? '') === 'Divorced') ? 'selected' : ''; ?>>Divorced</option>
+                                    <option value="Widowed" <?php echo (($user['marital_status'] ?? '') === 'Widowed') ? 'selected' : ''; ?>>Widowed</option>
+                                </select>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Repayment Duration</label>
-                                <p class="form-control-plaintext">10 months</p>
+                             <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender" required>
+                                    <option value="" disabled <?php echo empty($user['gender']) ? 'selected' : ''; ?>>Choose...</option>
+                                    <option value="Male" <?php echo (($user['gender'] ?? '') === 'Male') ? 'selected' : ''; ?>>Male</option>
+                                    <option value="Female" <?php echo (($user['gender'] ?? '') === 'Female') ? 'selected' : ''; ?>>Female</option>
+                                </select>
                             </div>
-                        </fieldset>
+                        </div>
 
-                        <fieldset>
-                            <legend class="h5">Step 4: Financial Standing</legend>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="monthlyIncome" class="form-label">Monthly Income/Allowance (₦)</label>
-                                    <input type="number" class="form-control" id="monthlyIncome" name="monthlyIncome" required value="<?php echo isset($_SESSION['form_data']['monthlyIncome']) ? $_SESSION['form_data']['monthlyIncome'] : ''; ?>">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="existingSavings" class="form-label">Existing Savings in the Hub (₦)</label>
-                                    <input type="number" class="form-control" id="existingSavings" name="existingSavings" required value="<?php echo isset($_SESSION['form_data']['existingSavings']) ? $_SESSION['form_data']['existingSavings'] : ''; ?>">
-                                </div>
+                        <div class="row">
+                           <div class="col-md-6 mb-3">
+                                <label for="nationality" class="form-label">Nationality</label>
+                                <input type="text" class="form-control" id="nationality" name="nationality" required value="<?php echo htmlspecialchars($user['nationality'] ?? 'Nigerian'); ?>">
                             </div>
-                        </fieldset>
+                            <div class="col-md-6 mb-3">
+                                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" required value="<?php echo htmlspecialchars($user['date_of_birth'] ?? ''); ?>">
+                            </div>
+                        </div>
 
-                        <fieldset>
-                            <legend class="h5">Step 5: Guarantor Information</legend>
-                            <p>Please provide two active members of the cooperative as guarantors.</p>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <h5>Guarantor 1</h5>
-                                    <label for="guarantor1Name" class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="guarantor1Name" name="guarantor1Name" required value="<?php echo isset($_SESSION['form_data']['guarantor1Name']) ? $_SESSION['form_data']['guarantor1Name'] : ''; ?>">
-                                    <label for="guarantor1Occupation" class="form-label mt-2">Occupation</label>
-                                    <input type="text" class="form-control" id="guarantor1Occupation" name="guarantor1Occupation" required value="<?php echo isset($_SESSION['form_data']['guarantor1Occupation']) ? $_SESSION['form_data']['guarantor1Occupation'] : ''; ?>">
-                                    <label for="guarantor1Phone" class="form-label mt-2">Phone Number</label>
-                                    <input type="tel" class="form-control" id="guarantor1Phone" name="guarantor1Phone" required value="<?php echo isset($_SESSION['form_data']['guarantor1Phone']) ? $_SESSION['form_data']['guarantor1Phone'] : ''; ?>">
-                                    <label for="guarantor1Passport" class="form-label mt-2">Passport</label>
-                                    <input type="file" class="form-control" id="guarantor1Passport" name="guarantor1Passport" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <h5>Guarantor 2</h5>
-                                    <label for="guarantor2Name" class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="guarantor2Name" name="guarantor2Name" required value="<?php echo isset($_SESSION['form_data']['guarantor2Name']) ? $_SESSION['form_data']['guarantor2Name'] : ''; ?>">
-                                    <label for="guarantor2Occupation" class="form-label mt-2">Occupation</label>
-                                    <input type="text" class="form-control" id="guarantor2Occupation" name="guarantor2Occupation" required value="<?php echo isset($_SESSION['form_data']['guarantor2Occupation']) ? $_SESSION['form_data']['guarantor2Occupation'] : ''; ?>">
-                                    <label for="guarantor2Phone" class="form-label mt-2">Phone Number</label>
-                                    <input type="tel" class="form-control" id="guarantor2Phone" name="guarantor2Phone" required value="<?php echo isset($_SESSION['form_data']['guarantor2Phone']) ? $_SESSION['form_data']['guarantor2Phone'] : ''; ?>">
-                                    <label for="guarantor2Passport" class="form-label mt-2">Passport</label>
-                                    <input type="file" class="form-control" id="guarantor2Passport" name="guarantor2Passport" required>
-                                </div>
-                            </div>
-                        </fieldset>
+                        <div class="mb-3">
+                            <label for="occupation" class="form-label">Occupation</label>
+                            <input type="text" class="form-control" id="occupation" name="occupation" required value="<?php echo htmlspecialchars($user['occupation'] ?? ''); ?>">
+                        </div>
 
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">Apply Now</button>
-                            <a href="#" class="btn btn-secondary btn-lg">Speak to a Financial Mentor</a>
+                            <button type="submit" class="btn btn-primary btn-lg">Save and Continue</button>
                         </div>
                     </form>
                 </div>
@@ -158,7 +192,4 @@ if (empty($_SESSION['csrf_token'])) {
     </div>
 </div>
 
-<?php
-    unset($_SESSION['form_data']);
-    include dirname(__DIR__) . '/includes/footer.php';
-?>
+<?php include dirname(__DIR__) . '/includes/footer.php'; ?>

@@ -16,21 +16,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
-        // Password is correct, start a new session
-        $_SESSION['is_loggedin'] = true;
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['fullName'];
-        $_SESSION['user_email'] = $user['email'];
-        $_SESSION['user_role'] = $user['role'];
-
-        if (isset($_SESSION['return_to'])) {
-            $return_to = $_SESSION['return_to'];
-            unset($_SESSION['return_to']);
-            header('Location: ' . $return_to);
+        if ($user['status'] === 'suspended') {
+            $errors[] = 'Your account has been suspended.';
         } else {
-            header('Location: ' . BASE_URL . 'pages/dashboard.php');
+            // Password is correct, start a new session
+            $_SESSION['is_loggedin'] = true;
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['fullName'];
+            $_SESSION['user_email'] = $user['email'];
+            $_SESSION['user_role'] = $user['role'];
+
+            if (isset($_SESSION['return_to'])) {
+                $return_to = $_SESSION['return_to'];
+                unset($_SESSION['return_to']);
+                header('Location: ' . $return_to);
+            } else {
+                header('Location: ' . BASE_URL . 'pages/dashboard.php');
+            }
+            exit;
         }
-        exit;
     } else {
         $errors[] = 'Invalid email or password.';
     }
