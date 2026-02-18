@@ -32,7 +32,7 @@ try {
 
     <div class="text-center py-5">
         <h1>Empowering Generations, Securing Futures.</h1>
-        <p class="lead">From your first savings account to your first business venture, Watchmen Finance Hub is here to help teens, youths, and adults thrive together.</p>
+        <p class="lead">From your first savings account to your first business venture, Finance Hub is here to help teens, youths, and adults thrive together.</p>
         <p class="h4 text-secondary"><strong>ZERO INTEREST ON ALL MONEY BORROWED</strong></p>
     </div>
 

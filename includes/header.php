@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($page_title) ? $page_title . ' - Watchmen Finance Hub' : 'Watchmen Finance Hub'; ?></title>
+    <title><?php echo isset($page_title) ? $page_title . ' - Finance Hub' : 'Finance Hub'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/style.css">
@@ -32,9 +32,9 @@
                 ?>
                 <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
                     <?php if ($logo && !empty($logo['setting_value'])): ?>
-                        <img src="<?php echo BASE_URL . htmlspecialchars($logo['setting_value']); ?>" alt="Watchmen Finance Hub" style="max-height: 40px;">
+                        <img src="<?php echo BASE_URL . htmlspecialchars($logo['setting_value']); ?>" alt="Finance Hub" style="max-height: 40px;">
                     <?php else: ?>
-                        Watchmen Finance Hub
+                        Finance Hub
                     <?php endif; ?>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,11 +49,14 @@
                             <a class="nav-link" href="<?php echo BASE_URL; ?>pages/apply.php">Apply for a Loan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo BASE_URL; ?>pages/news.php">The Watchmen News</a>
+                            <a class="nav-link" href="<?php echo BASE_URL; ?>pages/news.php">News</a>
                         </li>
                         <?php if (isset($_SESSION['is_loggedin']) && $_SESSION['is_loggedin'] === true): ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?php echo BASE_URL; ?>pages/dashboard.php">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?php echo BASE_URL; ?>pages/payment_history.php">Payment History</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?php echo BASE_URL; ?>actions/logout_user.php">Logout</a>

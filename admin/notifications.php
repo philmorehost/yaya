@@ -14,16 +14,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $id = (int)$_POST['id'];
-    $status = htmlspecialchars($_POST['status']);
+    $new_status = htmlspecialchars($_POST['status']);
 
     try {
-        $stmt = $db->prepare("UPDATE PaymentNotifications SET status = :status WHERE id = :id");
-        $stmt->execute([':status' => $status, ':id' => $id]);
+        $db->beginTransaction();
+
+        // Get current notification details
+        $stmt = $db->prepare("SELECT * FROM PaymentNotifications WHERE id = :id FOR UPDATE");
+        $stmt->execute([':id' => $id]);
+        $notification = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$notification) {
+            throw new Exception("Notification not found.");
+        }
+
+        if ($notification['status'] !== 'paid' && $new_status === 'paid') {
+            // Process the payment
+            $loan_id = $notification['loan_id'];
+            $amount = $notification['amount'];
+
+            // Get loan details
+            $loanStmt = $db->prepare("SELECT balance FROM Loans WHERE id = :loan_id FOR UPDATE");
+            $loanStmt->execute([':loan_id' => $loan_id]);
+            $loan = $loanStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($loan) {
+                // Update loan balance
+                $new_balance = $loan['balance'] - $amount;
+                if ($new_balance < 0) $new_balance = 0;
+
+                $updateLoanStmt = $db->prepare("UPDATE Loans SET balance = :new_balance WHERE id = :loan_id");
+                $updateLoanStmt->execute([':new_balance' => $new_balance, ':loan_id' => $loan_id]);
+
+                // Update next_due_date if balance > 0
+                if ($new_balance > 0) {
+                    $updateDateStmt = $db->prepare("UPDATE Loans SET next_due_date = DATE_ADD(next_due_date, INTERVAL 1 MONTH) WHERE id = :loan_id");
+                    $updateDateStmt->execute([':loan_id' => $loan_id]);
+                }
+
+                // Record repayment
+                $repaymentStmt = $db->prepare("INSERT INTO Repayments (loan_id, amount_paid, payment_date, recorded_by) VALUES (:loan_id, :amount_paid, :payment_date, :recorded_by)");
+                $repaymentStmt->execute([
+                    ':loan_id' => $loan_id,
+                    ':amount_paid' => $amount,
+                    ':payment_date' => $notification['payment_date'],
+                    ':recorded_by' => $_SESSION['user_id']
+                ]);
+            }
+        }
+
+        $updateStmt = $db->prepare("UPDATE PaymentNotifications SET status = :status WHERE id = :id");
+        $updateStmt->execute([':status' => $new_status, ':id' => $id]);
+
+        $db->commit();
         $_SESSION['success_message'] = "Payment notification #$id status updated successfully.";
-    } catch (PDOException $e) {
-        error_log("Error updating payment notification status: " . $e->getMessage(), 3, dirname(__DIR__) . '/logs/errors.log');
-        header('Location: ' . BASE_URL . 'pages/error.php');
-        exit;
+    } catch (Exception $e) {
+        $db->rollBack();
+        error_log("Error updating payment notification: " . $e->getMessage(), 3, dirname(__DIR__) . '/logs/errors.log');
+        $_SESSION['errors'] = ["Error updating payment notification: " . $e->getMessage()];
     }
 
     header('Location: ' . BASE_URL . 'admin/notifications.php');
@@ -43,6 +91,18 @@ try {
 
 <div class="container mt-5">
     <h1>Payment Notifications</h1>
+
+    <?php if (isset($_SESSION['success_message'])): ?>
+        <div class="alert alert-success"><?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?></div>
+    <?php endif; ?>
+
+    <?php if (isset($_SESSION['errors'])): ?>
+        <?php foreach ($_SESSION['errors'] as $error): ?>
+            <div class="alert alert-danger"><?php echo $error; ?></div>
+        <?php endforeach; ?>
+        <?php unset($_SESSION['errors']); ?>
+    <?php endif; ?>
+
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">

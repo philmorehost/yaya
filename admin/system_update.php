@@ -161,12 +161,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'guarantor2Occupation' => 'VARCHAR(255) DEFAULT NULL',
                 'guarantor2Phone' => 'VARCHAR(255) DEFAULT NULL',
                 'guarantor2Passport' => 'VARCHAR(255) DEFAULT NULL',
-                'userPassport' => 'VARCHAR(255) DEFAULT NULL'
+                'userPassport' => 'VARCHAR(255) DEFAULT NULL',
+                'loanDuration' => 'INT NOT NULL DEFAULT 10'
             ],
             'Loans' => [
-                 'monthly_repayment' => 'DECIMAL(10, 2) NOT NULL DEFAULT 0.00'
+                 'monthly_repayment' => 'DECIMAL(10, 2) NOT NULL DEFAULT 0.00',
+                 'loanDuration' => 'INT NOT NULL DEFAULT 10'
+            ],
+            'Repayments' => [
+                'amount_paid' => 'DECIMAL(10, 2) NOT NULL',
+                'recorded_by' => 'INT NOT NULL'
             ]
         ];
+
+        // Specific fix for Repayments table if it was created from schema.sql
+        try {
+            if ($columnExists('Repayments', 'amount') && !$columnExists('Repayments', 'amount_paid')) {
+                $messages[] = "Renaming 'amount' to 'amount_paid' in 'Repayments' table...";
+                $db->exec("ALTER TABLE `Repayments` CHANGE `amount` `amount_paid` DECIMAL(10, 2) NOT NULL;");
+                $messages[] = "Column renamed successfully.";
+            }
+            if ($columnExists('Repayments', 'user_id') && !$columnExists('Repayments', 'recorded_by')) {
+                $messages[] = "Renaming 'user_id' to 'recorded_by' in 'Repayments' table...";
+                $db->exec("ALTER TABLE `Repayments` CHANGE `user_id` `recorded_by` INT NOT NULL;");
+                $messages[] = "Column renamed successfully.";
+            }
+        } catch (PDOException $e) {
+            $errors[] = "Error updating 'Repayments' table columns: " . $e->getMessage();
+        }
 
         foreach ($all_columns as $table => $columns) {
             foreach ($columns as $column => $definition) {
