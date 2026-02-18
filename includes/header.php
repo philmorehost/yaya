@@ -7,24 +7,28 @@
     <title><?php echo isset($page_title) ? $page_title . ' - Watchmen Finance Hub' : 'Watchmen Finance Hub'; ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/style.css">
-    <?php
-    $current_page = basename($_SERVER['PHP_SELF']);
-    if (in_array($current_page, ['manage_articles.php', 'edit_article.php'])):
-    ?>
-    <!--
-        NOTE: The rich text editor below (TinyMCE) is using a free, limited version.
-        For production use, it is recommended to sign up for a free API key at https://www.tiny.cloud/
-        to remove developer warnings and access more features.
-    -->
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-    <script>tinymce.init({selector:'textarea'});</script>
-    <?php endif; ?>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="<?php echo BASE_URL; ?>">Watchmen Finance Hub</a>
+                <?php
+                $logo = null;
+                try {
+                    $stmt = $db->query("SELECT * FROM AdminSettings WHERE setting_key = 'logo'");
+                    $logo = $stmt->fetch();
+                } catch (PDOException $e) {
+                    // Log the error or handle it gracefully
+                    // For now, we'll just suppress the error
+                }
+                ?>
+                <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
+                    <?php if ($logo && !empty($logo['setting_value'])): ?>
+                        <img src="<?php echo BASE_URL . htmlspecialchars($logo['setting_value']); ?>" alt="Watchmen Finance Hub" style="max-height: 40px;">
+                    <?php else: ?>
+                        Watchmen Finance Hub
+                    <?php endif; ?>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>

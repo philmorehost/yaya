@@ -1,12 +1,12 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
+<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
 if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_SESSION['user_role'] !== 'admin') {
     header('Location: ' . BASE_URL . 'admin/login.php');
     exit;
 }
 ?>
-<?php require_once dirname(__DIR__) . '/database.php'; ?>
-<?php include dirname(__DIR__) . '/includes/header.php'; ?>
+<?php include 'includes/header.php'; ?>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -40,7 +40,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
                                 echo "<td>" . $repayment['id'] . "</td>";
                                 echo "<td>" . $repayment['loan_id'] . "</td>";
                                 echo "<td>" . $repayment['user_id'] . "</td>";
-                                echo "<td>$" . htmlspecialchars(number_format($repayment['amount'], 2)) . "</td>";
+                                echo "<td>₦" . htmlspecialchars(number_format($repayment['amount'], 2)) . "</td>";
                                 echo "<td>" . date('F j, Y', strtotime($repayment['payment_date'])) . "</td>";
                                 echo "</tr>";
                             }

@@ -1,4 +1,5 @@
 <?php require_once dirname(__DIR__) . '/config.php'; ?>
+<?php require_once dirname(__DIR__) . '/database.php'; ?>
 <?php
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -8,8 +9,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
     exit;
 }
 ?>
-<?php require_once dirname(__DIR__) . '/database.php'; ?>
-<?php include dirname(__DIR__) . '/includes/header.php'; ?>
+<?php include 'includes/header.php'; ?>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -56,7 +56,7 @@ if (!isset($_SESSION['is_loggedin']) || $_SESSION['is_loggedin'] !== true || $_S
                                 echo "<td>" . $app['id'] . "</td>";
                                 echo "<td>" . htmlspecialchars($app['fullName']) . "</td>";
                                 echo "<td>" . htmlspecialchars($app['loanPurpose']) . "</td>";
-                                echo "<td>$" . htmlspecialchars(number_format($app['loanAmount'], 2)) . "</td>";
+                                echo "<td>₦" . htmlspecialchars(number_format($app['loanAmount'], 2)) . "</td>";
                                 echo "<td><span class='badge bg-" . ($app['status'] === 'Approved' ? 'success' : ($app['status'] === 'Disapproved' ? 'danger' : 'warning')) . "'>" . htmlspecialchars($app['status']) . "</span></td>";
                                 echo "<td>
                                         <form action='update_status.php' method='post' style='display:inline-block;'>

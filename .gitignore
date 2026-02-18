@@ -1,3 +1,4 @@
 php_server.log
 data/
 config.ini
+logs/
